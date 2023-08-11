@@ -1,9 +1,22 @@
-.toto {
-    width: 200px;
-    border: 1px solid red;
-    .logo {
-        width: 100%;
-    }
+.root {
+  display: flex;
+  justify-content: space-between;
+    align-items: center;
+
+  height: 70px;
+ 
+  .icon {
+    margin-right: 15px;
+    height: 80%;
+  }
+ 
+  .logo { 
+    display: flex;
+    height: 80%;
+    margin-left: 15px;
+   
+
+    
+
+  }
 }
-
-
