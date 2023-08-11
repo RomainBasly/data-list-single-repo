@@ -1,6 +1,6 @@
 import classes from "./classes.module.scss";
 import { Bars3Icon } from "@heroicons/react/24/solid";
-import logo from "../../../public/list.svg";
+import logo from "../../../../public/list.svg";
 
 export default function Header() {
   return (

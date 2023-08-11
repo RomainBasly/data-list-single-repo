@@ -1,22 +1,18 @@
 .root {
   display: flex;
   justify-content: space-between;
-    align-items: center;
-
+  align-items: center;
   height: 70px;
- 
+  border-bottom: 1px solid #ccd5ae;
+
   .icon {
     margin-right: 15px;
     height: 80%;
   }
- 
-  .logo { 
+
+  .logo {
     display: flex;
     height: 80%;
     margin-left: 15px;
-   
-
-    
-
   }
 }
