@@ -6,7 +6,7 @@ export default function DefaultTemplate() {
   return (
     <div className={classes["root"]}>
       <Header />
-      {/* <SideMenu /> */}
+      <SideMenu />
     </div>
   );
 }
