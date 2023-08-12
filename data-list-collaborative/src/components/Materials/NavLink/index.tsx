@@ -4,6 +4,7 @@ type IProps = {
   svg: React.ReactElement;
   className?: string;
   text: string;
+  alt: string;
 };
 
 export default function NavLink(props: IProps) {
