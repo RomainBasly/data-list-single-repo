@@ -5,14 +5,38 @@
   height: 70px;
   border-bottom: 1px solid #ccd5ae;
 
-  .icon {
-    margin-right: 15px;
-    height: 80%;
-  }
-
   .logo {
     display: flex;
     height: 80%;
-    margin-left: 15px;
+    margin-left: 30px;
+  }
+  .mobile {
+    display: none;
+
+    @media screen and (max-width: 768px) {
+      display: flex;
+      align-items: center;
+      height: 100%;
+    }
+    .icon {
+      margin-right: 30px;
+      height: 80%;
+    }
+  }
+  .big-screen-nav-links {
+    display: flex;
+    min-width: 300px;
+    height: 80%;
+    gap: 20px;
+    justify-content: space-between;
+    margin-right: 30px;
+
+    .nav-link {
+      display: flex;
+    }
+
+    @media screen and (max-width: 768px) {
+      display: none;
+    }  
   }
 }
