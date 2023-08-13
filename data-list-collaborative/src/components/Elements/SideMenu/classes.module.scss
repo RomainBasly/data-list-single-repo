@@ -1,5 +1,6 @@
 .root {
     display: flex;
+    position: relative;
     justify-content: flex-end;
     height: 80%;
     min-height:350px;
@@ -10,8 +11,7 @@
     background-color: #faedcd;
     border-bottom-left-radius: 25px;
     box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.15);
-    transition: transform 300ms ease-in, opacity 300ms ease-in, width 300ms ease-in;
-	transform: translateX(0%);
+    transition: transform 300ms ease-in-out, opacity 300ms, width 300ms ease-in-out, box-shadow 300ms ease-in-out;
 
     @media screen and (max-width: 350px) {
         width: 100%;
@@ -19,9 +19,16 @@
 
     svg {
         position: absolute;
-        top: 30px;
+        top: 10px;
         right: 30px;
         cursor: pointer;
         height: 50px;
     }
+
+    &[status="closed"] {
+		pointer-events: none;
+		transform: translateX(100%);
+		opacity: 0;
+		width: 0;
+	}
 }
