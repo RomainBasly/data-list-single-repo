@@ -20,7 +20,6 @@ export default function Header() {
 	}, [updateStatus]);
 
   function updateStatus(status: EOpeningState) {
-    document.body.setAttribute("user-menu-status", status);
     setUserMenuState(status);
 }
 
