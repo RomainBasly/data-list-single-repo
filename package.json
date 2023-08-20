@@ -1,0 +1,38 @@
+{
+  "name": "backend-data-list",
+  "version": "1.0.0",
+  "description": "The first attempt to create a backend",
+  "main": "index.js",
+  "scripts": {
+    "build": "rimraf dist && npx tsc",
+    "prestart": "npm run build",
+    "start": "node dist/index.js",
+    "predev": "npm run build",
+    "dev": "concurrently \"tsc -w\" \"nodemon dist/app.js\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RomainBasly/backend-data-list.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RomainBasly/backend-data-list/issues"
+  },
+  "homepage": "https://github.com/RomainBasly/backend-data-list#readme",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.32.0",
+    "@types/express": "^4.17.17",
+    "@types/node": "^20.5.1",
+    "concurrently": "^8.2.0",
+    "express": "^4.18.2",
+    "nodemon": "^3.0.1",
+    "rimraf": "^5.0.1"
+  },
+  "devDependencies": {
+    "axios": "^1.4.0",
+    "dotenv": "^16.3.1",
+    "typescript": "^5.1.6"
+  }
+}
