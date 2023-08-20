@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=BioRhyme:wght@400;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=BioRhyme:wght@400;700;800&family=Geologica:wght@100;200;300;400;500;600;700;800;900&display=swap');
 * {
   font-family: 'BioRhyme', serif;
   box-sizing: border-box;
@@ -14,7 +14,12 @@ body {
 
 body {
   color: rgb(var(--foreground-rgb));
-  background-color: #fefae0;
+  background-color: #faedcd;
+}
+
+h1, h2, h3 {
+  font-family: 'Geologica', sans-serif;
+  color: #023047;
 }
 
 a {
