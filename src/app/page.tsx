@@ -5,7 +5,6 @@ import classes from "./classes.module.scss";
 export default function Home() {
   return (
     <div className={classes["root"]}>
-      <DefaultTemplate />
       <Login />
     </div>
   );
