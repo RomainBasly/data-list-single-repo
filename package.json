@@ -31,7 +31,9 @@
     "rimraf": "^5.0.1"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.0",
     "axios": "^1.4.0",
+    "bcrypt": "^5.1.1",
     "dotenv": "^16.3.1",
     "typescript": "^5.1.6"
   }
