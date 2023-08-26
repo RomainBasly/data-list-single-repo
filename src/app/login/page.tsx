@@ -1,3 +1,4 @@
+import React from "react";
 import classes from "./classes.module.scss";
 import Logo from "../../components/Materials/Logo";
 import logo from "../../../public/list.svg";
