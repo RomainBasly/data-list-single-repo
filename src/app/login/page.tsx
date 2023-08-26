@@ -15,6 +15,7 @@ export default function Login() {
           <div className={classes["form-element"]}>
             <label htmlFor="email">Email</label>
             <input type="email" name="email" placeholder="John@john.com" />
+            <div className={classes["error"]}>Error</div>
           </div>
           <div className={classes["form-element"]}>
             <label htmlFor="password">Mot de passe</label>
@@ -23,6 +24,10 @@ export default function Login() {
               name="password"
               placeholder="Entrez un mot de passe"
             />
+            <div className={classes["error"]}>Error</div>
+          </div>
+          <div className={classes["form-element"]}>
+            <button>Se connecter</button>
           </div>
         </form>
       </div>

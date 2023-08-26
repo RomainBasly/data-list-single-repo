@@ -64,12 +64,21 @@
 
                 &:focus {
                     outline: none;
-                    border: 1px solid #fec89a;
+                    border: 1px solid #ffb600;
+                    background-color: #efe9ae;
                 }
 
                 &::placeholder {
                     color: #6c757d;
                 }
+            }
+
+            button {
+                padding: 8px;
+            }
+
+            .error {
+                color: red;
             }
         }
     }
