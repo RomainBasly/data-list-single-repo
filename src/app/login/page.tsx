@@ -26,7 +26,7 @@ export default function Login() {
             />
             <div className={classes["error"]}>Error</div>
           </div>
-          <div className={classes["form-element"]}>
+          <div className={classes["button-element"]}>
             <button>Se connecter</button>
           </div>
         </form>
