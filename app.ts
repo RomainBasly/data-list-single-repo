@@ -4,7 +4,7 @@ import axios from 'axios';
 //import fetchData from './src/fetchLists';
 import router from './src/routes/appRoutes';
 import hashedPassword from './domain/common/auth/auth';
-import fetchData from './src/fetchLists';
+import fetchData, { ListItem } from './src/fetchLists';
 
 import dotenv from "dotenv";
 dotenv.config();
@@ -21,25 +21,28 @@ app.use(cors());
 // })
 
 // To be fixed
+// app.get("/my-lists", async (req: Request, res: Response) => {
+//     let response;
+//     try {
+//         axios.get("https://eaepcgberfstswvqfqge.supabase.co/rest/v1/app-lists?select=*", {
+//             headers: {
+//                 "apiKey" : process.env.SUPABASE_SERVICE_KEY,
+//                 "Authorization": `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
+//         }})
+//         .then((res) => {
+//             response = JSON.stringify(res.data)
+//             return response})
+//         .catch((err) => {console.log(err)})
+//         res.send(response)
+//     } catch (error) {
+//         console.log(error);
+//     }
+// })
+
 app.get("/my-lists", async (req: Request, res: Response) => {
-    let response;
-    try {
-        axios.get("https://eaepcgberfstswvqfqge.supabase.co/rest/v1/app-lists?select=*", {
-            headers: {
-                "apiKey" : process.env.SUPABASE_SERVICE_KEY,
-                "Authorization": `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
-        }})
-        .then((res) => {
-            response = JSON.stringify(res.data)
-            return response})
-        .catch((err) => {console.log(err)})
-        res.send(response)
-    } catch (error) {
-        console.log(error);
-    }
+    const response: ListItem[] = await fetchData();
+    res.send(response);
 })
-
-
 
 app.use(router);
 

@@ -6,13 +6,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const supabaseClient_1 = __importDefault(require("../config/database/supabaseClient"));
 async function fetchData() {
     try {
-        const { data } = await supabaseClient_1.default
-            .from("app-lists")
+        const { data, error } = await supabaseClient_1.default
+            .from("My-lists")
             .select("*");
+        if (error) {
+            throw error;
+        }
+        if (!data)
+            return [];
         return data;
     }
     catch (error) {
         console.log(error);
+        return [];
     }
 }
 exports.default = fetchData;
