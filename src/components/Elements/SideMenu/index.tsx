@@ -2,9 +2,8 @@
 import * as React from "react";
 import { useEffect } from "react";
 import classes from "./classes.module.scss";
-import {XMarkIcon} from "@heroicons/react/24/outline";
 import UserMenuStatus, { EOpeningState } from "@/Stores/UserMenuStatus";
-import { HomeIcon, PencilIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { HomeIcon, PencilIcon, XCircleIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import NavLink from "@/components/Materials/NavLink";
 
 type IProps = {
