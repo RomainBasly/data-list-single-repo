@@ -1,34 +1,42 @@
 .root {
-    display: flex;
-    position: relative;
-    justify-content: flex-end;
-    height: 80%;
-    min-height:350px;
-    width: 70%;
-    position: fixed;
-    top: 0;
-    right: 0;
-    background-color: #faedcd;
-    border-bottom-left-radius: 25px;
-    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.15);
-    transition: transform 300ms ease-in-out, opacity 300ms, width 300ms ease-in-out, box-shadow 300ms ease-in-out;
+  display: flex;
+  justify-content: flex-end;
+  height: 80%;
+  min-height: 450px;
+  width: 70%;
+  position: fixed;
+  top: 0;
+  right: 0;
+  background-color: #faedcd;
+  border-bottom-left-radius: 25px;
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.15);
+  transition: transform 300ms ease-in-out, opacity 300ms,
+    width 300ms ease-in-out, box-shadow 300ms ease-in-out;
 
-    @media screen and (max-width: 350px) {
-        width: 100%;
+  @media screen and (max-width: 350px) {
+    width: 100%;
+  }
+
+  .closing-svg {
+    position: absolute;
+    top: 10px;
+    right: 30px;
+    cursor: pointer;
+    height: 50px;
+  }
+  .nav-link-container {
+    background-color: red;
+    height: 200px;
+    .nav-link {
+      display: flex;
+      height: 100px;
     }
+  }
 
-    svg {
-        position: absolute;
-        top: 10px;
-        right: 30px;
-        cursor: pointer;
-        height: 50px;
-    }
-
-    &[status="closed"] {
-		pointer-events: none;
-		transform: translateX(100%);
-		opacity: 0;
-		width: 0;
-	}
+  &[status="closed"] {
+    pointer-events: none;
+    transform: translateX(100%);
+    opacity: 0;
+    width: 0;
+  }
 }
