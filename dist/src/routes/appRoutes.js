@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const controllers_1 = require("../api/app-auth/controllers/controllers");
+const controllers_1 = require("../api/app-auth/controllers");
 const controllers_2 = require("../api/app-users/controllers");
 const router = (0, express_1.Router)();
 router.get("/", controllers_1.checkSessionUser);

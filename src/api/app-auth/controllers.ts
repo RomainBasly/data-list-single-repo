@@ -1,6 +1,16 @@
 import supabase from "../../../config/database/supabaseClient";
 import { RequestWithBody } from "../../common/types/api";
 import { Request, Response, NextFunction } from "express";
+import { get } from './decorators/routes'
+import { controller } from './decorators/controller'
+
+@controller("/autho")
+export class Auth {
+  @get('/login')
+  getLogin(req: Request, res: Response): void {
+    res.send("it works baby congratulations")
+  }
+}
 
 export function requireAuth(req: Request, res: Response, next: NextFunction): void {
   if (req.session && req.session.loggedIn) {
