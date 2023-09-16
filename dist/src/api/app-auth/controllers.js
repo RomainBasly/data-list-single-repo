@@ -14,21 +14,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.login_post = exports.signup_post = exports.login_get = exports.signup_get = exports.logoutUser = exports.checkSessionUser = exports.requireAuth = exports.Auth = void 0;
 const supabaseClient_1 = __importDefault(require("../../../config/database/supabaseClient"));
-const routes_1 = require("./decorators/routes");
-const controller_1 = require("./decorators/controller");
+const decorators_1 = require("./decorators");
 let Auth = exports.Auth = class Auth {
     getLogin(req, res) {
         res.send("it works baby congratulations");
     }
 };
 __decorate([
-    (0, routes_1.get)('/login'),
+    (0, decorators_1.get)('/login'),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], Auth.prototype, "getLogin", null);
 exports.Auth = Auth = __decorate([
-    (0, controller_1.controller)("/autho")
+    (0, decorators_1.controller)("/autho")
 ], Auth);
 function requireAuth(req, res, next) {
     if (req.session && req.session.loggedIn) {

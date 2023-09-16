@@ -1,8 +1,20 @@
-import 'reflect-metadata';
+import "reflect-metadata";
+import { Methods, MetadataKeys } from "./enums";
 
-export function get(path: string) {
-    return function(target: any, key: string, descriptor: PropertyDescriptor) {
-        console.log("get decorator", target, key, descriptor)
-        Reflect.defineMetadata("path", path, target, key)
-    }
+function routeBinder(method: string) {
+  return function (path: string) {
+    return function (target: any, key: string, descriptor: PropertyDescriptor) {
+      Reflect.defineMetadata(MetadataKeys.PATH, path, target, key);
+      Reflect.defineMetadata(MetadataKeys.METHOD, method, target, key);
+    };
+  }
 }
+
+export const get = routeBinder(Methods.GET);
+export const post = routeBinder(Methods.POST);
+export const put = routeBinder(Methods.PUT);
+export const del = routeBinder(Methods.DEL);
+export const patch = routeBinder(Methods.PATCH);
+
+
+
