@@ -1,17 +1,29 @@
 import * as Data from "../../../infrastructure/fakeData/users.json";
-import { RequestWithBody } from "../../common/types/api";
-import { Response } from "express";
+import { Response, Request } from "express";
+import { get, controller, bodyValidator, post, use } from "../../common/decorators";
+import { requireAuth } from "../app-auth/controllers";
 
-export const getUsers = (req: RequestWithBody, res: Response) => {
-  try {
-    res.json(Data.users);
-  } catch (error) {
-    console.log(error);
-    res.status(400).send("error getting the users");
+@controller("/api/user")
+export class AppUserController {
+  @get("/:id")
+  @use(requireAuth)
+  getUserById(req: Request, res: Response) {
+    const { id } = req.params;
+    res.json(Data.users.find(user => user.id === Number(id)))
   }
-};
 
-export const postUsers = (req: RequestWithBody, res: Response) => {
+  @get("/")
+  getUsers(req: Request, res: Response) {
+    try {
+      res.json(Data.users);
+    } catch (error) {
+      console.log(error);
+      res.status(400).send("error getting the users");
+    }
+  }
+}
+
+export const postUsers = (req: Request, res: Response) => {
   const { email, password } = req.body;
   try {
     res.json({
@@ -24,7 +36,7 @@ export const postUsers = (req: RequestWithBody, res: Response) => {
   }
 };
 
-export const putUsers = (req: RequestWithBody, res: Response) => {
+export const putUsers = (req: Request, res: Response) => {
   const { id, email, password } = req.body;
 
   try {
@@ -32,14 +44,9 @@ export const putUsers = (req: RequestWithBody, res: Response) => {
   } catch (error) {}
 };
 
-export const deleteUser = (req: RequestWithBody, res: Response) => {
+export const deleteUser = (req: Request, res: Response) => {
   const { id } = req.body;
   try {
     res.json({ id });
   } catch (error) {}
-};
-
-export const getUserById = (req: RequestWithBody, res: Response) => {
-  const { id } = req.params;
-  res.json({ id });
 };

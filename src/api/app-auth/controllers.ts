@@ -1,5 +1,4 @@
 import supabase from "../../../config/database/supabaseClient";
-import { RequestWithBody } from "../../common/types/api";
 import { Request, Response, NextFunction } from "express";
 import { get, controller, bodyValidator, post, use } from "../../common/decorators";
 
@@ -12,11 +11,10 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
   res.send("Not permitted");
 }
 
-@controller("/auth")
-export class Auth {
-
+@controller("/api/auth")
+export class AppAuthController {
   @get("/")
-  checkSessionUser(req: RequestWithBody, res: Response) {
+  checkSessionUser(req: Request, res: Response) {
     if (req.session && req.session.loggedIn) {
       res.send("you are loggedIn Baby");
     } else {
@@ -45,7 +43,7 @@ export class Auth {
   }
 
   @get("/logout")
-  logoutUser(req: RequestWithBody, res: Response) {
+  logoutUser(req: Request, res: Response) {
     req.session = undefined;
     res.send("you are now loggedOut, copeng");
   }
@@ -57,7 +55,7 @@ export class Auth {
   }
 }
 
-export const signup_post = async (req: RequestWithBody, res: Response) => {
+export const signup_post = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   try {
     if (email && password) {
@@ -74,9 +72,9 @@ export const signup_post = async (req: RequestWithBody, res: Response) => {
   }
 };
 
-export const signup_get = (req: RequestWithBody, res: Response) => {
+export const signup_get = (req: Request, res: Response) => {
   res.send("signup get");
 };
-export const login_get = (req: RequestWithBody, res: Response) => {
+export const login_get = (req: Request, res: Response) => {
   res.send("login get");
 };

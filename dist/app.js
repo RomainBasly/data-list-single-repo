@@ -11,6 +11,7 @@ const fetchLists_1 = __importDefault(require("./src/fetchLists"));
 const cookie_session_1 = __importDefault(require("cookie-session"));
 const common_1 = require("./config/common");
 require("./src/api/app-auth/controllers");
+require("./src/api/app-users/controllers");
 const dotenv_1 = __importDefault(require("dotenv"));
 const appRouter_1 = require("./src/appRouter");
 dotenv_1.default.config();

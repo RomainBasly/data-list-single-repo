@@ -7,6 +7,7 @@ import cookieSession from 'cookie-session';
 import { corsOptions } from "./config/common";
 
 import "./src/api/app-auth/controllers"
+import "./src/api/app-users/controllers"
 
 import dotenv from "dotenv";
 import { AppRouter } from "./src/appRouter";

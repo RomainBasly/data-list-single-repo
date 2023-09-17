@@ -15,6 +15,12 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -22,19 +28,45 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserById = exports.deleteUser = exports.putUsers = exports.postUsers = exports.getUsers = void 0;
+exports.deleteUser = exports.putUsers = exports.postUsers = exports.AppUserController = void 0;
 const Data = __importStar(require("../../../infrastructure/fakeData/users.json"));
-const getUsers = (req, res) => {
-    try {
-        res.json(Data.users);
+const decorators_1 = require("../../common/decorators");
+const controllers_1 = require("../app-auth/controllers");
+let AppUserController = exports.AppUserController = class AppUserController {
+    getUserById(req, res) {
+        const { id } = req.params;
+        res.json(Data.users.find(user => user.id === Number(id)));
     }
-    catch (error) {
-        console.log(error);
-        res.status(400).send("error getting the users");
+    getUsers(req, res) {
+        try {
+            res.json(Data.users);
+        }
+        catch (error) {
+            console.log(error);
+            res.status(400).send("error getting the users");
+        }
     }
 };
-exports.getUsers = getUsers;
+__decorate([
+    (0, decorators_1.get)("/:id"),
+    (0, decorators_1.use)(controllers_1.requireAuth),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], AppUserController.prototype, "getUserById", null);
+__decorate([
+    (0, decorators_1.get)("/"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], AppUserController.prototype, "getUsers", null);
+exports.AppUserController = AppUserController = __decorate([
+    (0, decorators_1.controller)("/api/user")
+], AppUserController);
 const postUsers = (req, res) => {
     const { email, password } = req.body;
     try {
@@ -65,8 +97,3 @@ const deleteUser = (req, res) => {
     catch (error) { }
 };
 exports.deleteUser = deleteUser;
-const getUserById = (req, res) => {
-    const { id } = req.params;
-    res.json({ id });
-};
-exports.getUserById = getUserById;

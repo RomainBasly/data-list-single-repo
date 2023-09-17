@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login_get = exports.signup_get = exports.signup_post = exports.Auth = exports.requireAuth = void 0;
+exports.login_get = exports.signup_get = exports.signup_post = exports.AppAuthController = exports.requireAuth = void 0;
 const supabaseClient_1 = __importDefault(require("../../../config/database/supabaseClient"));
 const decorators_1 = require("../../common/decorators");
 function requireAuth(req, res, next) {
@@ -24,7 +24,7 @@ function requireAuth(req, res, next) {
     res.send("Not permitted");
 }
 exports.requireAuth = requireAuth;
-let Auth = exports.Auth = class Auth {
+let AppAuthController = exports.AppAuthController = class AppAuthController {
     checkSessionUser(req, res) {
         if (req.session && req.session.loggedIn) {
             res.send("you are loggedIn Baby");
@@ -62,36 +62,36 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
-], Auth.prototype, "checkSessionUser", null);
+], AppAuthController.prototype, "checkSessionUser", null);
 __decorate([
     (0, decorators_1.get)("/login"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
-], Auth.prototype, "getLogin", null);
+], AppAuthController.prototype, "getLogin", null);
 __decorate([
     (0, decorators_1.post)("/login"),
     (0, decorators_1.bodyValidator)("email", "password"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
-], Auth.prototype, "postLogin", null);
+], AppAuthController.prototype, "postLogin", null);
 __decorate([
     (0, decorators_1.get)("/logout"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
-], Auth.prototype, "logoutUser", null);
+], AppAuthController.prototype, "logoutUser", null);
 __decorate([
     (0, decorators_1.get)("/protected"),
     (0, decorators_1.use)(requireAuth),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
-], Auth.prototype, "getProtected", null);
-exports.Auth = Auth = __decorate([
-    (0, decorators_1.controller)("/auth")
-], Auth);
+], AppAuthController.prototype, "getProtected", null);
+exports.AppAuthController = AppAuthController = __decorate([
+    (0, decorators_1.controller)("/api/auth")
+], AppAuthController);
 const signup_post = async (req, res) => {
     const { email, password } = req.body;
     try {
