@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { AppRouter } from "../../../../src/appRouter";
+import { AppRouter } from "../../appRouter";
 import { Methods, MetadataKeys } from "./enums";
 import { Request, Response, RequestHandler, NextFunction } from "express";
 

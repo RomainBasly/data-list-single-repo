@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.login_get = exports.signup_get = exports.signup_post = exports.Auth = exports.requireAuth = void 0;
 const supabaseClient_1 = __importDefault(require("../../../config/database/supabaseClient"));
-const decorators_1 = require("./decorators");
+const decorators_1 = require("../../common/decorators");
 function requireAuth(req, res, next) {
     if (req.session && req.session.loggedIn) {
         next();
