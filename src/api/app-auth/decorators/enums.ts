@@ -8,5 +8,7 @@ export enum Methods {
 
 export enum MetadataKeys {
     METHOD = 'method',
-    PATH = 'path'
+    PATH = 'path',
+    MIDDLEWARE = 'middleware',
+    VALIDATOR = 'validator'
 }

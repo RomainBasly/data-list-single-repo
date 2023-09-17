@@ -12,23 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login_post = exports.signup_post = exports.login_get = exports.signup_get = exports.logoutUser = exports.checkSessionUser = exports.requireAuth = exports.Auth = void 0;
+exports.login_get = exports.signup_get = exports.signup_post = exports.Auth = exports.requireAuth = void 0;
 const supabaseClient_1 = __importDefault(require("../../../config/database/supabaseClient"));
 const decorators_1 = require("./decorators");
-let Auth = exports.Auth = class Auth {
-    getLogin(req, res) {
-        res.send("it works baby congratulations");
-    }
-};
-__decorate([
-    (0, decorators_1.get)('/login'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
-], Auth.prototype, "getLogin", null);
-exports.Auth = Auth = __decorate([
-    (0, decorators_1.controller)("/autho")
-], Auth);
 function requireAuth(req, res, next) {
     if (req.session && req.session.loggedIn) {
         next();
@@ -38,28 +24,74 @@ function requireAuth(req, res, next) {
     res.send("Not permitted");
 }
 exports.requireAuth = requireAuth;
-const checkSessionUser = (req, res) => {
-    if (req.session && req.session.loggedIn) {
-        res.send("you are loggedIn Baby");
+let Auth = exports.Auth = class Auth {
+    checkSessionUser(req, res) {
+        if (req.session && req.session.loggedIn) {
+            res.send("you are loggedIn Baby");
+        }
+        else {
+            res.send("you are not loggedIn Copeng");
+        }
     }
-    else {
-        res.send("you are not loggedIn Copeng");
+    getLogin(req, res) {
+        res.send("it works baby congratulations");
+    }
+    postLogin(req, res) {
+        try {
+            const { email, password } = req.body;
+            if (email === "hi@hi.com" && password === "Tatayoyo") {
+                req.session = { loggedIn: true };
+                res.send("you are now loggedIn babababab");
+            }
+        }
+        catch (error) {
+            console.log(error);
+            res.status(400).send("error in login_post");
+        }
+    }
+    logoutUser(req, res) {
+        req.session = undefined;
+        res.send("you are now loggedOut, copeng");
+    }
+    getProtected(req, res) {
+        res.send("welcome to the website, copeng");
     }
 };
-exports.checkSessionUser = checkSessionUser;
-const logoutUser = (req, res) => {
-    req.session = undefined;
-    res.send("you are now loggedOut, copeng");
-};
-exports.logoutUser = logoutUser;
-const signup_get = (req, res) => {
-    res.send("signup get");
-};
-exports.signup_get = signup_get;
-const login_get = (req, res) => {
-    res.send("login get");
-};
-exports.login_get = login_get;
+__decorate([
+    (0, decorators_1.get)("/"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], Auth.prototype, "checkSessionUser", null);
+__decorate([
+    (0, decorators_1.get)("/login"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], Auth.prototype, "getLogin", null);
+__decorate([
+    (0, decorators_1.post)("/login"),
+    (0, decorators_1.bodyValidator)("email", "password"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], Auth.prototype, "postLogin", null);
+__decorate([
+    (0, decorators_1.get)("/logout"),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], Auth.prototype, "logoutUser", null);
+__decorate([
+    (0, decorators_1.get)("/protected"),
+    (0, decorators_1.use)(requireAuth),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
+], Auth.prototype, "getProtected", null);
+exports.Auth = Auth = __decorate([
+    (0, decorators_1.controller)("/auth")
+], Auth);
 const signup_post = async (req, res) => {
     const { email, password } = req.body;
     try {
@@ -78,18 +110,11 @@ const signup_post = async (req, res) => {
     }
 };
 exports.signup_post = signup_post;
-const login_post = (req, res) => {
-    try {
-        const { email, password } = req.body;
-        if (email && password && email === "hi@hi.com" && password === "Tatayoyo") {
-            req.session = { loggedIn: true };
-            res.send("you are now loggedIn");
-        }
-        console.log({ email, password });
-    }
-    catch (error) {
-        console.log(error);
-        res.status(400).send("error in login_post");
-    }
+const signup_get = (req, res) => {
+    res.send("signup get");
 };
-exports.login_post = login_post;
+exports.signup_get = signup_get;
+const login_get = (req, res) => {
+    res.send("login get");
+};
+exports.login_get = login_get;
