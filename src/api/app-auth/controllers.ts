@@ -6,6 +6,11 @@ import fs from "fs";
 import path from "path";
 import * as employeesModule from "../../../infrastructure/fakeData/employees.json";
 
+interface Employee {
+  email: string;
+  password: string;
+}
+
 export function requireAuth(req: Request, res: Response, next: NextFunction): void {
   if (req?.session?.loggedIn) {
     next();
@@ -41,12 +46,15 @@ export class AppAuthController {
 
   @post("/login")
   @bodyValidator("email", "password")
-  async postLogin(req: Request, res: Response): Promise<any> {
+  async postLogin(req: Request<{}, {}, Employee>, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;
-      const userMatchingDB = employeesDB.employees.find((person) => person.email === email);
+      const userMatchingDB: Employee = employeesDB.employees.find((person) => person.email === email);
       console.log(employeesDB.employees)
-      if (!userMatchingDB) return res.sendStatus(401);
+      if (!userMatchingDB) {
+        res.sendStatus(401)
+        return; 
+      }
       const matchingPassword = await bcrypt.compare(password, userMatchingDB.password);
       if (matchingPassword) {
         res.json("success, good password");

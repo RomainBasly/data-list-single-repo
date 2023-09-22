@@ -77,8 +77,10 @@ let AppAuthController = exports.AppAuthController = class AppAuthController {
             const { email, password } = req.body;
             const userMatchingDB = employeesDB.employees.find((person) => person.email === email);
             console.log(employeesDB.employees);
-            if (!userMatchingDB)
-                return res.sendStatus(401);
+            if (!userMatchingDB) {
+                res.sendStatus(401);
+                return;
+            }
             const matchingPassword = await bcrypt_1.default.compare(password, userMatchingDB.password);
             if (matchingPassword) {
                 res.json("success, good password");
