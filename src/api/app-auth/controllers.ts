@@ -1,9 +1,13 @@
 import supabase from "../../../config/database/supabaseClient";
 import { Request, Response, NextFunction } from "express";
 import { get, controller, bodyValidator, post, use } from "../../common/decorators";
+import bcrypt from "bcrypt";
+import fs from "fs";
+import path from "path";
+import * as employeesModule from "../../../infrastructure/fakeData/employees.json";
 
 export function requireAuth(req: Request, res: Response, next: NextFunction): void {
-  if (req.session && req.session.loggedIn) {
+  if (req?.session?.loggedIn) {
     next();
     return;
   }
@@ -11,11 +15,20 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
   res.send("Not permitted");
 }
 
+
+const employees = (employeesModule as any).default as any[];
+const employeesDB = {
+  employees: employees || [],
+  setUsers: function(data: any) {
+    this.employees = data;
+  }
+}
+
 @controller("/api/auth")
 export class AppAuthController {
   @get("/")
   checkSessionUser(req: Request, res: Response) {
-    if (req.session && req.session.loggedIn) {
+    if (req?.session?.loggedIn) {
       res.send("you are loggedIn Baby");
     } else {
       res.send("you are not loggedIn Copeng");
@@ -43,6 +56,7 @@ export class AppAuthController {
   }
 
   @get("/logout")
+  @use(requireAuth)
   logoutUser(req: Request, res: Response) {
     req.session = undefined;
     res.send("you are now loggedOut, copeng");
@@ -53,9 +67,30 @@ export class AppAuthController {
   getProtected(req: Request, res: Response) {
     res.send("welcome to the website, copeng");
   }
+
+  @post("/")
+  async handleNewUser(req: Request, res: Response) {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json("userName and password are required");
+    
+    // const duplicate = employeesDB.employees.find((person: { email: string; }) => person.email === email)
+    // if (duplicate) return res.sendStatus(409).json("You are already a user")
+    try {
+      const salt = bcrypt.genSaltSync(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+      const newUser = { "userName": email, "password": hashedPassword};
+      employeesDB.setUsers([...employeesDB.employees, newUser])
+      await fs.promises.writeFile(
+        path.join(__dirname, '..', '..', '..', 'infrastructure', 'fakeData', 'employees.json'), JSON.stringify(employeesDB.employees))
+      console.log(employeesDB.employees)
+      res.status(201).json({"message": "new user created"})
+    } catch (error) {
+      res.status(500).json({"message error 500": error})
+    }
+  }
 }
 
-export const signup_post = async (req: Request, res: Response) => {
+export const signup_post_with_supabase = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   try {
     if (email && password) {
