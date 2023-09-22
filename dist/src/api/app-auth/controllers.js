@@ -57,7 +57,7 @@ const employeesDB = {
     employees: employees || [],
     setUsers: function (data) {
         this.employees = data;
-    }
+    },
 };
 let AppAuthController = exports.AppAuthController = class AppAuthController {
     checkSessionUser(req, res) {
@@ -72,12 +72,20 @@ let AppAuthController = exports.AppAuthController = class AppAuthController {
     getLogin(req, res) {
         res.send("it works baby congratulations");
     }
-    postLogin(req, res) {
+    async postLogin(req, res) {
         try {
             const { email, password } = req.body;
-            if (email === "hi@hi.com" && password === "Tatayoyo") {
+            const userMatchingDB = employeesDB.employees.find((person) => person.email === email);
+            console.log(employeesDB.employees);
+            if (!userMatchingDB)
+                return res.sendStatus(401);
+            const matchingPassword = await bcrypt_1.default.compare(password, userMatchingDB.password);
+            if (matchingPassword) {
+                res.json("success, good password");
                 req.session = { loggedIn: true };
-                res.send("you are now loggedIn babababab");
+            }
+            else {
+                res.sendStatus(401);
             }
         }
         catch (error) {
@@ -97,15 +105,15 @@ let AppAuthController = exports.AppAuthController = class AppAuthController {
         if (!email || !password)
             return res.status(400).json("userName and password are required");
         // const duplicate = employeesDB.employees.find((person: { email: string; }) => person.email === email)
-        // if (duplicate) return res.sendStatus(409).json("You are already a user")
+        // if (duplicate) return res.sendS©atus(409).json("You are already a user")
         try {
             const salt = bcrypt_1.default.genSaltSync(10);
             const hashedPassword = await bcrypt_1.default.hash(password, salt);
-            const newUser = { "userName": email, "password": hashedPassword };
+            const newUser = { email: email, password: hashedPassword };
             employeesDB.setUsers([...employeesDB.employees, newUser]);
-            await fs_1.default.promises.writeFile(path_1.default.join(__dirname, '..', '..', '..', 'infrastructure', 'fakeData', 'employees.json'), JSON.stringify(employeesDB.employees));
+            await fs_1.default.promises.writeFile(path_1.default.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"), JSON.stringify(employeesDB.employees));
             console.log(employeesDB.employees);
-            res.status(201).json({ "message": "new user created" });
+            res.status(201).json({ message: "new user created" });
         }
         catch (error) {
             res.status(500).json({ "message error 500": error });
@@ -129,7 +137,7 @@ __decorate([
     (0, decorators_1.bodyValidator)("email", "password"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
+    __metadata("design:returntype", Promise)
 ], AppAuthController.prototype, "postLogin", null);
 __decorate([
     (0, decorators_1.get)("/logout"),
@@ -146,7 +154,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AppAuthController.prototype, "getProtected", null);
 __decorate([
-    (0, decorators_1.post)("/"),
+    (0, decorators_1.post)("/register"),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)

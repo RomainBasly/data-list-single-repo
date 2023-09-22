@@ -7,12 +7,12 @@ const enums_1 = require("./enums");
 function bodyValidatorsCheck(keys) {
     return function (req, res, next) {
         if (!req.body) {
-            res.status(422).send("Invalid request");
+            res.status(422).send("The body of the request is missing");
             return;
         }
         for (let key of keys) {
             if (!req.body[key]) {
-                res.status(422).send("Invalid request");
+                res.status(422).send("The body of the request is missing some properties");
                 return;
             }
         }

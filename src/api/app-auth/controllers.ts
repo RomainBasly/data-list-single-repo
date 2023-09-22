@@ -15,14 +15,13 @@ export function requireAuth(req: Request, res: Response, next: NextFunction): vo
   res.send("Not permitted");
 }
 
-
 const employees = (employeesModule as any).default as any[];
 const employeesDB = {
   employees: employees || [],
-  setUsers: function(data: any) {
+  setUsers: function (data: any) {
     this.employees = data;
-  }
-}
+  },
+};
 
 @controller("/api/auth")
 export class AppAuthController {
@@ -42,12 +41,18 @@ export class AppAuthController {
 
   @post("/login")
   @bodyValidator("email", "password")
-  postLogin(req: Request, res: Response): void {
+  async postLogin(req: Request, res: Response): Promise<any> {
     try {
       const { email, password } = req.body;
-      if (email === "hi@hi.com" && password === "Tatayoyo") {
+      const userMatchingDB = employeesDB.employees.find((person) => person.email === email);
+      console.log(employeesDB.employees)
+      if (!userMatchingDB) return res.sendStatus(401);
+      const matchingPassword = await bcrypt.compare(password, userMatchingDB.password);
+      if (matchingPassword) {
+        res.json("success, good password");
         req.session = { loggedIn: true };
-        res.send("you are now loggedIn babababab");
+      } else {
+        res.sendStatus(401);
       }
     } catch (error) {
       console.log(error);
@@ -68,24 +73,26 @@ export class AppAuthController {
     res.send("welcome to the website, copeng");
   }
 
-  @post("/")
+  @post("/register")
   async handleNewUser(req: Request, res: Response) {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json("userName and password are required");
-    
+
     // const duplicate = employeesDB.employees.find((person: { email: string; }) => person.email === email)
-    // if (duplicate) return res.sendStatus(409).json("You are already a user")
+    // if (duplicate) return res.sendS©atus(409).json("You are already a user")
     try {
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = await bcrypt.hash(password, salt);
-      const newUser = { "userName": email, "password": hashedPassword};
-      employeesDB.setUsers([...employeesDB.employees, newUser])
+      const newUser = { email: email, password: hashedPassword };
+      employeesDB.setUsers([...employeesDB.employees, newUser]);
       await fs.promises.writeFile(
-        path.join(__dirname, '..', '..', '..', 'infrastructure', 'fakeData', 'employees.json'), JSON.stringify(employeesDB.employees))
-      console.log(employeesDB.employees)
-      res.status(201).json({"message": "new user created"})
+        path.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"),
+        JSON.stringify(employeesDB.employees)
+      );
+      console.log(employeesDB.employees);
+      res.status(201).json({ message: "new user created" });
     } catch (error) {
-      res.status(500).json({"message error 500": error})
+      res.status(500).json({ "message error 500": error });
     }
   }
 }
