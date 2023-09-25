@@ -36,6 +36,7 @@ exports.AppUserController = void 0;
 const Data = __importStar(require("../../../infrastructure/fakeData/users.json"));
 const decorators_1 = require("../../common/decorators");
 const controllers_1 = require("../app-auth/controllers");
+const service_1 = require("../app-auth/service");
 let AppUserController = exports.AppUserController = class AppUserController {
     getAllUsers(req, res) {
         try {
@@ -80,6 +81,7 @@ let AppUserController = exports.AppUserController = class AppUserController {
 };
 __decorate([
     (0, decorators_1.get)("/"),
+    (0, decorators_1.use)(service_1.verifyToken),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
@@ -110,5 +112,5 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], AppUserController.prototype, "deleteUser", null);
 exports.AppUserController = AppUserController = __decorate([
-    (0, decorators_1.controller)("/api/user")
+    (0, decorators_1.controller)("/api/users")
 ], AppUserController);

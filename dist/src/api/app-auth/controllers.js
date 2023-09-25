@@ -42,6 +42,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const employeesModule = __importStar(require("../../../infrastructure/fakeData/employees.json"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 function requireAuth(req, res, next) {
     var _a;
     if ((_a = req === null || req === void 0 ? void 0 : req.session) === null || _a === void 0 ? void 0 : _a.loggedIn) {
@@ -59,6 +60,8 @@ const employeesDB = {
         this.employees = data;
     },
 };
+const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 let AppAuthController = exports.AppAuthController = class AppAuthController {
     checkSessionUser(req, res) {
         var _a;
@@ -69,22 +72,25 @@ let AppAuthController = exports.AppAuthController = class AppAuthController {
             res.send("you are not loggedIn Copeng");
         }
     }
-    getLogin(req, res) {
-        res.send("it works baby congratulations");
-    }
     async postLogin(req, res) {
         try {
             const { email, password } = req.body;
             const userMatchingDB = employeesDB.employees.find((person) => person.email === email);
-            console.log(employeesDB.employees);
             if (!userMatchingDB) {
                 res.sendStatus(401);
                 return;
             }
             const matchingPassword = await bcrypt_1.default.compare(password, userMatchingDB.password);
             if (matchingPassword) {
-                res.json("success, good password");
-                req.session = { loggedIn: true };
+                //if (!accessTokenSecret || !refreshTokenSecret) return;
+                const accessToken = jsonwebtoken_1.default.sign({ "email": userMatchingDB.email }, String(accessTokenSecret), { expiresIn: '30s' });
+                const refreshToken = jsonwebtoken_1.default.sign({ "email": userMatchingDB.email }, String(refreshTokenSecret), { expiresIn: '1d' });
+                const otherUsers = employeesDB.employees.filter(employee => employee.email !== userMatchingDB.email);
+                const currentUser = Object.assign(Object.assign({}, userMatchingDB), { refreshToken });
+                employeesDB.setUsers([...otherUsers, currentUser]);
+                await fs_1.default.promises.writeFile(path_1.default.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"), JSON.stringify(employeesDB.employees));
+                res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+                res.json({ accessToken });
             }
             else {
                 res.sendStatus(401);
@@ -104,10 +110,15 @@ let AppAuthController = exports.AppAuthController = class AppAuthController {
     }
     async handleNewUser(req, res) {
         const { email, password } = req.body;
-        if (!email || !password)
-            return res.status(400).json("userName and password are required");
-        // const duplicate = employeesDB.employees.find((person: { email: string; }) => person.email === email)
-        // if (duplicate) return res.sendS©atus(409).json("You are already a user")
+        if (!email || !password) {
+            res.status(400).json("userName and password are required");
+            return;
+        }
+        const duplicate = employeesDB.employees.find((person) => person.email === email);
+        if (duplicate) {
+            res.sendStatus(409).json("You are already in the database, try to login instead");
+            return;
+        }
         try {
             const salt = bcrypt_1.default.genSaltSync(10);
             const hashedPassword = await bcrypt_1.default.hash(password, salt);
@@ -128,12 +139,6 @@ __decorate([
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], AppAuthController.prototype, "checkSessionUser", null);
-__decorate([
-    (0, decorators_1.get)("/login"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
-], AppAuthController.prototype, "getLogin", null);
 __decorate([
     (0, decorators_1.post)("/login"),
     (0, decorators_1.bodyValidator)("email", "password"),

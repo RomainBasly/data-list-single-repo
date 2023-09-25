@@ -5,6 +5,7 @@ import bcrypt from "bcrypt";
 import fs from "fs";
 import path from "path";
 import * as employeesModule from "../../../infrastructure/fakeData/employees.json";
+import jwt from 'jsonwebtoken';
 
 interface Employee {
   email: string;
@@ -28,6 +29,9 @@ const employeesDB = {
   },
 };
 
+const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
+
 @controller("/api/auth")
 export class AppAuthController {
   @get("/")
@@ -39,26 +43,33 @@ export class AppAuthController {
     }
   }
 
-  @get("/login")
-  getLogin(req: Request, res: Response): void {
-    res.send("it works baby congratulations");
-  }
-
   @post("/login")
   @bodyValidator("email", "password")
   async postLogin(req: Request<{}, {}, Employee>, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;
       const userMatchingDB: Employee = employeesDB.employees.find((person) => person.email === email);
-      console.log(employeesDB.employees)
       if (!userMatchingDB) {
         res.sendStatus(401)
         return; 
       }
       const matchingPassword = await bcrypt.compare(password, userMatchingDB.password);
       if (matchingPassword) {
-        res.json("success, good password");
-        req.session = { loggedIn: true };
+
+        //if (!accessTokenSecret || !refreshTokenSecret) return;
+        const accessToken = jwt.sign({"email": userMatchingDB.email}, String(accessTokenSecret), {expiresIn: '30s'})
+        const refreshToken = jwt.sign({"email": userMatchingDB.email}, String(refreshTokenSecret), {expiresIn: '1d'})
+
+        const otherUsers = employeesDB.employees.filter(employee => employee.email !== userMatchingDB.email);
+        const currentUser = {...userMatchingDB, refreshToken};
+        employeesDB.setUsers([...otherUsers, currentUser]);
+
+        await fs.promises.writeFile(
+          path.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"),
+          JSON.stringify(employeesDB.employees)
+        );
+        res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24*60*60*1000})
+        res.json({accessToken});
       } else {
         res.sendStatus(401);
       }
@@ -82,12 +93,19 @@ export class AppAuthController {
   }
 
   @post("/register")
-  async handleNewUser(req: Request, res: Response) {
+  async handleNewUser(req: Request, res: Response): Promise<void> {
     const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json("userName and password are required");
+    if (!email || !password) {
+      res.status(400).json("userName and password are required");
+      return;
+    }
 
-    // const duplicate = employeesDB.employees.find((person: { email: string; }) => person.email === email)
-    // if (duplicate) return res.sendS©atus(409).json("You are already a user")
+    const duplicate = employeesDB.employees.find((person: { email: string; }) => person.email === email)
+    if (duplicate) {
+      res.sendStatus(409).json("You are already in the database, try to login instead")
+      return; 
+    }
+
     try {
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = await bcrypt.hash(password, salt);
