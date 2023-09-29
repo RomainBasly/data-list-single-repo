@@ -27,10 +27,12 @@ export class AppRouter {
         if (path && method) {
           const methodKey = method as keyof express.Router;
           // Register the route with the Express router
-          if (typeof AppRouter.instance[methodKey] === 'function') {
+          if (typeof AppRouter.instance[methodKey] === "function") {
             // Register the route with the Express router
             (AppRouter.instance[methodKey] as any)(path, routeHandler.bind(controller));
           }
+        }
+      }
     }
   }
-}}}
+}
