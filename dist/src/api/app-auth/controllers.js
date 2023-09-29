@@ -61,9 +61,11 @@ const employeesDB = {
     },
 };
 let AppAuthController = exports.AppAuthController = class AppAuthController {
-    constructor(authService) {
+    constructor() {
         const accessTokenSecret = String(process.env.ACCESS_TOKEN_SECRET);
-        this.authService = authService;
+        console.log("accessTokenSecret:", accessTokenSecret);
+        this.authService = new services_1.AuthService(accessTokenSecret);
+        this.postLogin = this.postLogin.bind(this);
     }
     checkSessionUser(req, res) {
         var _a;
@@ -171,7 +173,7 @@ __decorate([
 ], AppAuthController.prototype, "handleNewUser", null);
 exports.AppAuthController = AppAuthController = __decorate([
     (0, decorators_1.controller)("/api/auth"),
-    __metadata("design:paramtypes", [services_1.AuthService])
+    __metadata("design:paramtypes", [])
 ], AppAuthController);
 const signup_post_with_supabase = async (req, res) => {
     const { email, password } = req.body;

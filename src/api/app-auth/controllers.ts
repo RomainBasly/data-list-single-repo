@@ -32,11 +32,13 @@ const employeesDB = {
 
 @controller("/api/auth")
 export class AppAuthController {
-  authService: AuthService;
+  private readonly authService: AuthService;
 
-  constructor(authService: AuthService) {
+  constructor() {
     const accessTokenSecret = String(process.env.ACCESS_TOKEN_SECRET);
-    this.authService = authService;
+    console.log("accessTokenSecret:", accessTokenSecret);
+    this.authService = new AuthService(accessTokenSecret);
+    this.postLogin = this.postLogin.bind(this);
   }
 
   @get("/")
