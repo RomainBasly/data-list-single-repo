@@ -42,7 +42,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const employeesModule = __importStar(require("../../../infrastructure/fakeData/employees.json"));
-const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const services_1 = require("./services");
 function requireAuth(req, res, next) {
     var _a;
     if ((_a = req === null || req === void 0 ? void 0 : req.session) === null || _a === void 0 ? void 0 : _a.loggedIn) {
@@ -60,9 +60,11 @@ const employeesDB = {
         this.employees = data;
     },
 };
-const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
-const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 let AppAuthController = exports.AppAuthController = class AppAuthController {
+    constructor(authService) {
+        const accessTokenSecret = String(process.env.ACCESS_TOKEN_SECRET);
+        this.authService = authService;
+    }
     checkSessionUser(req, res) {
         var _a;
         if ((_a = req === null || req === void 0 ? void 0 : req.session) === null || _a === void 0 ? void 0 : _a.loggedIn) {
@@ -82,14 +84,14 @@ let AppAuthController = exports.AppAuthController = class AppAuthController {
             }
             const matchingPassword = await bcrypt_1.default.compare(password, userMatchingDB.password);
             if (matchingPassword) {
-                //if (!accessTokenSecret || !refreshTokenSecret) return;
-                const accessToken = jsonwebtoken_1.default.sign({ "email": userMatchingDB.email }, String(accessTokenSecret), { expiresIn: '30s' });
-                const refreshToken = jsonwebtoken_1.default.sign({ "email": userMatchingDB.email }, String(refreshTokenSecret), { expiresIn: '1d' });
-                const otherUsers = employeesDB.employees.filter(employee => employee.email !== userMatchingDB.email);
+                console.log(this.authService);
+                const accessToken = this.authService.generateAccessToken({ email: userMatchingDB.email });
+                const refreshToken = this.authService.generateRefreshToken({ email });
+                const otherUsers = employeesDB.employees.filter((employee) => employee.email !== userMatchingDB.email);
                 const currentUser = Object.assign(Object.assign({}, userMatchingDB), { refreshToken });
                 employeesDB.setUsers([...otherUsers, currentUser]);
                 await fs_1.default.promises.writeFile(path_1.default.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"), JSON.stringify(employeesDB.employees));
-                res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+                res.cookie("jwt", refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
                 res.json({ accessToken });
             }
             else {
@@ -142,6 +144,7 @@ __decorate([
 __decorate([
     (0, decorators_1.post)("/login"),
     (0, decorators_1.bodyValidator)("email", "password"),
+    decorators_1.bind,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
@@ -167,7 +170,8 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], AppAuthController.prototype, "handleNewUser", null);
 exports.AppAuthController = AppAuthController = __decorate([
-    (0, decorators_1.controller)("/api/auth")
+    (0, decorators_1.controller)("/api/auth"),
+    __metadata("design:paramtypes", [services_1.AuthService])
 ], AppAuthController);
 const signup_post_with_supabase = async (req, res) => {
     const { email, password } = req.body;

@@ -2,7 +2,7 @@ import * as Data from "../../../infrastructure/fakeData/users.json";
 import { Response, Request } from "express";
 import { get, controller, post, use, put, del } from "../../common/decorators";
 import { requireAuth } from "../app-auth/controllers";
-import { verifyToken } from "../app-auth/service";
+import { verifyToken } from "../../middlewares/auth-middleware";
 
 @controller("/api/users")
 export class AppUserController {

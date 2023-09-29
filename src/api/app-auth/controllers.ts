@@ -1,11 +1,12 @@
 import supabase from "../../../config/database/supabaseClient";
 import { Request, Response, NextFunction } from "express";
-import { get, controller, bodyValidator, post, use } from "../../common/decorators";
+import { get, controller, bodyValidator, post, use, bind } from "../../common/decorators";
 import bcrypt from "bcrypt";
 import fs from "fs";
 import path from "path";
 import * as employeesModule from "../../../infrastructure/fakeData/employees.json";
-import jwt from 'jsonwebtoken';
+import { AuthService } from "./services";
+import jwt from "jsonwebtoken";
 
 interface Employee {
   email: string;
@@ -29,11 +30,15 @@ const employeesDB = {
   },
 };
 
-const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
-const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
-
 @controller("/api/auth")
 export class AppAuthController {
+  authService: AuthService;
+
+  constructor(authService: AuthService) {
+    const accessTokenSecret = String(process.env.ACCESS_TOKEN_SECRET);
+    this.authService = authService;
+  }
+
   @get("/")
   checkSessionUser(req: Request, res: Response) {
     if (req?.session?.loggedIn) {
@@ -45,31 +50,29 @@ export class AppAuthController {
 
   @post("/login")
   @bodyValidator("email", "password")
+  @bind
   async postLogin(req: Request<{}, {}, Employee>, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;
       const userMatchingDB: Employee = employeesDB.employees.find((person) => person.email === email);
       if (!userMatchingDB) {
-        res.sendStatus(401)
-        return; 
+        res.sendStatus(401);
+        return;
       }
       const matchingPassword = await bcrypt.compare(password, userMatchingDB.password);
       if (matchingPassword) {
-
-        //if (!accessTokenSecret || !refreshTokenSecret) return;
-        const accessToken = jwt.sign({"email": userMatchingDB.email}, String(accessTokenSecret), {expiresIn: '30s'})
-        const refreshToken = jwt.sign({"email": userMatchingDB.email}, String(refreshTokenSecret), {expiresIn: '1d'})
-
-        const otherUsers = employeesDB.employees.filter(employee => employee.email !== userMatchingDB.email);
-        const currentUser = {...userMatchingDB, refreshToken};
+        console.log(this.authService)
+        const accessToken = this.authService.generateAccessToken({ email: userMatchingDB.email });
+        const refreshToken = this.authService.generateRefreshToken({ email });
+        const otherUsers = employeesDB.employees.filter((employee) => employee.email !== userMatchingDB.email);
+        const currentUser = { ...userMatchingDB, refreshToken };
         employeesDB.setUsers([...otherUsers, currentUser]);
-
         await fs.promises.writeFile(
           path.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"),
           JSON.stringify(employeesDB.employees)
         );
-        res.cookie('jwt', refreshToken, { httpOnly: true, maxAge: 24*60*60*1000})
-        res.json({accessToken});
+        res.cookie("jwt", refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+        res.json({ accessToken });
       } else {
         res.sendStatus(401);
       }
@@ -100,10 +103,10 @@ export class AppAuthController {
       return;
     }
 
-    const duplicate = employeesDB.employees.find((person: { email: string; }) => person.email === email)
+    const duplicate = employeesDB.employees.find((person: { email: string }) => person.email === email);
     if (duplicate) {
-      res.sendStatus(409).json("You are already in the database, try to login instead")
-      return; 
+      res.sendStatus(409).json("You are already in the database, try to login instead");
+      return;
     }
 
     try {

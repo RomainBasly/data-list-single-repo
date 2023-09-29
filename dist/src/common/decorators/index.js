@@ -18,3 +18,4 @@ __exportStar(require("./controller"), exports);
 __exportStar(require("./routes"), exports);
 __exportStar(require("./use"), exports);
 __exportStar(require("./bodyValidator"), exports);
+__exportStar(require("./bind"), exports);

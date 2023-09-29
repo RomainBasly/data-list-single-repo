@@ -9,9 +9,7 @@ interface IRequest extends Request {
   }
 
 export const verifyToken = (req: IRequest, res: Response, next: NextFunction) => {
-    console.log(req.headers)
     const authHeader = req.headers['authorization'];
-    console.log(authHeader)
     if (!authHeader) return res.sendStatus(401);
     const token = authHeader.split(' ')[1]
     if (!accessTokenSecret) return;
