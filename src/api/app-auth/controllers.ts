@@ -13,15 +13,6 @@ interface Employee {
   password: string;
 }
 
-export function requireAuth(req: Request, res: Response, next: NextFunction): void {
-  if (req?.session?.loggedIn) {
-    next();
-    return;
-  }
-  res.status(403);
-  res.send("Not permitted");
-}
-
 const employees = (employeesModule as any).default as any[];
 const employeesDB = {
   employees: employees || [],
@@ -32,13 +23,9 @@ const employeesDB = {
 
 @controller("/api/auth")
 export class AppAuthController {
-  private readonly authService: AuthService;
-
-  constructor() {
+  constructor(private authService: AuthService) {
     const accessTokenSecret = String(process.env.ACCESS_TOKEN_SECRET);
     console.log("accessTokenSecret:", accessTokenSecret);
-    this.authService = new AuthService(accessTokenSecret);
-    this.postLogin = this.postLogin.bind(this);
   }
 
   @get("/")
@@ -52,7 +39,6 @@ export class AppAuthController {
 
   @post("/login")
   @bodyValidator("email", "password")
-  @bind
   async postLogin(req: Request<{}, {}, Employee>, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;
@@ -63,7 +49,6 @@ export class AppAuthController {
       }
       const matchingPassword = await bcrypt.compare(password, userMatchingDB.password);
       if (matchingPassword) {
-        console.log(this.authService)
         const accessToken = this.authService.generateAccessToken({ email: userMatchingDB.email });
         const refreshToken = this.authService.generateRefreshToken({ email });
         const otherUsers = employeesDB.employees.filter((employee) => employee.email !== userMatchingDB.email);
@@ -85,14 +70,12 @@ export class AppAuthController {
   }
 
   @get("/logout")
-  @use(requireAuth)
   logoutUser(req: Request, res: Response) {
     req.session = undefined;
     res.send("you are now loggedOut, copeng");
   }
 
   @get("/protected")
-  @use(requireAuth)
   getProtected(req: Request, res: Response) {
     res.send("welcome to the website, copeng");
   }

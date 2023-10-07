@@ -1,7 +1,6 @@
 import * as Data from "../../../infrastructure/fakeData/users.json";
 import { Response, Request } from "express";
 import { get, controller, post, use, put, del } from "../../common/decorators";
-import { requireAuth } from "../app-auth/controllers";
 import { verifyToken } from "../../middlewares/auth-middleware";
 
 @controller("/api/users")
@@ -18,7 +17,6 @@ export class AppUserController {
   }
 
   @get("/:id")
-  @use(requireAuth)
   getUserById(req: Request, res: Response) {
     const { id } = req.params;
     res.json(Data.users.find((user) => user.id === Number(id)));

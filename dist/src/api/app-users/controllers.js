@@ -35,7 +35,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppUserController = void 0;
 const Data = __importStar(require("../../../infrastructure/fakeData/users.json"));
 const decorators_1 = require("../../common/decorators");
-const controllers_1 = require("../app-auth/controllers");
 const auth_middleware_1 = require("../../middlewares/auth-middleware");
 let AppUserController = exports.AppUserController = class AppUserController {
     getAllUsers(req, res) {
@@ -88,7 +87,6 @@ __decorate([
 ], AppUserController.prototype, "getAllUsers", null);
 __decorate([
     (0, decorators_1.get)("/:id"),
-    (0, decorators_1.use)(controllers_1.requireAuth),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)

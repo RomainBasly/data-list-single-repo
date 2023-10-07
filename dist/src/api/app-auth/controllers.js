@@ -35,7 +35,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login_get = exports.signup_get = exports.signup_post_with_supabase = exports.AppAuthController = exports.requireAuth = void 0;
+exports.login_get = exports.signup_get = exports.signup_post_with_supabase = exports.AppAuthController = void 0;
 const supabaseClient_1 = __importDefault(require("../../../config/database/supabaseClient"));
 const decorators_1 = require("../../common/decorators");
 const bcrypt_1 = __importDefault(require("bcrypt"));
@@ -43,16 +43,6 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const employeesModule = __importStar(require("../../../infrastructure/fakeData/employees.json"));
 const services_1 = require("./services");
-function requireAuth(req, res, next) {
-    var _a;
-    if ((_a = req === null || req === void 0 ? void 0 : req.session) === null || _a === void 0 ? void 0 : _a.loggedIn) {
-        next();
-        return;
-    }
-    res.status(403);
-    res.send("Not permitted");
-}
-exports.requireAuth = requireAuth;
 const employees = employeesModule.default;
 const employeesDB = {
     employees: employees || [],
@@ -61,11 +51,10 @@ const employeesDB = {
     },
 };
 let AppAuthController = exports.AppAuthController = class AppAuthController {
-    constructor() {
+    constructor(authService) {
+        this.authService = authService;
         const accessTokenSecret = String(process.env.ACCESS_TOKEN_SECRET);
         console.log("accessTokenSecret:", accessTokenSecret);
-        this.authService = new services_1.AuthService(accessTokenSecret);
-        this.postLogin = this.postLogin.bind(this);
     }
     checkSessionUser(req, res) {
         var _a;
@@ -86,7 +75,6 @@ let AppAuthController = exports.AppAuthController = class AppAuthController {
             }
             const matchingPassword = await bcrypt_1.default.compare(password, userMatchingDB.password);
             if (matchingPassword) {
-                console.log(this.authService);
                 const accessToken = this.authService.generateAccessToken({ email: userMatchingDB.email });
                 const refreshToken = this.authService.generateRefreshToken({ email });
                 const otherUsers = employeesDB.employees.filter((employee) => employee.email !== userMatchingDB.email);
@@ -146,21 +134,18 @@ __decorate([
 __decorate([
     (0, decorators_1.post)("/login"),
     (0, decorators_1.bodyValidator)("email", "password"),
-    decorators_1.bind,
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", Promise)
 ], AppAuthController.prototype, "postLogin", null);
 __decorate([
     (0, decorators_1.get)("/logout"),
-    (0, decorators_1.use)(requireAuth),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], AppAuthController.prototype, "logoutUser", null);
 __decorate([
     (0, decorators_1.get)("/protected"),
-    (0, decorators_1.use)(requireAuth),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
@@ -173,7 +158,7 @@ __decorate([
 ], AppAuthController.prototype, "handleNewUser", null);
 exports.AppAuthController = AppAuthController = __decorate([
     (0, decorators_1.controller)("/api/auth"),
-    __metadata("design:paramtypes", [])
+    __metadata("design:paramtypes", [services_1.AuthService])
 ], AppAuthController);
 const signup_post_with_supabase = async (req, res) => {
     const { email, password } = req.body;
