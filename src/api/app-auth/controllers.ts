@@ -1,12 +1,12 @@
 import supabase from "../../../config/database/supabaseClient";
 import { Request, Response, NextFunction } from "express";
-import { get, controller, bodyValidator, post, use, bind } from "../../common/decorators";
+import { get, bodyValidator, post, use, bind } from "../../common/decorators";
 import bcrypt from "bcrypt";
 import fs from "fs";
 import path from "path";
 import * as employeesModule from "../../../infrastructure/fakeData/employees.json";
 import { AuthService } from "./services";
-import jwt from "jsonwebtoken";
+import { inject, injectable} from "tsyringe";
 
 interface Employee {
   email: string;
@@ -21,14 +21,11 @@ const employeesDB = {
   },
 };
 
-@controller("/api/auth")
+@injectable()
 export class AppAuthController {
-  constructor(private authService: AuthService) {
-    const accessTokenSecret = String(process.env.ACCESS_TOKEN_SECRET);
-    console.log("accessTokenSecret:", accessTokenSecret);
+  constructor(@inject(AuthService) private readonly authService: AuthService) {
   }
 
-  @get("/")
   checkSessionUser(req: Request, res: Response) {
     if (req?.session?.loggedIn) {
       res.send("you are loggedIn Baby");
@@ -37,8 +34,6 @@ export class AppAuthController {
     }
   }
 
-  @post("/login")
-  @bodyValidator("email", "password")
   async postLogin(req: Request<{}, {}, Employee>, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;
@@ -69,18 +64,15 @@ export class AppAuthController {
     }
   }
 
-  @get("/logout")
   logoutUser(req: Request, res: Response) {
     req.session = undefined;
     res.send("you are now loggedOut, copeng");
   }
 
-  @get("/protected")
   getProtected(req: Request, res: Response) {
     res.send("welcome to the website, copeng");
   }
 
-  @post("/register")
   async handleNewUser(req: Request, res: Response): Promise<void> {
     const { email, password } = req.body;
     if (!email || !password) {

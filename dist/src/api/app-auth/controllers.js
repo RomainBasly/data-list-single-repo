@@ -31,18 +31,21 @@ var __importStar = (this && this.__importStar) || function (mod) {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.login_get = exports.signup_get = exports.signup_post_with_supabase = exports.AppAuthController = void 0;
 const supabaseClient_1 = __importDefault(require("../../../config/database/supabaseClient"));
-const decorators_1 = require("../../common/decorators");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const employeesModule = __importStar(require("../../../infrastructure/fakeData/employees.json"));
 const services_1 = require("./services");
+const tsyringe_1 = require("tsyringe");
 const employees = employeesModule.default;
 const employeesDB = {
     employees: employees || [],
@@ -53,8 +56,6 @@ const employeesDB = {
 let AppAuthController = exports.AppAuthController = class AppAuthController {
     constructor(authService) {
         this.authService = authService;
-        const accessTokenSecret = String(process.env.ACCESS_TOKEN_SECRET);
-        console.log("accessTokenSecret:", accessTokenSecret);
     }
     checkSessionUser(req, res) {
         var _a;
@@ -125,39 +126,9 @@ let AppAuthController = exports.AppAuthController = class AppAuthController {
         }
     }
 };
-__decorate([
-    (0, decorators_1.get)("/"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
-], AppAuthController.prototype, "checkSessionUser", null);
-__decorate([
-    (0, decorators_1.post)("/login"),
-    (0, decorators_1.bodyValidator)("email", "password"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], AppAuthController.prototype, "postLogin", null);
-__decorate([
-    (0, decorators_1.get)("/logout"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
-], AppAuthController.prototype, "logoutUser", null);
-__decorate([
-    (0, decorators_1.get)("/protected"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
-], AppAuthController.prototype, "getProtected", null);
-__decorate([
-    (0, decorators_1.post)("/register"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", Promise)
-], AppAuthController.prototype, "handleNewUser", null);
 exports.AppAuthController = AppAuthController = __decorate([
-    (0, decorators_1.controller)("/api/auth"),
+    (0, tsyringe_1.injectable)(),
+    __param(0, (0, tsyringe_1.inject)(services_1.AuthService)),
     __metadata("design:paramtypes", [services_1.AuthService])
 ], AppAuthController);
 const signup_post_with_supabase = async (req, res) => {

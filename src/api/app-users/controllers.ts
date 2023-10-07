@@ -1,11 +1,9 @@
 import * as Data from "../../../infrastructure/fakeData/users.json";
 import { Response, Request } from "express";
-import { get, controller, post, use, put, del } from "../../common/decorators";
+import { get, post, use, put, del } from "../../common/decorators";
 import { verifyToken } from "../../middlewares/auth-middleware";
 
-@controller("/api/users")
 export class AppUserController {
-  @get("/")
   @use(verifyToken)
   getAllUsers(req: Request, res: Response) {
     try {
@@ -16,13 +14,11 @@ export class AppUserController {
     }
   }
 
-  @get("/:id")
   getUserById(req: Request, res: Response) {
     const { id } = req.params;
     res.json(Data.users.find((user) => user.id === Number(id)));
   }
 
-  @post("/")
   postUsers(req: Request, res: Response) {
     const { email, password } = req.body;
     try {
@@ -36,7 +32,6 @@ export class AppUserController {
     }
   }
 
-  @put("/")
   putUsers(req: Request, res: Response) {
     const { id, email, password } = req.body;
 
@@ -45,7 +40,6 @@ export class AppUserController {
     } catch (error) {}
   }
 
-  @del("/")
   deleteUser(req: Request, res: Response) {
     const { id } = req.body;
     try {

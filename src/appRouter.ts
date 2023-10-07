@@ -1,6 +1,4 @@
 import express from "express";
-import { AppAuthController } from "./api/app-auth/controllers";
-import { MetadataKeys } from "./common/decorators/enums";
 
 export class AppRouter {
   private static instance: express.Router;

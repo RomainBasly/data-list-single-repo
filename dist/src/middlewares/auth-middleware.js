@@ -15,8 +15,9 @@ const verifyToken = (req, res, next) => {
     if (!accessTokenSecret)
         return;
     jsonwebtoken_1.default.verify(token, accessTokenSecret, (err, decoded) => {
-        if (err)
+        if (err) {
             return res.sendStatus(403);
+        }
         req.email = decoded.email;
         next();
     });

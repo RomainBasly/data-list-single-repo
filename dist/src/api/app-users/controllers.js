@@ -36,7 +36,7 @@ exports.AppUserController = void 0;
 const Data = __importStar(require("../../../infrastructure/fakeData/users.json"));
 const decorators_1 = require("../../common/decorators");
 const auth_middleware_1 = require("../../middlewares/auth-middleware");
-let AppUserController = exports.AppUserController = class AppUserController {
+class AppUserController {
     getAllUsers(req, res) {
         try {
             res.json(Data.users);
@@ -77,38 +77,11 @@ let AppUserController = exports.AppUserController = class AppUserController {
         }
         catch (error) { }
     }
-};
+}
+exports.AppUserController = AppUserController;
 __decorate([
-    (0, decorators_1.get)("/"),
     (0, decorators_1.use)(auth_middleware_1.verifyToken),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], AppUserController.prototype, "getAllUsers", null);
-__decorate([
-    (0, decorators_1.get)("/:id"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
-], AppUserController.prototype, "getUserById", null);
-__decorate([
-    (0, decorators_1.post)("/"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
-], AppUserController.prototype, "postUsers", null);
-__decorate([
-    (0, decorators_1.put)("/"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
-], AppUserController.prototype, "putUsers", null);
-__decorate([
-    (0, decorators_1.del)("/"),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
-    __metadata("design:returntype", void 0)
-], AppUserController.prototype, "deleteUser", null);
-exports.AppUserController = AppUserController = __decorate([
-    (0, decorators_1.controller)("/api/users")
-], AppUserController);

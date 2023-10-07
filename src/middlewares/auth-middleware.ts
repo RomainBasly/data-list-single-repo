@@ -14,7 +14,8 @@ export const verifyToken = (req: IRequest, res: Response, next: NextFunction) =>
     const token = authHeader.split(' ')[1]
     if (!accessTokenSecret) return;
     jwt.verify(token, accessTokenSecret, (err, decoded) => {
-        if (err) return res.sendStatus(403)
+        if (err) {
+            return res.sendStatus(403)}
         req.email = (decoded as JwtPayload).email;
         next()
     })
