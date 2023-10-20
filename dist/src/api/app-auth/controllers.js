@@ -53,7 +53,7 @@ const employeesDB = {
         this.employees = data;
     },
 };
-let AppAuthController = exports.AppAuthController = class AppAuthController {
+let AppAuthController = class AppAuthController {
     constructor(authService) {
         this.authService = authService;
     }
@@ -126,6 +126,7 @@ let AppAuthController = exports.AppAuthController = class AppAuthController {
         }
     }
 };
+exports.AppAuthController = AppAuthController;
 exports.AppAuthController = AppAuthController = __decorate([
     (0, tsyringe_1.injectable)(),
     __param(0, (0, tsyringe_1.inject)(services_1.AuthService)),

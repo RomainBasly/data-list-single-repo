@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const tsyringe_1 = require("tsyringe");
-let AuthService = exports.AuthService = class AuthService {
+let AuthService = class AuthService {
     constructor() {
         this.accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
     }
@@ -27,6 +27,7 @@ let AuthService = exports.AuthService = class AuthService {
         return jsonwebtoken_1.default.sign(payload, this.accessTokenSecret, { expiresIn: "300s" });
     }
 };
+exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, tsyringe_1.injectable)()
 ], AuthService);
