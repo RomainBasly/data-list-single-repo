@@ -26,6 +26,9 @@ let AuthService = class AuthService {
             return null;
         return jsonwebtoken_1.default.sign(payload, this.accessTokenSecret, { expiresIn: "300s" });
     }
+    // to implement and refacto methods from controller to service
+    createNewUser(email, password) { }
+    saveEmployeeToDatabase() { }
 };
 exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([

@@ -1,10 +1,7 @@
 import * as Data from "../../../infrastructure/fakeData/users.json";
 import { Response, Request } from "express";
-import { get, post, use, put, del } from "../../common/decorators";
-import { verifyToken } from "../../middlewares/auth-middleware";
 
 export class AppUserController {
-  @use(verifyToken)
   getAllUsers(req: Request, res: Response) {
     try {
       res.json(Data.users);
