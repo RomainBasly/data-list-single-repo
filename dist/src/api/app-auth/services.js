@@ -15,6 +15,7 @@ const tsyringe_1 = require("tsyringe");
 let AuthService = class AuthService {
     constructor() {
         this.accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+        this.refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
     }
     generateAccessToken(payload) {
         if (!this.accessTokenSecret)
@@ -22,9 +23,9 @@ let AuthService = class AuthService {
         return jsonwebtoken_1.default.sign(payload, this.accessTokenSecret, { expiresIn: "300s" });
     }
     generateRefreshToken(payload) {
-        if (!this.accessTokenSecret)
+        if (!this.refreshTokenSecret)
             return null;
-        return jsonwebtoken_1.default.sign(payload, this.accessTokenSecret, { expiresIn: "300s" });
+        return jsonwebtoken_1.default.sign(payload, this.refreshTokenSecret, { expiresIn: "300s" });
     }
     // to implement and refacto methods from controller to service
     createNewUser(email, password) { }

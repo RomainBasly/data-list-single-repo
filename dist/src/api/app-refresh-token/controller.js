@@ -15,6 +15,12 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 }) : function(o, v) {
     o["default"] = v;
 });
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
@@ -29,6 +35,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppRefreshTokenController = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const fakeDataModule = __importStar(require("../../../infrastructure/fakeData/employees.json"));
+const tsyringe_1 = require("tsyringe");
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 const fakeUsers = fakeDataModule.default;
@@ -38,31 +45,36 @@ const fakeUsersDB = {
         this.users = data;
     },
 };
-class AppRefreshTokenController {
+let AppRefreshTokenController = class AppRefreshTokenController {
     handleRefreshToken(req, res) {
         const cookies = req.cookies;
         if (!(cookies === null || cookies === void 0 ? void 0 : cookies.jwt))
             return res.send(401);
-        console.log(cookies.jwt);
+        console.log("cookies", cookies.jwt);
         const refreshToken = cookies.jwt;
         const foundUser = fakeUsersDB.users.find((person) => person.refreshToken === refreshToken);
         if (!refreshTokenSecret)
             throw new Error("no refreshToken in middleware");
         if (!foundUser)
-            return (res.send(403),
-                jsonwebtoken_1.default.verify(refreshToken, refreshTokenSecret, (err, decoded) => {
-                    if (err)
-                        return res.sendStatus(403);
-                    const decodedPayload = decoded; // force type otherwise TS does not know that username exists in payload
-                    if (!decodedPayload.username || foundUser.username !== decodedPayload.username)
-                        return res.sendStatus(403);
-                    if (!accessTokenSecret)
-                        throw new Error("no accessToken accessible in middleware (handleRefreshToken)");
-                    const accessToken = jsonwebtoken_1.default.sign({ username: decodedPayload.username }, accessTokenSecret, {
-                        expiresIn: "30s",
-                    });
-                    res.json({ accessToken });
-                }));
+            return res.send(403);
+        jsonwebtoken_1.default.verify(refreshToken, refreshTokenSecret, (err, decoded) => {
+            if (err) {
+                console.log("error dude", err);
+                return res.sendStatus(403);
+            }
+            const decodedPayload = decoded; // force type otherwise TS does not know that email exists in payload
+            if (!decodedPayload.email || foundUser.email !== decodedPayload.email)
+                return res.sendStatus(403);
+            if (!accessTokenSecret)
+                throw new Error("no accessToken accessible in middleware (handleRefreshToken)");
+            const accessToken = jsonwebtoken_1.default.sign({ email: decodedPayload.email }, accessTokenSecret, {
+                expiresIn: "30s",
+            });
+            res.json({ accessToken });
+        });
     }
-}
+};
 exports.AppRefreshTokenController = AppRefreshTokenController;
+exports.AppRefreshTokenController = AppRefreshTokenController = __decorate([
+    (0, tsyringe_1.injectable)()
+], AppRefreshTokenController);
