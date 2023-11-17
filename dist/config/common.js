@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.corsOptions = void 0;
-const whitelist = ["http://localhost:3000", "http://localhost:8000"];
+exports.ROLES_LIST = exports.corsOptions = exports.allowedOrigins = void 0;
+exports.allowedOrigins = ["http://localhost:3000", "http://localhost:8000"];
 exports.corsOptions = {
     origin: (origin, callback) => {
-        if ((origin && whitelist.indexOf(origin) !== -1) || !origin) {
+        if ((origin && exports.allowedOrigins.indexOf(origin) !== -1) || !origin) {
             callback(null, true);
         }
         else {
@@ -12,4 +12,9 @@ exports.corsOptions = {
         }
     },
     optionsSucessStatus: 200,
+};
+exports.ROLES_LIST = {
+    admin: 1,
+    user: 2,
+    presign: 3,
 };

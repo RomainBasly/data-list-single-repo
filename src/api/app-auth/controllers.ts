@@ -6,12 +6,14 @@ import path from "path";
 import * as fakeDataModule from "../../../infrastructure/fakeData/employees.json";
 import { AuthService } from "./services";
 import { inject, injectable } from "tsyringe";
+import { RoleAssignments, Roles } from "../../common/types/api";
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 
 interface Employee {
   email: string;
+  roles: {};
   password: string;
 }
 
@@ -37,7 +39,7 @@ export class AppAuthController {
     }
   }
 
-  async postLogin(req: Request<{}, {}, Employee>, res: Response): Promise<void> {
+  async login(req: Request<{}, {}, Employee>, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;
       const userMatchingDB: Employee = fakeUsersDB.users.find((person) => person.email === email);
@@ -47,7 +49,13 @@ export class AppAuthController {
       }
       const matchingPassword = await bcrypt.compare(password, userMatchingDB.password);
       if (matchingPassword) {
-        const accessToken = this.authService.generateAccessToken({ email: userMatchingDB.email });
+        const defaultRole: RoleAssignments = { [Roles.USER]: true };
+
+        const userRolesFromDB = userMatchingDB.roles as RoleAssignments;
+        const roles = { ...defaultRole, ...userRolesFromDB };
+        const accessToken = this.authService.generateAccessToken({
+          userInfo: { email: userMatchingDB.email, roles },
+        });
         const refreshToken = this.authService.generateRefreshToken({ email });
         const otherUsers = fakeUsersDB.users.filter((employee) => employee.email !== userMatchingDB.email);
         const currentUser = { ...userMatchingDB, refreshToken };
@@ -56,7 +64,12 @@ export class AppAuthController {
           path.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"),
           JSON.stringify(fakeUsersDB.users)
         );
-        res.cookie("jwt", refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+        res.cookie("jwt", refreshToken, {
+          httpOnly: true,
+          sameSite: "none",
+          secure: true,
+          maxAge: 24 * 60 * 60 * 1000,
+        });
         res.json({ accessToken });
       } else {
         res.sendStatus(401);
@@ -76,7 +89,7 @@ export class AppAuthController {
 
     if (!refreshTokenSecret) throw new Error("no refreshToken in the controler");
     if (!foundUser) {
-      res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+      res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true, maxAge: 24 * 60 * 60 * 1000 });
       return res.send(204);
     }
 
@@ -87,7 +100,7 @@ export class AppAuthController {
       path.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"),
       JSON.stringify(fakeUsersDB.users)
     );
-    res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // TODO set secure: true for https
+    res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true, maxAge: 24 * 60 * 60 * 1000 });
     res.sendStatus(204);
   }
 
@@ -111,7 +124,7 @@ export class AppAuthController {
     try {
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = await bcrypt.hash(password, salt);
-      const newUser = { email: email, password: hashedPassword };
+      const newUser = { email: email, roles: { User: 3 }, password: hashedPassword };
       fakeUsersDB.setUsers([...fakeUsersDB.users, newUser]);
       await fs.promises.writeFile(
         path.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"),

@@ -1,6 +1,6 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import * as fakeDataModule from "../../infrastructure/fakeData/employees.json";
+import { allowedOrigins } from "../../config/common";
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
@@ -21,4 +21,12 @@ export const verifyToken = (req: IRequest, res: Response, next: NextFunction) =>
     req.email = (decoded as JwtPayload).email;
     next();
   });
+};
+
+export const corsOriginCheck = (req: Request, res: Response, next: NextFunction) => {
+  const origin = req.headers.origin;
+  if (origin && allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Credentials", "true");
+  }
+  next();
 };

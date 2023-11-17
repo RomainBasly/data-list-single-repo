@@ -46,6 +46,7 @@ const path_1 = __importDefault(require("path"));
 const fakeDataModule = __importStar(require("../../../infrastructure/fakeData/employees.json"));
 const services_1 = require("./services");
 const tsyringe_1 = require("tsyringe");
+const api_1 = require("../../common/types/api");
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 const fakeUsers = fakeDataModule.default;
@@ -70,7 +71,7 @@ let AppAuthController = class AppAuthController {
             res.send("you are not loggedIn Copeng");
         }
     }
-    async postLogin(req, res) {
+    async login(req, res) {
         try {
             const { email, password } = req.body;
             const userMatchingDB = fakeUsersDB.users.find((person) => person.email === email);
@@ -80,13 +81,23 @@ let AppAuthController = class AppAuthController {
             }
             const matchingPassword = await bcrypt_1.default.compare(password, userMatchingDB.password);
             if (matchingPassword) {
-                const accessToken = this.authService.generateAccessToken({ email: userMatchingDB.email });
+                const defaultRole = { [api_1.Roles.USER]: true };
+                const userRolesFromDB = userMatchingDB.roles;
+                const roles = Object.assign(Object.assign({}, defaultRole), userRolesFromDB);
+                const accessToken = this.authService.generateAccessToken({
+                    userInfo: { email: userMatchingDB.email, roles },
+                });
                 const refreshToken = this.authService.generateRefreshToken({ email });
                 const otherUsers = fakeUsersDB.users.filter((employee) => employee.email !== userMatchingDB.email);
                 const currentUser = Object.assign(Object.assign({}, userMatchingDB), { refreshToken });
                 fakeUsersDB.setUsers([...otherUsers, currentUser]);
                 await fs_1.default.promises.writeFile(path_1.default.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"), JSON.stringify(fakeUsersDB.users));
-                res.cookie("jwt", refreshToken, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+                res.cookie("jwt", refreshToken, {
+                    httpOnly: true,
+                    sameSite: "none",
+                    secure: true,
+                    maxAge: 24 * 60 * 60 * 1000,
+                });
                 res.json({ accessToken });
             }
             else {
@@ -107,14 +118,14 @@ let AppAuthController = class AppAuthController {
         if (!refreshTokenSecret)
             throw new Error("no refreshToken in the controler");
         if (!foundUser) {
-            res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+            res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true, maxAge: 24 * 60 * 60 * 1000 });
             return res.send(204);
         }
         const otherUsers = fakeUsersDB.users.filter((person) => person.refreshToken !== foundUser.refreshToken);
         const currentUser = Object.assign(Object.assign({}, foundUser), { refreshToken: "" });
         fakeUsersDB.setUsers([...otherUsers, currentUser]);
         await fs_1.default.promises.writeFile(path_1.default.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"), JSON.stringify(fakeUsersDB.users));
-        res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // TODO set secure: true for https
+        res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true, maxAge: 24 * 60 * 60 * 1000 });
         res.sendStatus(204);
     }
     getProtected(req, res) {
@@ -134,7 +145,7 @@ let AppAuthController = class AppAuthController {
         try {
             const salt = bcrypt_1.default.genSaltSync(10);
             const hashedPassword = await bcrypt_1.default.hash(password, salt);
-            const newUser = { email: email, password: hashedPassword };
+            const newUser = { email: email, roles: { User: 3 }, password: hashedPassword };
             fakeUsersDB.setUsers([...fakeUsersDB.users, newUser]);
             await fs_1.default.promises.writeFile(path_1.default.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"), JSON.stringify(fakeUsersDB.users));
             console.log(fakeUsersDB.users);

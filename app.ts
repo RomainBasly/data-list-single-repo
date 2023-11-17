@@ -5,7 +5,7 @@ import { corsOptions } from "./config/common";
 import protectedRouter from "./src/routes/protectedRoutes";
 import publicRouter from "./src/routes/publicRoutes";
 import dotenv from "dotenv";
-import { verifyToken } from "./src/middlewares/auth-middleware";
+import { corsOriginCheck, verifyToken } from "./src/middlewares/auth-middleware";
 import cookieParser from "cookie-parser";
 
 import "./src/api/app-auth/controllers";
@@ -16,6 +16,7 @@ dotenv.config();
 const app: Express = express();
 const port = 8000;
 
+app.use(corsOriginCheck);
 app.use(cors(corsOptions));
 
 app.use(express.json());

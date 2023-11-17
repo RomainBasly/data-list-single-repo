@@ -3,8 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyToken = void 0;
+exports.corsOriginCheck = exports.verifyToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const common_1 = require("../../config/common");
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 const verifyToken = (req, res, next) => {
@@ -23,3 +24,11 @@ const verifyToken = (req, res, next) => {
     });
 };
 exports.verifyToken = verifyToken;
+const corsOriginCheck = (req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin && common_1.allowedOrigins.includes(origin)) {
+        res.header("Access-Control-Allow-Credentials", "true");
+    }
+    next();
+};
+exports.corsOriginCheck = corsOriginCheck;
