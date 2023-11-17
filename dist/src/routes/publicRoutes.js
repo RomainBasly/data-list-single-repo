@@ -14,5 +14,8 @@ publicRoutes
     .post("/api/auth/login", (req, res) => appAuthController.postLogin(req, res))
     .get("/api/auth/refresh-token", (req, res) => {
     appRefreshTokenController.handleRefreshToken(req, res);
+})
+    .get("/api/auth/logout", (req, res) => {
+    appAuthController.logoutUser(req, res);
 });
 exports.default = publicRoutes;

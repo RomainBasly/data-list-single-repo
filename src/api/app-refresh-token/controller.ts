@@ -18,14 +18,14 @@ const fakeUsersDB = {
 export class AppRefreshTokenController {
   handleRefreshToken(req: Request, res: Response) {
     const cookies = req.cookies;
-    if (!cookies?.jwt) return res.send(401);
+    if (!cookies?.jwt) return res.sendStatus(401);
     console.log("cookies", cookies.jwt);
     const refreshToken = cookies.jwt;
 
     const foundUser = fakeUsersDB.users.find((person) => person.refreshToken === refreshToken);
 
     if (!refreshTokenSecret) throw new Error("no refreshToken in middleware");
-    if (!foundUser) return res.send(403);
+    if (!foundUser) return res.sendStatus(403);
     jwt.verify(
       refreshToken,
       refreshTokenSecret,

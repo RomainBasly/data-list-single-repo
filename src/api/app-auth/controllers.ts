@@ -1,12 +1,14 @@
 import supabase from "../../../config/database/supabaseClient";
-import { Request, Response, NextFunction } from "express";
-import { get, bodyValidator, post, use, bind } from "../../common/decorators";
+import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import fs from "fs";
 import path from "path";
 import * as fakeDataModule from "../../../infrastructure/fakeData/employees.json";
 import { AuthService } from "./services";
 import { inject, injectable } from "tsyringe";
+
+const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 
 interface Employee {
   email: string;
@@ -21,6 +23,8 @@ const fakeUsersDB = {
   },
 };
 
+// Here is injection dependencies used in this architecture
+// If you do not get it please check tsyringe
 @injectable()
 export class AppAuthController {
   constructor(@inject(AuthService) private readonly authService: AuthService) {}
@@ -63,9 +67,28 @@ export class AppAuthController {
     }
   }
 
-  logoutUser(req: Request, res: Response) {
-    req.session = undefined;
-    res.send("you are now loggedOut, copeng");
+  async logoutUser(req: Request, res: Response) {
+    const cookies = req.cookies;
+    if (!cookies?.jwt) return res.sendStatus(204);
+    const refreshToken = cookies.jwt;
+
+    const foundUser = fakeUsersDB.users.find((person) => person.refreshToken === refreshToken);
+
+    if (!refreshTokenSecret) throw new Error("no refreshToken in the controler");
+    if (!foundUser) {
+      res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+      return res.send(204);
+    }
+
+    const otherUsers = fakeUsersDB.users.filter((person) => person.refreshToken !== foundUser.refreshToken);
+    const currentUser = { ...foundUser, refreshToken: "" };
+    fakeUsersDB.setUsers([...otherUsers, currentUser]);
+    await fs.promises.writeFile(
+      path.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"),
+      JSON.stringify(fakeUsersDB.users)
+    );
+    res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // TODO set secure: true for https
+    res.sendStatus(204);
   }
 
   getProtected(req: Request, res: Response) {

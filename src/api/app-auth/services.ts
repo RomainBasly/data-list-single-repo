@@ -10,6 +10,7 @@ export class AuthService {
     if (!this.accessTokenSecret) return null;
     return jwt.sign(payload, this.accessTokenSecret, { expiresIn: "300s" });
   }
+
   public generateRefreshToken(payload: { email: string }): string | null {
     if (!this.refreshTokenSecret) return null;
     return jwt.sign(payload, this.refreshTokenSecret, { expiresIn: "300s" });

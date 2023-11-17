@@ -49,14 +49,14 @@ let AppRefreshTokenController = class AppRefreshTokenController {
     handleRefreshToken(req, res) {
         const cookies = req.cookies;
         if (!(cookies === null || cookies === void 0 ? void 0 : cookies.jwt))
-            return res.send(401);
+            return res.sendStatus(401);
         console.log("cookies", cookies.jwt);
         const refreshToken = cookies.jwt;
         const foundUser = fakeUsersDB.users.find((person) => person.refreshToken === refreshToken);
         if (!refreshTokenSecret)
             throw new Error("no refreshToken in middleware");
         if (!foundUser)
-            return res.send(403);
+            return res.sendStatus(403);
         jsonwebtoken_1.default.verify(refreshToken, refreshTokenSecret, (err, decoded) => {
             if (err) {
                 console.log("error dude", err);

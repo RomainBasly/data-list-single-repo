@@ -46,6 +46,8 @@ const path_1 = __importDefault(require("path"));
 const fakeDataModule = __importStar(require("../../../infrastructure/fakeData/employees.json"));
 const services_1 = require("./services");
 const tsyringe_1 = require("tsyringe");
+const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 const fakeUsers = fakeDataModule.default;
 const fakeUsersDB = {
     users: fakeUsers || [],
@@ -53,6 +55,8 @@ const fakeUsersDB = {
         this.users = data;
     },
 };
+// Here is injection dependencies used in this architecture
+// If you do not get it please check tsyringe
 let AppAuthController = class AppAuthController {
     constructor(authService) {
         this.authService = authService;
@@ -94,9 +98,24 @@ let AppAuthController = class AppAuthController {
             res.status(400).send("error in login_post");
         }
     }
-    logoutUser(req, res) {
-        req.session = undefined;
-        res.send("you are now loggedOut, copeng");
+    async logoutUser(req, res) {
+        const cookies = req.cookies;
+        if (!(cookies === null || cookies === void 0 ? void 0 : cookies.jwt))
+            return res.sendStatus(204);
+        const refreshToken = cookies.jwt;
+        const foundUser = fakeUsersDB.users.find((person) => person.refreshToken === refreshToken);
+        if (!refreshTokenSecret)
+            throw new Error("no refreshToken in the controler");
+        if (!foundUser) {
+            res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 });
+            return res.send(204);
+        }
+        const otherUsers = fakeUsersDB.users.filter((person) => person.refreshToken !== foundUser.refreshToken);
+        const currentUser = Object.assign(Object.assign({}, foundUser), { refreshToken: "" });
+        fakeUsersDB.setUsers([...otherUsers, currentUser]);
+        await fs_1.default.promises.writeFile(path_1.default.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"), JSON.stringify(fakeUsersDB.users));
+        res.clearCookie("jwt", { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // TODO set secure: true for https
+        res.sendStatus(204);
     }
     getProtected(req, res) {
         res.send("welcome to the website, copeng");
