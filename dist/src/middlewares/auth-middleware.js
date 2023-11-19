@@ -3,23 +3,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.corsOriginCheck = exports.verifyToken = void 0;
+exports.verifyRoles = exports.corsOriginCheck = exports.verifyToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const common_1 = require("../../config/common");
-const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+//const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers["authorization"];
     if (!authHeader)
         return res.sendStatus(401);
     const token = authHeader.split(" ")[1];
+    const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
     if (!accessTokenSecret)
         throw new Error("no accessToken accessible in middleware (verifyToken)");
     jsonwebtoken_1.default.verify(token, accessTokenSecret, (err, decoded) => {
         if (err) {
+            console.log("4", err);
             return res.sendStatus(403);
         }
-        req.email = decoded.email;
+        req.email = decoded.UserInfo.email;
+        req.roles = decoded.UserInfo.roles;
         next();
     });
 };
@@ -32,3 +35,19 @@ const corsOriginCheck = (req, res, next) => {
     next();
 };
 exports.corsOriginCheck = corsOriginCheck;
+const verifyRoles = (...allowedRoles) => {
+    console.log("1", ...allowedRoles);
+    return (req, res, next) => {
+        console.log(req.roles);
+        if (!(req === null || req === void 0 ? void 0 : req.roles))
+            return res.sendStatus(401);
+        const hasSufficientRole = Object.entries(req.roles).some(([role, assigned]) => {
+            console.log("2", role, assigned);
+            return assigned && allowedRoles.includes(role);
+        });
+        if (!hasSufficientRole)
+            return res.sendStatus(403);
+        next();
+    };
+};
+exports.verifyRoles = verifyRoles;

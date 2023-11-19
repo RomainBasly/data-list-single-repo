@@ -145,7 +145,7 @@ let AppAuthController = class AppAuthController {
         try {
             const salt = bcrypt_1.default.genSaltSync(10);
             const hashedPassword = await bcrypt_1.default.hash(password, salt);
-            const newUser = { email: email, roles: { User: 3 }, password: hashedPassword };
+            const newUser = { email: email, roles: { [api_1.Roles.USER]: true }, password: hashedPassword };
             fakeUsersDB.setUsers([...fakeUsersDB.users, newUser]);
             await fs_1.default.promises.writeFile(path_1.default.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"), JSON.stringify(fakeUsersDB.users));
             console.log(fakeUsersDB.users);

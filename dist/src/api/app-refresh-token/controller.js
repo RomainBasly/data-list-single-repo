@@ -48,6 +48,7 @@ const fakeUsersDB = {
 let AppRefreshTokenController = class AppRefreshTokenController {
     handleRefreshToken(req, res) {
         const cookies = req.cookies;
+        console.log(cookies.jwt);
         if (!(cookies === null || cookies === void 0 ? void 0 : cookies.jwt))
             return res.sendStatus(401);
         console.log("cookies", cookies.jwt);
@@ -67,8 +68,9 @@ let AppRefreshTokenController = class AppRefreshTokenController {
                 return res.sendStatus(403);
             if (!accessTokenSecret)
                 throw new Error("no accessToken accessible in middleware (handleRefreshToken)");
-            const accessToken = jsonwebtoken_1.default.sign({ email: decodedPayload.email }, accessTokenSecret, {
-                expiresIn: "30s",
+            const roles = foundUser.roles;
+            const accessToken = jsonwebtoken_1.default.sign({ UserInfo: { email: decodedPayload.email, roles } }, accessTokenSecret, {
+                expiresIn: "3600s",
             });
             res.json({ accessToken });
         });

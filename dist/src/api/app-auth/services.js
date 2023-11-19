@@ -20,12 +20,12 @@ let AuthService = class AuthService {
     generateAccessToken(payload) {
         if (!this.accessTokenSecret)
             return null;
-        return jsonwebtoken_1.default.sign(payload, this.accessTokenSecret, { expiresIn: "300s" });
+        return jsonwebtoken_1.default.sign(payload, this.accessTokenSecret, { expiresIn: "3600s" });
     }
     generateRefreshToken(payload) {
         if (!this.refreshTokenSecret)
             return null;
-        return jsonwebtoken_1.default.sign(payload, this.refreshTokenSecret, { expiresIn: "300s" });
+        return jsonwebtoken_1.default.sign(payload, this.refreshTokenSecret, { expiresIn: "60d" });
     }
     // to implement and refacto methods from controller to service
     createNewUser(email, password) { }

@@ -124,7 +124,7 @@ export class AppAuthController {
     try {
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = await bcrypt.hash(password, salt);
-      const newUser = { email: email, roles: { User: 3 }, password: hashedPassword };
+      const newUser = { email: email, roles: { [Roles.USER]: true }, password: hashedPassword };
       fakeUsersDB.setUsers([...fakeUsersDB.users, newUser]);
       await fs.promises.writeFile(
         path.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"),

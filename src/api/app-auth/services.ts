@@ -9,12 +9,12 @@ export class AuthService {
 
   public generateAccessToken(payload: { userInfo: { email: string; roles: RoleAssignments } }): string | null {
     if (!this.accessTokenSecret) return null;
-    return jwt.sign(payload, this.accessTokenSecret, { expiresIn: "300s" });
+    return jwt.sign(payload, this.accessTokenSecret, { expiresIn: "3600s" });
   }
 
   public generateRefreshToken(payload: { email: string }): string | null {
     if (!this.refreshTokenSecret) return null;
-    return jwt.sign(payload, this.refreshTokenSecret, { expiresIn: "300s" });
+    return jwt.sign(payload, this.refreshTokenSecret, { expiresIn: "60d" });
   }
 
   // to implement and refacto methods from controller to service

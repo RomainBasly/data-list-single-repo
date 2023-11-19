@@ -10,9 +10,3 @@ export const corsOptions = {
   },
   optionsSucessStatus: 200,
 };
-
-export const ROLES_LIST = {
-  admin: 1,
-  user: 2,
-  presign: 3,
-};

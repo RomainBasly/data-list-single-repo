@@ -1,24 +1,29 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import { allowedOrigins } from "../../config/common";
+import { RoleAssignments, Roles } from "../common/types/api";
 
-const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+//const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 
 interface IRequest extends Request {
   email?: string;
+  roles?: RoleAssignments;
 }
 
 export const verifyToken = (req: IRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers["authorization"];
   if (!authHeader) return res.sendStatus(401);
   const token = authHeader.split(" ")[1];
+  const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
   if (!accessTokenSecret) throw new Error("no accessToken accessible in middleware (verifyToken)");
   jwt.verify(token, accessTokenSecret, (err, decoded) => {
     if (err) {
+      console.log("4", err);
       return res.sendStatus(403);
     }
-    req.email = (decoded as JwtPayload).email;
+    req.email = (decoded as JwtPayload).UserInfo.email;
+    req.roles = (decoded as JwtPayload).UserInfo.roles;
     next();
   });
 };
@@ -29,4 +34,20 @@ export const corsOriginCheck = (req: Request, res: Response, next: NextFunction)
     res.header("Access-Control-Allow-Credentials", "true");
   }
   next();
+};
+
+export const verifyRoles = (...allowedRoles: Roles[]) => {
+  console.log("1", ...allowedRoles);
+  return (req: IRequest, res: Response, next: NextFunction) => {
+    console.log(req.roles);
+    if (!req?.roles) return res.sendStatus(401);
+    const hasSufficientRole = Object.entries(req.roles).some(([role, assigned]) => {
+      console.log("2", role, assigned);
+      return assigned && allowedRoles.includes(role as Roles);
+    });
+
+    if (!hasSufficientRole) return res.sendStatus(403);
+
+    next();
+  };
 };

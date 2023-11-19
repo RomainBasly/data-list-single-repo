@@ -18,6 +18,7 @@ const fakeUsersDB = {
 export class AppRefreshTokenController {
   handleRefreshToken(req: Request, res: Response) {
     const cookies = req.cookies;
+    console.log(cookies.jwt);
     if (!cookies?.jwt) return res.sendStatus(401);
     console.log("cookies", cookies.jwt);
     const refreshToken = cookies.jwt;
@@ -37,8 +38,9 @@ export class AppRefreshTokenController {
         const decodedPayload = decoded as JwtPayload; // force type otherwise TS does not know that email exists in payload
         if (!decodedPayload.email || foundUser.email !== decodedPayload.email) return res.sendStatus(403);
         if (!accessTokenSecret) throw new Error("no accessToken accessible in middleware (handleRefreshToken)");
-        const accessToken = jwt.sign({ email: decodedPayload.email }, accessTokenSecret, {
-          expiresIn: "30s",
+        const roles = foundUser.roles;
+        const accessToken = jwt.sign({ UserInfo: { email: decodedPayload.email, roles } }, accessTokenSecret, {
+          expiresIn: "3600s",
         });
         res.json({ accessToken });
       }
