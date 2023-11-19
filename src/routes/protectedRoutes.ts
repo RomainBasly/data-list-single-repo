@@ -10,8 +10,6 @@ const appUserController = container.resolve(AppUserController);
 
 const protectedRoutes = Router();
 
-protectedRoutes.get("/api/users/all", verifyRoles(Roles.ADMIN, Roles.USER), (req, res) =>
-  appUserController.getAllUsers(req, res)
-);
+protectedRoutes.get("/api/users/all", verifyRoles(Roles.ADMIN), (req, res) => appUserController.getAllUsers(req, res));
 
 export default protectedRoutes;

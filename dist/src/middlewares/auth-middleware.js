@@ -6,23 +6,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyRoles = exports.corsOriginCheck = exports.verifyToken = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const common_1 = require("../../config/common");
-//const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 const verifyToken = (req, res, next) => {
     const authHeader = req.headers["authorization"];
     if (!authHeader)
         return res.sendStatus(401);
     const token = authHeader.split(" ")[1];
-    const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+    // const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
     if (!accessTokenSecret)
         throw new Error("no accessToken accessible in middleware (verifyToken)");
+    const decodedToken = jsonwebtoken_1.default.verify(token, accessTokenSecret);
     jsonwebtoken_1.default.verify(token, accessTokenSecret, (err, decoded) => {
         if (err) {
-            console.log("4", err);
             return res.sendStatus(403);
         }
-        req.email = decoded.UserInfo.email;
-        req.roles = decoded.UserInfo.roles;
+        req.email = decodedToken.userInfo.email;
+        req.roles = decodedToken.userInfo.roles;
         next();
     });
 };

@@ -38,8 +38,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.login_get = exports.signup_get = exports.signup_post_with_supabase = exports.AppAuthController = void 0;
-const supabaseClient_1 = __importDefault(require("../../../config/database/supabaseClient"));
+exports.AppAuthController = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -62,13 +61,28 @@ let AppAuthController = class AppAuthController {
     constructor(authService) {
         this.authService = authService;
     }
-    checkSessionUser(req, res) {
-        var _a;
-        if ((_a = req === null || req === void 0 ? void 0 : req.session) === null || _a === void 0 ? void 0 : _a.loggedIn) {
-            res.send("you are loggedIn Baby");
+    async registerNewUser(req, res) {
+        const { email, password } = req.body;
+        if (!email || !password) {
+            res.status(400).json("userName and password are required");
+            return;
         }
-        else {
-            res.send("you are not loggedIn Copeng");
+        const duplicate = fakeUsersDB.users.find((person) => person.email === email);
+        if (duplicate) {
+            res.sendStatus(409).json("You are already in the database, try to login instead");
+            return;
+        }
+        try {
+            const salt = bcrypt_1.default.genSaltSync(10);
+            const hashedPassword = await bcrypt_1.default.hash(password, salt);
+            const newUser = { email: email, roles: { [api_1.Roles.USER]: true }, password: hashedPassword };
+            fakeUsersDB.setUsers([...fakeUsersDB.users, newUser]);
+            await fs_1.default.promises.writeFile(path_1.default.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"), JSON.stringify(fakeUsersDB.users));
+            console.log(fakeUsersDB.users);
+            res.status(201).json({ message: "new user created" });
+        }
+        catch (error) {
+            res.status(500).json({ "message error 500": error });
         }
     }
     async login(req, res) {
@@ -95,7 +109,7 @@ let AppAuthController = class AppAuthController {
                 res.cookie("jwt", refreshToken, {
                     httpOnly: true,
                     sameSite: "none",
-                    secure: true,
+                    secure: false,
                     maxAge: 24 * 60 * 60 * 1000,
                 });
                 res.json({ accessToken });
@@ -128,33 +142,6 @@ let AppAuthController = class AppAuthController {
         res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true, maxAge: 24 * 60 * 60 * 1000 });
         res.sendStatus(204);
     }
-    getProtected(req, res) {
-        res.send("welcome to the website, copeng");
-    }
-    async registerNewUser(req, res) {
-        const { email, password } = req.body;
-        if (!email || !password) {
-            res.status(400).json("userName and password are required");
-            return;
-        }
-        const duplicate = fakeUsersDB.users.find((person) => person.email === email);
-        if (duplicate) {
-            res.sendStatus(409).json("You are already in the database, try to login instead");
-            return;
-        }
-        try {
-            const salt = bcrypt_1.default.genSaltSync(10);
-            const hashedPassword = await bcrypt_1.default.hash(password, salt);
-            const newUser = { email: email, roles: { [api_1.Roles.USER]: true }, password: hashedPassword };
-            fakeUsersDB.setUsers([...fakeUsersDB.users, newUser]);
-            await fs_1.default.promises.writeFile(path_1.default.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"), JSON.stringify(fakeUsersDB.users));
-            console.log(fakeUsersDB.users);
-            res.status(201).json({ message: "new user created" });
-        }
-        catch (error) {
-            res.status(500).json({ "message error 500": error });
-        }
-    }
 };
 exports.AppAuthController = AppAuthController;
 exports.AppAuthController = AppAuthController = __decorate([
@@ -162,29 +149,3 @@ exports.AppAuthController = AppAuthController = __decorate([
     __param(0, (0, tsyringe_1.inject)(services_1.AuthService)),
     __metadata("design:paramtypes", [services_1.AuthService])
 ], AppAuthController);
-const signup_post_with_supabase = async (req, res) => {
-    const { email, password } = req.body;
-    try {
-        if (email && password) {
-            let { data, error } = await supabaseClient_1.default.auth.signInWithPassword({
-                email,
-                password,
-            });
-            console.log(data, error);
-        }
-        res.status(201).send("user created");
-    }
-    catch (error) {
-        console.log(error);
-        res.status(400).send("error, user not created");
-    }
-};
-exports.signup_post_with_supabase = signup_post_with_supabase;
-const signup_get = (req, res) => {
-    res.send("signup get");
-};
-exports.signup_get = signup_get;
-const login_get = (req, res) => {
-    res.send("login get");
-};
-exports.login_get = login_get;

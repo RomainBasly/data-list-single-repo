@@ -2,8 +2,9 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import { allowedOrigins } from "../../config/common";
 import { RoleAssignments, Roles } from "../common/types/api";
+import { JwtPayloadAccessToken } from "../api/app-auth/services";
 
-//const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 
 interface IRequest extends Request {
@@ -15,15 +16,16 @@ export const verifyToken = (req: IRequest, res: Response, next: NextFunction) =>
   const authHeader = req.headers["authorization"];
   if (!authHeader) return res.sendStatus(401);
   const token = authHeader.split(" ")[1];
-  const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+  // const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
   if (!accessTokenSecret) throw new Error("no accessToken accessible in middleware (verifyToken)");
+
+  const decodedToken = jwt.verify(token, accessTokenSecret) as JwtPayloadAccessToken;
   jwt.verify(token, accessTokenSecret, (err, decoded) => {
     if (err) {
-      console.log("4", err);
       return res.sendStatus(403);
     }
-    req.email = (decoded as JwtPayload).UserInfo.email;
-    req.roles = (decoded as JwtPayload).UserInfo.roles;
+    req.email = decodedToken.userInfo.email;
+    req.roles = decodedToken.userInfo.roles;
     next();
   });
 };
