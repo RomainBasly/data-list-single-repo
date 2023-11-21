@@ -13,7 +13,7 @@ const protectedRoutes_1 = __importDefault(require("./src/routes/protectedRoutes"
 const publicRoutes_1 = __importDefault(require("./src/routes/publicRoutes"));
 const auth_middleware_1 = require("./src/middlewares/auth-middleware");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
-require("./src/api/app-auth/controllers");
+require("./src/api/app-auth/controller");
 require("./src/api/app-users/controllers");
 const app = (0, express_1.default)();
 const port = 8000;

@@ -9,7 +9,7 @@ import publicRouter from "./src/routes/publicRoutes";
 import { corsOriginCheck, verifyToken } from "./src/middlewares/auth-middleware";
 import cookieParser from "cookie-parser";
 
-import "./src/api/app-auth/controllers";
+import "./src/api/app-auth/controller";
 import "./src/api/app-users/controllers";
 
 const app: Express = express();

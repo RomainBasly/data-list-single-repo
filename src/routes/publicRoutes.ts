@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { AppAuthController } from "../api/app-auth/controllers";
+import { AppAuthController } from "../api/app-auth/controller";
 import { container } from "tsyringe";
 import { AppRefreshTokenController } from "../api/app-refresh-token/controller";
 

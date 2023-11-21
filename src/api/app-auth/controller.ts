@@ -3,27 +3,15 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import fs from "fs";
 import path from "path";
-import * as fakeDataModule from "../../../infrastructure/fakeData/employees.json";
 import { AuthService } from "./services";
 import { inject, injectable } from "tsyringe";
 import { RoleAssignments, Roles } from "../../common/types/api";
-
-const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
-const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 
 interface Employee {
   email: string;
   roles: {};
   password: string;
 }
-
-const fakeUsers = (fakeDataModule as any).default as any[];
-const fakeUsersDB = {
-  users: fakeUsers || [],
-  setUsers: function (data: any) {
-    this.users = data;
-  },
-};
 
 // Here is injection dependencies used in this architecture
 // If you do not get it please check tsyringe
@@ -38,8 +26,8 @@ export class AppAuthController {
       return;
     }
 
-    const duplicate = fakeUsersDB.users.find((person: { email: string }) => person.email === email);
-    if (duplicate) {
+    const alreadyUser = await supabase.from("app-users").select().eq("email", email);
+    if (alreadyUser) {
       res.sendStatus(409).json("You are already in the database, try to login instead");
       return;
     }
@@ -48,12 +36,7 @@ export class AppAuthController {
       const salt = bcrypt.genSaltSync(10);
       const hashedPassword = await bcrypt.hash(password, salt);
       const newUser = { email: email, roles: { [Roles.USER]: true }, password: hashedPassword };
-      fakeUsersDB.setUsers([...fakeUsersDB.users, newUser]);
-      await fs.promises.writeFile(
-        path.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"),
-        JSON.stringify(fakeUsersDB.users)
-      );
-      console.log(fakeUsersDB.users);
+      await supabase.from("app-users").insert([newUser]).select();
       res.status(201).json({ message: "new user created" });
     } catch (error) {
       res.status(500).json({ "message error 500": error });
@@ -63,28 +46,24 @@ export class AppAuthController {
   async login(req: Request<{}, {}, Employee>, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;
-      const userMatchingDB: Employee = fakeUsersDB.users.find((person) => person.email === email);
-      if (!userMatchingDB) {
+      const userMatchingDB = await supabase.from("app-users").select().eq("email", email);
+      if (!userMatchingDB || !userMatchingDB.data || userMatchingDB.data.length === 0) {
         res.sendStatus(401);
         return;
       }
-      const matchingPassword = await bcrypt.compare(password, userMatchingDB.password);
+      const dataFromDB = userMatchingDB.data[0];
+      const passwordFromDB = dataFromDB.password;
+      const matchingPassword = await bcrypt.compare(password, passwordFromDB);
       if (matchingPassword) {
         const defaultRole: RoleAssignments = { [Roles.USER]: true };
 
-        const userRolesFromDB = userMatchingDB.roles as RoleAssignments;
+        const userRolesFromDB = dataFromDB.roles as RoleAssignments;
         const roles = { ...defaultRole, ...userRolesFromDB };
         const accessToken = this.authService.generateAccessToken({
-          userInfo: { email: userMatchingDB.email, roles },
+          userInfo: { email, roles },
         });
         const refreshToken = this.authService.generateRefreshToken({ email });
-        const otherUsers = fakeUsersDB.users.filter((employee) => employee.email !== userMatchingDB.email);
-        const currentUser = { ...userMatchingDB, refreshToken };
-        fakeUsersDB.setUsers([...otherUsers, currentUser]);
-        await fs.promises.writeFile(
-          path.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"),
-          JSON.stringify(fakeUsersDB.users)
-        );
+        await supabase.from("app-users").update({ refreshToken: refreshToken }).eq("email", email);
         res.cookie("jwt", refreshToken, {
           httpOnly: true,
           sameSite: "none",
@@ -106,21 +85,14 @@ export class AppAuthController {
     if (!cookies?.jwt) return res.sendStatus(204);
     const refreshToken = cookies.jwt;
 
-    const foundUser = fakeUsersDB.users.find((person) => person.refreshToken === refreshToken);
+    const foundUserRefreshToken = await supabase.from("app-users").select().eq("refreshToken", refreshToken);
 
-    if (!refreshTokenSecret) throw new Error("no refreshToken in the controler");
-    if (!foundUser) {
+    if (!foundUserRefreshToken) {
       res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true, maxAge: 24 * 60 * 60 * 1000 });
       return res.send(204);
     }
 
-    const otherUsers = fakeUsersDB.users.filter((person) => person.refreshToken !== foundUser.refreshToken);
-    const currentUser = { ...foundUser, refreshToken: "" };
-    fakeUsersDB.setUsers([...otherUsers, currentUser]);
-    await fs.promises.writeFile(
-      path.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"),
-      JSON.stringify(fakeUsersDB.users)
-    );
+    await supabase.from("app-users").update({ refreshToken: "" }).eq("refreshToken", refreshToken);
     res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true, maxAge: 24 * 60 * 60 * 1000 });
     res.sendStatus(204);
   }

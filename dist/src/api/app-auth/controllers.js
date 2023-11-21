@@ -39,6 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppAuthController = void 0;
+const supabaseClient_1 = __importDefault(require("../../../config/database/supabaseClient"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
@@ -76,9 +77,7 @@ let AppAuthController = class AppAuthController {
             const salt = bcrypt_1.default.genSaltSync(10);
             const hashedPassword = await bcrypt_1.default.hash(password, salt);
             const newUser = { email: email, roles: { [api_1.Roles.USER]: true }, password: hashedPassword };
-            fakeUsersDB.setUsers([...fakeUsersDB.users, newUser]);
-            await fs_1.default.promises.writeFile(path_1.default.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"), JSON.stringify(fakeUsersDB.users));
-            console.log(fakeUsersDB.users);
+            const { data, error } = await supabaseClient_1.default.from("app-users").insert([newUser]).select();
             res.status(201).json({ message: "new user created" });
         }
         catch (error) {
@@ -88,35 +87,39 @@ let AppAuthController = class AppAuthController {
     async login(req, res) {
         try {
             const { email, password } = req.body;
-            const userMatchingDB = fakeUsersDB.users.find((person) => person.email === email);
+            //let { data, error } = await supabase.from("app-users").select().eq("email", email);
+            const userMatchingDB = await supabaseClient_1.default.from("app-users").select().eq("email", email);
+            console.log(userMatchingDB);
             if (!userMatchingDB) {
                 res.sendStatus(401);
                 return;
             }
-            const matchingPassword = await bcrypt_1.default.compare(password, userMatchingDB.password);
-            if (matchingPassword) {
-                const defaultRole = { [api_1.Roles.USER]: true };
-                const userRolesFromDB = userMatchingDB.roles;
-                const roles = Object.assign(Object.assign({}, defaultRole), userRolesFromDB);
-                const accessToken = this.authService.generateAccessToken({
-                    userInfo: { email: userMatchingDB.email, roles },
-                });
-                const refreshToken = this.authService.generateRefreshToken({ email });
-                const otherUsers = fakeUsersDB.users.filter((employee) => employee.email !== userMatchingDB.email);
-                const currentUser = Object.assign(Object.assign({}, userMatchingDB), { refreshToken });
-                fakeUsersDB.setUsers([...otherUsers, currentUser]);
-                await fs_1.default.promises.writeFile(path_1.default.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"), JSON.stringify(fakeUsersDB.users));
-                res.cookie("jwt", refreshToken, {
-                    httpOnly: true,
-                    sameSite: "none",
-                    secure: false,
-                    maxAge: 24 * 60 * 60 * 1000,
-                });
-                res.json({ accessToken });
-            }
-            else {
-                res.sendStatus(401);
-            }
+            // const matchingPassword = await bcrypt.compare(password, userMatchingDB.password);
+            // if (matchingPassword) {
+            //   const defaultRole: RoleAssignments = { [Roles.USER]: true };
+            //   const userRolesFromDB = userMatchingDB.roles as RoleAssignments;
+            //   const roles = { ...defaultRole, ...userRolesFromDB };
+            //   const accessToken = this.authService.generateAccessToken({
+            //     userInfo: { email: userMatchingDB.email, roles },
+            //   });
+            //   const refreshToken = this.authService.generateRefreshToken({ email });
+            //   const otherUsers = fakeUsersDB.users.filter((employee) => employee.email !== userMatchingDB.email);
+            //   const currentUser = { ...userMatchingDB, refreshToken };
+            //   fakeUsersDB.setUsers([...otherUsers, currentUser]);
+            //   await fs.promises.writeFile(
+            //     path.join(__dirname, "..", "..", "..", "infrastructure", "fakeData", "employees.json"),
+            //     JSON.stringify(fakeUsersDB.users)
+            //   );
+            //   res.cookie("jwt", refreshToken, {
+            //     httpOnly: true,
+            //     sameSite: "none",
+            //     secure: false,
+            //     maxAge: 24 * 60 * 60 * 1000,
+            //   });
+            //   res.json({ accessToken });
+            // } else {
+            //   res.sendStatus(401);
+            // }
         }
         catch (error) {
             console.log(error);
