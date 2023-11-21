@@ -1,17 +1,16 @@
+import dotenv from "dotenv";
+dotenv.config();
 import "reflect-metadata";
 import express, { Express } from "express";
 import cors from "cors";
 import { corsOptions } from "./config/common";
 import protectedRouter from "./src/routes/protectedRoutes";
 import publicRouter from "./src/routes/publicRoutes";
-import dotenv from "dotenv";
 import { corsOriginCheck, verifyToken } from "./src/middlewares/auth-middleware";
 import cookieParser from "cookie-parser";
 
 import "./src/api/app-auth/controllers";
 import "./src/api/app-users/controllers";
-
-dotenv.config();
 
 const app: Express = express();
 const port = 8000;
