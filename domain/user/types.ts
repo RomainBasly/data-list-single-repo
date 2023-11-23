@@ -5,6 +5,6 @@ export interface IAppUserRepository {}
 export type CreateUser = {
   email: string;
   password: string;
-  refreshToken: string;
+  refreshToken?: string;
   roles: RoleAssignments;
 };

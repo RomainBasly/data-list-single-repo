@@ -19,30 +19,6 @@ interface Employee {
 export class AppAuthController {
   constructor(@inject(AuthService) private readonly authService: AuthService) {}
 
-  async registerNewUser(req: Request, res: Response): Promise<void> {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      res.status(400).json("userName and password are required");
-      return;
-    }
-
-    const alreadyUser = await supabase.from("app-users").select().eq("email", email);
-    if (alreadyUser) {
-      res.sendStatus(409).json("You are already in the database, try to login instead");
-      return;
-    }
-
-    try {
-      const salt = bcrypt.genSaltSync(10);
-      const hashedPassword = await bcrypt.hash(password, salt);
-      const newUser = { email: email, roles: { [Roles.USER]: true }, password: hashedPassword };
-      await supabase.from("app-users").insert([newUser]).select();
-      res.status(201).json({ message: "new user created" });
-    } catch (error) {
-      res.status(500).json({ "message error 500": error });
-    }
-  }
-
   async login(req: Request<{}, {}, Employee>, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;

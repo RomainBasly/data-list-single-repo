@@ -15,6 +15,7 @@ const auth_middleware_1 = require("./src/middlewares/auth-middleware");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 require("./src/api/app-auth/controller");
 require("./src/api/app-users/controllers");
+const errors_1 = require("./domain/common/errors");
 const app = (0, express_1.default)();
 const port = 8000;
 app.use(auth_middleware_1.corsOriginCheck);
@@ -26,6 +27,7 @@ app.use(publicRoutes_1.default);
 // Use the protected routes
 app.use(auth_middleware_1.verifyToken);
 app.use(protectedRoutes_1.default);
+app.use(errors_1.errorHandler);
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
