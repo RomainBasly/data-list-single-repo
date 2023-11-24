@@ -11,27 +11,24 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const tsyringe_1 = require("tsyringe");
-const bcrypt_1 = __importDefault(require("bcrypt"));
 const api_1 = require("../../src/common/types/api");
 const AppUserRepository_1 = require("../../infrastructure/database/repositories/AppUserRepository");
 const errors_1 = require("../common/errors");
+const services_1 = require("../authentication/services");
 let UserService = class UserService {
-    constructor(userRepository) {
+    constructor(userRepository, authService) {
         this.userRepository = userRepository;
+        this.authService = authService;
     }
-    async registerNewUser(email, password) {
-        if (await this.userRepository.userAlreadyExists(email)) {
+    async registerUser(email, password) {
+        if (await this.userRepository.getUser(email)) {
             throw new errors_1.UserAlreadyExistsError(errors_1.ErrorMessages.ALREADY_EXISTS);
         }
         try {
-            const salt = bcrypt_1.default.genSaltSync(10);
-            const hashedPassword = await bcrypt_1.default.hash(password, salt);
+            const hashedPassword = await this.authService.hashPassword(password);
             const newUser = { email: email, roles: { [api_1.Roles.USER]: true }, password: hashedPassword };
             await this.userRepository.create(newUser);
         }
@@ -40,10 +37,52 @@ let UserService = class UserService {
             throw error;
         }
     }
+    async login(email, passwordInput) {
+        try {
+            const dbQuery = await this.userRepository.getUser(email);
+            if (!dbQuery || !dbQuery.data) {
+                throw new errors_1.UserDoNotExists(errors_1.ErrorMessages.NOT_EXISTING_USER);
+            }
+            const user = dbQuery.data[0];
+            const passwordFromDB = user.password;
+            const passwordMatchDB = await this.authService.checkCredentials(passwordInput, passwordFromDB);
+            if (!passwordMatchDB) {
+                throw new errors_1.AuthenticationError(errors_1.ErrorMessages.INVALID_CREDENTIALS);
+            }
+            const roles = this.addUserRole(user);
+            const accessToken = this.authService.generateAccessToken({
+                userInfo: { email, roles },
+            });
+            const refreshToken = this.authService.generateRefreshToken({ email });
+            if (!refreshToken || !accessToken) {
+                throw new errors_1.FailToGenerateTokens(errors_1.ErrorMessages.FAIL_TO_GENERATE_TOKENS);
+            }
+            await this.userRepository.updateRefreshToken(refreshToken, email);
+            return { accessToken, refreshToken };
+        }
+        catch (error) {
+            console.error("something went wrong in the service", error);
+            throw error;
+        }
+    }
+    async logoutUser(refreshToken) {
+        const foundUser = await this.userRepository.findUserByRefreshToken(refreshToken);
+        if (!foundUser)
+            return false;
+        await this.userRepository.clearUserRefreshToken(refreshToken);
+        return true;
+    }
+    addUserRole(user) {
+        const defaultRole = { [api_1.Roles.USER]: true };
+        const userRolesFromDB = user.roles;
+        return Object.assign(Object.assign({}, defaultRole), userRolesFromDB);
+    }
 };
 exports.UserService = UserService;
 exports.UserService = UserService = __decorate([
     (0, tsyringe_1.injectable)(),
     __param(0, (0, tsyringe_1.inject)(AppUserRepository_1.AppUserRepository)),
-    __metadata("design:paramtypes", [AppUserRepository_1.AppUserRepository])
+    __param(1, (0, tsyringe_1.inject)(services_1.AuthService)),
+    __metadata("design:paramtypes", [AppUserRepository_1.AppUserRepository,
+        services_1.AuthService])
 ], UserService);

@@ -36,13 +36,10 @@ const corsOriginCheck = (req, res, next) => {
 };
 exports.corsOriginCheck = corsOriginCheck;
 const verifyRoles = (...allowedRoles) => {
-    console.log("1", ...allowedRoles);
     return (req, res, next) => {
-        console.log(req.roles);
         if (!(req === null || req === void 0 ? void 0 : req.roles))
             return res.sendStatus(401);
         const hasSufficientRole = Object.entries(req.roles).some(([role, assigned]) => {
-            console.log("2", role, assigned);
             return assigned && allowedRoles.includes(role);
         });
         if (!hasSufficientRole)

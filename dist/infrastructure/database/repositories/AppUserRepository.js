@@ -19,9 +19,17 @@ let AppUserRepository = class AppUserRepository {
             throw new Error(`something when wrong in the repo: ${error.message}`);
         }
     }
-    async userAlreadyExists(email) {
-        const result = await supabaseClient_1.default.from("app-users").select().eq("email", email);
-        return result.data ? result.data.length > 0 : false;
+    async getUser(email) {
+        return await supabaseClient_1.default.from("app-users").select().eq("email", email);
+    }
+    async updateRefreshToken(refreshToken, email) {
+        await supabaseClient_1.default.from("app-users").update({ refreshToken: refreshToken }).eq("email", email);
+    }
+    async findUserByRefreshToken(refreshToken) {
+        return await supabaseClient_1.default.from("app-users").select().eq("refreshToken", refreshToken);
+    }
+    async clearUserRefreshToken(refreshToken) {
+        return await supabaseClient_1.default.from("app-users").update({ refreshToken: "" }).eq("refreshToken", refreshToken);
     }
 };
 exports.AppUserRepository = AppUserRepository;

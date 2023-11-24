@@ -11,8 +11,19 @@ export class AppUserRepository implements IAppUserRepository {
     }
   }
 
-  public async userAlreadyExists(email: string) {
-    const result = await supabase.from("app-users").select().eq("email", email);
-    return result.data ? result.data.length > 0 : false;
+  public async getUser(email: string) {
+    return await supabase.from("app-users").select().eq("email", email);
+  }
+
+  public async updateRefreshToken(refreshToken: string, email: string) {
+    await supabase.from("app-users").update({ refreshToken: refreshToken }).eq("email", email);
+  }
+
+  public async findUserByRefreshToken(refreshToken: string) {
+    return await supabase.from("app-users").select().eq("refreshToken", refreshToken);
+  }
+
+  public async clearUserRefreshToken(refreshToken: string) {
+    return await supabase.from("app-users").update({ refreshToken: "" }).eq("refreshToken", refreshToken);
   }
 }

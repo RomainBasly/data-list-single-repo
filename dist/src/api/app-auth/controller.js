@@ -16,48 +16,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppAuthController = void 0;
-const supabaseClient_1 = __importDefault(require("../../../config/database/supabaseClient"));
-const bcrypt_1 = __importDefault(require("bcrypt"));
-const services_1 = require("./services");
+const services_1 = require("../../../domain/authentication/services");
 const tsyringe_1 = require("tsyringe");
-const api_1 = require("../../common/types/api");
+const services_2 = require("../../../domain/user/services");
+const assert_1 = __importDefault(require("assert"));
 // Here is injection dependencies used in this architecture
 // If you do not get it please check tsyringe
 let AppAuthController = class AppAuthController {
-    constructor(authService) {
+    constructor(authService, userService) {
         this.authService = authService;
+        this.userService = userService;
     }
     async login(req, res) {
         try {
             const { email, password } = req.body;
-            const userMatchingDB = await supabaseClient_1.default.from("app-users").select().eq("email", email);
-            if (!userMatchingDB || !userMatchingDB.data || userMatchingDB.data.length === 0) {
-                res.sendStatus(401);
-                return;
-            }
-            const dataFromDB = userMatchingDB.data[0];
-            const passwordFromDB = dataFromDB.password;
-            const matchingPassword = await bcrypt_1.default.compare(password, passwordFromDB);
-            if (matchingPassword) {
-                const defaultRole = { [api_1.Roles.USER]: true };
-                const userRolesFromDB = dataFromDB.roles;
-                const roles = Object.assign(Object.assign({}, defaultRole), userRolesFromDB);
-                const accessToken = this.authService.generateAccessToken({
-                    userInfo: { email, roles },
-                });
-                const refreshToken = this.authService.generateRefreshToken({ email });
-                await supabaseClient_1.default.from("app-users").update({ refreshToken: refreshToken }).eq("email", email);
-                res.cookie("jwt", refreshToken, {
-                    httpOnly: true,
-                    sameSite: "none",
-                    secure: false,
-                    maxAge: 24 * 60 * 60 * 1000,
-                });
-                res.json({ accessToken });
-            }
-            else {
-                res.sendStatus(401);
-            }
+            const { accessToken, refreshToken } = await this.userService.login(email, password);
+            (0, assert_1.default)(refreshToken, "problem with refreshToken inside user login service");
+            (0, assert_1.default)(accessToken, "problem with refreshToken inside user login service");
+            res.cookie("jwt", refreshToken, {
+                httpOnly: true,
+                sameSite: "none",
+                secure: false,
+                maxAge: 24 * 60 * 60 * 1000,
+            });
+            res.json({ accessToken });
         }
         catch (error) {
             console.log(error);
@@ -69,12 +51,11 @@ let AppAuthController = class AppAuthController {
         if (!(cookies === null || cookies === void 0 ? void 0 : cookies.jwt))
             return res.sendStatus(204);
         const refreshToken = cookies.jwt;
-        const foundUserRefreshToken = await supabaseClient_1.default.from("app-users").select().eq("refreshToken", refreshToken);
-        if (!foundUserRefreshToken) {
+        const isLoggedOut = await this.userService.logoutUser(refreshToken);
+        if (!isLoggedOut) {
             res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true, maxAge: 24 * 60 * 60 * 1000 });
             return res.send(204);
         }
-        await supabaseClient_1.default.from("app-users").update({ refreshToken: "" }).eq("refreshToken", refreshToken);
         res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true, maxAge: 24 * 60 * 60 * 1000 });
         res.sendStatus(204);
     }
@@ -83,5 +64,7 @@ exports.AppAuthController = AppAuthController;
 exports.AppAuthController = AppAuthController = __decorate([
     (0, tsyringe_1.injectable)(),
     __param(0, (0, tsyringe_1.inject)(services_1.AuthService)),
-    __metadata("design:paramtypes", [services_1.AuthService])
+    __param(1, (0, tsyringe_1.inject)(services_2.UserService)),
+    __metadata("design:paramtypes", [services_1.AuthService,
+        services_2.UserService])
 ], AppAuthController);

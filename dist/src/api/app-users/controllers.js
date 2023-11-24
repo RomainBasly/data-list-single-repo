@@ -51,7 +51,7 @@ let AppUserController = class AppUserController {
             return;
         }
         try {
-            await this.userService.registerNewUser(email, password);
+            await this.userService.registerUser(email, password);
             res.status(201).json({ message: "new user created" });
         }
         catch (error) {

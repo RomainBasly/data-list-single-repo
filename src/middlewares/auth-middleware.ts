@@ -2,7 +2,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import { allowedOrigins } from "../../config/common";
 import { RoleAssignments, Roles } from "../common/types/api";
-import { JwtPayloadAccessToken } from "../api/app-auth/services";
+import { JwtPayloadAccessToken } from "../../domain/authentication/services";
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
@@ -39,12 +39,9 @@ export const corsOriginCheck = (req: Request, res: Response, next: NextFunction)
 };
 
 export const verifyRoles = (...allowedRoles: Roles[]) => {
-  console.log("1", ...allowedRoles);
   return (req: IRequest, res: Response, next: NextFunction) => {
-    console.log(req.roles);
     if (!req?.roles) return res.sendStatus(401);
     const hasSufficientRole = Object.entries(req.roles).some(([role, assigned]) => {
-      console.log("2", role, assigned);
       return assigned && allowedRoles.includes(role as Roles);
     });
 

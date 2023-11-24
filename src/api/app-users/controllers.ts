@@ -7,15 +7,15 @@ import { UserAlreadyExistsError } from "../../../domain/common/errors";
 @injectable()
 export class AppUserController {
   constructor(@inject(UserService) private readonly userService: UserService) {}
+
   async registerNewUser(req: Request, res: Response): Promise<void> {
     const { email, password } = req.body;
     if (!email || !password) {
       res.status(400).json("userName and password are required");
       return;
     }
-
     try {
-      await this.userService.registerNewUser(email, password);
+      await this.userService.registerUser(email, password);
       res.status(201).json({ message: "new user created" });
     } catch (error) {
       if (error instanceof UserAlreadyExistsError) {
@@ -26,6 +26,7 @@ export class AppUserController {
       }
     }
   }
+
   getAllUsers(req: Request, res: Response) {
     try {
       res.json(Data.users);

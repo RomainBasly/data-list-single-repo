@@ -3,9 +3,11 @@ import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import fs from "fs";
 import path from "path";
-import { AuthService } from "./services";
+import { AuthService } from "../../../domain/authentication/services";
 import { inject, injectable } from "tsyringe";
 import { RoleAssignments, Roles } from "../../common/types/api";
+import { UserService } from "../../../domain/user/services";
+import assert from "assert";
 
 interface Employee {
   email: string;
@@ -17,39 +19,25 @@ interface Employee {
 // If you do not get it please check tsyringe
 @injectable()
 export class AppAuthController {
-  constructor(@inject(AuthService) private readonly authService: AuthService) {}
+  constructor(
+    @inject(AuthService) private readonly authService: AuthService,
+    @inject(UserService) private readonly userService: UserService
+  ) {}
 
   async login(req: Request<{}, {}, Employee>, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;
-      const userMatchingDB = await supabase.from("app-users").select().eq("email", email);
-      if (!userMatchingDB || !userMatchingDB.data || userMatchingDB.data.length === 0) {
-        res.sendStatus(401);
-        return;
-      }
-      const dataFromDB = userMatchingDB.data[0];
-      const passwordFromDB = dataFromDB.password;
-      const matchingPassword = await bcrypt.compare(password, passwordFromDB);
-      if (matchingPassword) {
-        const defaultRole: RoleAssignments = { [Roles.USER]: true };
+      const { accessToken, refreshToken } = await this.userService.login(email, password);
 
-        const userRolesFromDB = dataFromDB.roles as RoleAssignments;
-        const roles = { ...defaultRole, ...userRolesFromDB };
-        const accessToken = this.authService.generateAccessToken({
-          userInfo: { email, roles },
-        });
-        const refreshToken = this.authService.generateRefreshToken({ email });
-        await supabase.from("app-users").update({ refreshToken: refreshToken }).eq("email", email);
-        res.cookie("jwt", refreshToken, {
-          httpOnly: true,
-          sameSite: "none",
-          secure: false,
-          maxAge: 24 * 60 * 60 * 1000,
-        });
-        res.json({ accessToken });
-      } else {
-        res.sendStatus(401);
-      }
+      assert(refreshToken, "problem with refreshToken inside user login service");
+      assert(accessToken, "problem with refreshToken inside user login service");
+      res.cookie("jwt", refreshToken, {
+        httpOnly: true,
+        sameSite: "none",
+        secure: false,
+        maxAge: 24 * 60 * 60 * 1000,
+      });
+      res.json({ accessToken });
     } catch (error) {
       console.log(error);
       res.status(400).send("error in login_post");
@@ -61,14 +49,13 @@ export class AppAuthController {
     if (!cookies?.jwt) return res.sendStatus(204);
     const refreshToken = cookies.jwt;
 
-    const foundUserRefreshToken = await supabase.from("app-users").select().eq("refreshToken", refreshToken);
+    const isLoggedOut = await this.userService.logoutUser(refreshToken);
 
-    if (!foundUserRefreshToken) {
+    if (!isLoggedOut) {
       res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true, maxAge: 24 * 60 * 60 * 1000 });
       return res.send(204);
     }
 
-    await supabase.from("app-users").update({ refreshToken: "" }).eq("refreshToken", refreshToken);
     res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true, maxAge: 24 * 60 * 60 * 1000 });
     res.sendStatus(204);
   }
