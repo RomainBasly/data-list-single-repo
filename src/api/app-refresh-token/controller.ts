@@ -1,6 +1,6 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import * as fakeDataModule from "../../../infrastructure/fakeData/employees.json";
+import * as fakeDataModule from "../../infrastructure/fakeData/employees.json";
 import { injectable } from "tsyringe";
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;

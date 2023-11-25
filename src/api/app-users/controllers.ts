@@ -1,8 +1,8 @@
 import { inject, injectable } from "tsyringe";
-import * as Data from "../../../infrastructure/fakeData/users.json";
+import * as Data from "../../infrastructure/fakeData/users.json";
 import { Response, Request } from "express";
-import { UserService } from "../../../domain/user/services";
-import { UserAlreadyExistsError } from "../../../domain/common/errors";
+import { UserService } from "../../domain/user/services";
+import { UserAlreadyExistsError } from "../../domain/common/errors";
 
 @injectable()
 export class AppUserController {

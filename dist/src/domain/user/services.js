@@ -14,7 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.UserService = void 0;
 const tsyringe_1 = require("tsyringe");
-const api_1 = require("../../src/common/types/api");
+const api_1 = require("../../common/types/api");
 const AppUserRepository_1 = require("../../infrastructure/database/repositories/AppUserRepository");
 const errors_1 = require("../common/errors");
 const services_1 = require("../authentication/services");

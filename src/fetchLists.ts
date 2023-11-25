@@ -1,4 +1,4 @@
-import supabase from "../config/database/supabaseClient";
+import supabase from "./config/database/supabaseClient";
 
 export type ListItem = {
   id: number;
@@ -7,16 +7,14 @@ export type ListItem = {
   list_element_id: number[];
 };
 
-export default async function fetchData():Promise<ListItem[]> {
+export default async function fetchData(): Promise<ListItem[]> {
   try {
-    const { data, error } = await supabase
-      .from("My-lists")
-      .select("*")
+    const { data, error } = await supabase.from("My-lists").select("*");
     if (error) {
       throw error;
     }
-    if (!data) return []
-    return data
+    if (!data) return [];
+    return data;
   } catch (error) {
     console.log(error);
     return [];

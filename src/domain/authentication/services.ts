@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 import { inject, injectable } from "tsyringe";
-import { RoleAssignments, Roles } from "../../src/common/types/api";
+import { RoleAssignments, Roles } from "../../common/types/api";
 import { ErrorMessages, UserDoNotExists } from "../common/errors";
 import bcrypt from "bcrypt";
 import { AppUserRepository } from "../../infrastructure/database/repositories/AppUserRepository";

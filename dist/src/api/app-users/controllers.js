@@ -37,9 +37,9 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppUserController = void 0;
 const tsyringe_1 = require("tsyringe");
-const Data = __importStar(require("../../../infrastructure/fakeData/users.json"));
-const services_1 = require("../../../domain/user/services");
-const errors_1 = require("../../../domain/common/errors");
+const Data = __importStar(require("../../infrastructure/fakeData/users.json"));
+const services_1 = require("../../domain/user/services");
+const errors_1 = require("../../domain/common/errors");
 let AppUserController = class AppUserController {
     constructor(userService) {
         this.userService = userService;

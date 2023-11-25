@@ -3,7 +3,7 @@ dotenv.config();
 import "reflect-metadata";
 import express, { Express } from "express";
 import cors from "cors";
-import { corsOptions } from "./config/common";
+import { corsOptions } from "./src/config/common";
 import protectedRouter from "./src/routes/protectedRoutes";
 import publicRouter from "./src/routes/publicRoutes";
 import { corsOriginCheck, verifyToken } from "./src/middlewares/auth-middleware";
@@ -11,7 +11,7 @@ import cookieParser from "cookie-parser";
 
 import "./src/api/app-auth/controller";
 import "./src/api/app-users/controllers";
-import { errorHandler } from "./domain/common/errors";
+import { errorHandler } from "./src/domain/common/errors";
 
 const app: Express = express();
 const port = 8000;

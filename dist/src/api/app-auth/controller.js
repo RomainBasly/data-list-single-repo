@@ -16,9 +16,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppAuthController = void 0;
-const services_1 = require("../../../domain/authentication/services");
+const services_1 = require("../../domain/authentication/services");
 const tsyringe_1 = require("tsyringe");
-const services_2 = require("../../../domain/user/services");
+const services_2 = require("../../domain/user/services");
 const assert_1 = __importDefault(require("assert"));
 // Here is injection dependencies used in this architecture
 // If you do not get it please check tsyringe

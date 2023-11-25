@@ -1,4 +1,4 @@
-import { RoleAssignments } from "../../src/common/types/api";
+import { RoleAssignments } from "../../common/types/api";
 
 export interface IAppUserRepository {}
 

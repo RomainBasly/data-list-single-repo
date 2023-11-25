@@ -1,5 +1,5 @@
 import { inject, injectable } from "tsyringe";
-import { RoleAssignments, Roles } from "../../src/common/types/api";
+import { RoleAssignments, Roles } from "../../common/types/api";
 import { AppUserRepository } from "../../infrastructure/database/repositories/AppUserRepository";
 import {
   AuthenticationError,

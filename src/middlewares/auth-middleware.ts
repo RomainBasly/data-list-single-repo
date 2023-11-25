@@ -1,8 +1,8 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
-import { allowedOrigins } from "../../config/common";
+import { allowedOrigins } from "../config/common";
 import { RoleAssignments, Roles } from "../common/types/api";
-import { JwtPayloadAccessToken } from "../../domain/authentication/services";
+import { JwtPayloadAccessToken } from "../domain/authentication/services";
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 
