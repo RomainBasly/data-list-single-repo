@@ -9,7 +9,6 @@ import {
   UserDoNotExists,
 } from "../common/errors";
 import { AuthService } from "../authentication/services";
-import assert from "assert";
 
 @injectable()
 export class UserService {
@@ -19,7 +18,8 @@ export class UserService {
   ) {}
 
   async registerUser(email: string, password: string) {
-    if (await this.userRepository.getUser(email)) {
+    const checkIfUserExists = await this.userRepository.getUser(email);
+    if (checkIfUserExists.data && checkIfUserExists.data.length > 0) {
       throw new UserAlreadyExistsError(ErrorMessages.ALREADY_EXISTS);
     }
     try {

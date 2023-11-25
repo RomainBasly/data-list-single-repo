@@ -24,7 +24,8 @@ let UserService = class UserService {
         this.authService = authService;
     }
     async registerUser(email, password) {
-        if (await this.userRepository.getUser(email)) {
+        const checkIfUserExists = await this.userRepository.getUser(email);
+        if (checkIfUserExists.data && checkIfUserExists.data.length > 0) {
             throw new errors_1.UserAlreadyExistsError(errors_1.ErrorMessages.ALREADY_EXISTS);
         }
         try {
