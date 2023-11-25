@@ -14,9 +14,9 @@ const tsyringe_1 = require("tsyringe");
 const supabaseClient_1 = __importDefault(require("../../../config/database/supabaseClient"));
 let AppUserRepository = class AppUserRepository {
     async create(userData) {
-        const { data, error } = await supabaseClient_1.default.from("app-users").insert([userData]).select();
+        const { error } = await supabaseClient_1.default.from("app-users").insert([userData]).select();
         if (error) {
-            throw new Error(`something when wrong in the repo: ${error.message}`);
+            throw new Error(`something when wrong in the appUserRepository: ${error.message}`);
         }
     }
     async getUser(email) {

@@ -5,7 +5,6 @@ import { RoleAssignments, Roles } from "../common/types/api";
 import { JwtPayloadAccessToken } from "../../domain/authentication/services";
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
-const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 
 interface IRequest extends Request {
   email?: string;
@@ -16,7 +15,6 @@ export const verifyToken = (req: IRequest, res: Response, next: NextFunction) =>
   const authHeader = req.headers["authorization"];
   if (!authHeader) return res.sendStatus(401);
   const token = authHeader.split(" ")[1];
-  // const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
   if (!accessTokenSecret) throw new Error("no accessToken accessible in middleware (verifyToken)");
 
   const decodedToken = jwt.verify(token, accessTokenSecret) as JwtPayloadAccessToken;

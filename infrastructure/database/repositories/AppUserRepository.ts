@@ -5,9 +5,9 @@ import { CreateUser, IAppUserRepository } from "../../../domain/user/types";
 @injectable()
 export class AppUserRepository implements IAppUserRepository {
   public async create(userData: CreateUser) {
-    const { data, error } = await supabase.from("app-users").insert([userData]).select();
+    const { error } = await supabase.from("app-users").insert([userData]).select();
     if (error) {
-      throw new Error(`something when wrong in the repo: ${error.message}`);
+      throw new Error(`something when wrong in the appUserRepository: ${error.message}`);
     }
   }
 
