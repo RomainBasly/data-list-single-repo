@@ -2,7 +2,7 @@
   "name": "backend-data-list",
   "version": "1.0.0",
   "description": "The first attempt to create a backend",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "build": "rimraf dist && npx tsc",
     "prestart": "npm run build",
@@ -46,8 +46,5 @@
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "typescript": "^5.1.6"
-  },
-  "engines": {
-    "node": "^16.0.0"
   }
 }
