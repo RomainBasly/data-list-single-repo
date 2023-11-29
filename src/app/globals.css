@@ -14,12 +14,14 @@ body {
 
 body {
   color: rgb(var(--foreground-rgb));
-  background-color: #faedcd;
+  background-color: #efefef;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   font-family: 'Geologica', sans-serif;
-  color: #023047;
+  color: #2a5293;
 }
 
 a {
