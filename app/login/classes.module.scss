@@ -13,7 +13,6 @@
     min-width: 500px;
     max-width: 600px;
     border-radius: 10px;
-    background-color: #fefae0;
 
     @media screen and (max-width: 500px) {
       min-width: 390px;
@@ -36,15 +35,15 @@
     .subtitle {
       text-align: center;
       margin-top: 10px;
-      color: #6c757d;
     }
 
     img {
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 70px;
-      margin-top: 30px;
+      height: 75px;
+      width: 200px;
+      margin: 0 auto;
     }
     .form {
       display: flex;
@@ -74,6 +73,7 @@
 
         .error {
           color: red;
+          font-weight: 800;
         }
       }
       button {
