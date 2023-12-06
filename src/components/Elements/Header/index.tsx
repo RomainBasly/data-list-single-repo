@@ -7,7 +7,7 @@ import Logo from '../../Materials/Logo'
 import logo from '../../../../public/images/logos/logo-big-screen.png'
 import { Bars3Icon } from '@heroicons/react/24/solid'
 import { HomeIcon, PencilIcon, XCircleIcon } from '@heroicons/react/24/outline'
-import UserMenuStatus, { EOpeningState } from '@/Stores/UserMenuStatus'
+import UserMenuStatus, { EOpeningState } from '../../../Stores/UserMenuStatus'
 
 export default function Header() {
   const [userMenuState, setUserMenuState] = React.useState<EOpeningState>(

@@ -1,13 +1,14 @@
 {
   "name": "Simplifiez vos listes",
   "short_name": "Simp'listes",
+  "theme_color": "#000000",
+  "background_color": "#efefef",
+  "scope": "/",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#efefef",
   "description": "Dématérialisez vos listes, partagez les avec vos proches et soyez sûrs de ne jamais vous faire gronder parce que vous avez oublié la liste de courses!",
-  "lang": "fr-FR",
+  "lang": "fr",
   "orientation": "portrait",
-  "theme_color": "#000000",
   "icons": [
     {
       "src": "images/logos/logo-48x48.png",
@@ -60,7 +61,6 @@
       "type": "image/png"
     }
   ],
-  "scope": "/",
   "prefer_related_applications": false,
   "related_applications": []
 }
