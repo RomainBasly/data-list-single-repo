@@ -1,6 +1,6 @@
 'use client'
 import classes from './classes.module.scss'
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import NavLink from '../../Materials/NavLink'
 import Logo from '../../Materials/Logo'
 
@@ -14,6 +14,10 @@ export default function Header() {
     UserMenuStatus.getInstance().status,
   )
 
+  const updateStatus = useCallback((status: EOpeningState) => {
+    setUserMenuState(status)
+  }, [])
+
   useEffect(() => {
     const removeOnUserMenuStatusChange = UserMenuStatus.getInstance().onChange(
       updateStatus,
@@ -22,10 +26,6 @@ export default function Header() {
       removeOnUserMenuStatusChange()
     }
   }, [updateStatus])
-
-  function updateStatus(status: EOpeningState) {
-    setUserMenuState(status)
-  }
 
   function toggleUserMenu() {
     UserMenuStatus.getInstance().toggle()

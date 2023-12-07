@@ -22,7 +22,10 @@
     "sass": "^1.65.1"
   },
   "devDependencies": {
+    "@babel/eslint-parser": "^7.23.3",
     "@types/react": "^18.2.21",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.33.2",
     "typescript": "^5.2.2",
     "webpack": "^5.89.0"
   },
