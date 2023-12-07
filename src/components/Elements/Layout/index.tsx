@@ -1,6 +1,6 @@
 'use client'
 import { useAuth } from '@/components/hooks/useAuth'
-import { useRouter } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 export default function Layout({
@@ -12,7 +12,7 @@ export default function Layout({
   const router = useRouter()
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isAuthenticated && window.location.pathname !== '/register') {
       router.push('/login')
     }
   }, [isAuthenticated, router])
