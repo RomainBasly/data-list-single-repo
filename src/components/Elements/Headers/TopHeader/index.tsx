@@ -35,7 +35,13 @@ export default function Header() {
 
   return (
     <div className={classes['root']}>
-      <Logo src={String(logo.src)} alt={'Logo'} className={classes['logo']} />
+      <Logo
+        src={String(logo.src)}
+        alt={'Logo'}
+        className={classes['logo']}
+        width={1018}
+        height={374}
+      />
       <div className={classes['big-screen-nav-links']}>
         <NavLink
           svg={<HomeIcon />}

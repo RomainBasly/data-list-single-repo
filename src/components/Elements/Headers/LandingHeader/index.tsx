@@ -9,6 +9,8 @@ export function LandingHeader() {
         src={String(picture.src)}
         alt={'Logo'}
         className={classes['logo']}
+        width={1018}
+        height={374}
       />
       <h3 className={classes['title']}>
         Gérez vos listes en toute simplicité!
