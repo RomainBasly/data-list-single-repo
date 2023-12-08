@@ -1,9 +1,17 @@
 .root {
   display: flex;
-  justify-content: center;
   height: 100%;
   min-height: 600px;
-  margin-top: 100px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  .top {
+    margin-top: 100px;
+    @media screen and (max-width: 400px) {
+      margin-top: 60px;
+    }
+  }
 
   .content {
     display: flex;
@@ -13,6 +21,12 @@
     min-width: 500px;
     max-width: 600px;
     border-radius: 10px;
+    border: 1px solid #4f5d75;
+    gap: 20px;
+    background-color: #f5f3f4;
+    padding: 10px;
+    margin: 10px;
+    justify-content: center;
 
     @media screen and (max-width: 500px) {
       min-width: 390px;
@@ -27,9 +41,9 @@
       min-width: 300px;
     }
 
+    .title,
     .subtitle {
       text-align: center;
-      margin-top: 10px;
     }
     .form {
       display: flex;
@@ -62,10 +76,26 @@
           font-weight: 800;
         }
       }
-      button {
-        padding: 8px;
-        background-color: #ffcb77;
-        border: 1px solid #fec89a;
+      .button-element {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        gap: 8px;
+
+        .connexion-button {
+          padding: 8px;
+          background-color: #ffcb77;
+          border: 1px solid #fec89a;
+          cursor: pointer;
+        }
+
+        .registration-button {
+          border: none;
+          cursor: pointer;
+          text-decoration: underline;
+          font-style: italic;
+          background-color: inherit;
+        }
       }
     }
   }

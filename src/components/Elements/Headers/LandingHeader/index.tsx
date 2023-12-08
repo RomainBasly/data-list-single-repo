@@ -10,9 +10,6 @@ export function LandingHeader() {
         alt={'Logo'}
         className={classes['logo']}
       />
-      <h3 className={classes['title']}>
-        Gérez vos listes en toute simplicité!
-      </h3>
     </div>
   )
 }

@@ -5,9 +5,12 @@ import { LandingHeader } from '@/components/Elements/Headers/LandingHeader'
 export default function Login() {
   return (
     <div className={classes['root']}>
-      <div className={classes['content']}>
+      <div className={classes['top']}>
         <LandingHeader />
-        <p className={classes['subtitle']}>Se connecter</p>
+      </div>
+      <div className={classes['content']}>
+        <h2 className={classes['title']}>Bienvenue!</h2>
+        <h3 className={classes['subtitle']}>Connexion à l'app</h3>
         <form className={classes['form']}>
           <div className={classes['form-element']}>
             <label htmlFor="email">Email</label>
@@ -24,7 +27,12 @@ export default function Login() {
             <div className={classes['error']}>Error</div>
           </div>
           <div className={classes['button-element']}>
-            <button>Se connecter</button>
+            <button className={classes['connexion-button']}>
+              Se connecter
+            </button>
+            <button className={classes['registration-button']}>
+              Pas encore de compte?
+            </button>
           </div>
         </form>
       </div>
