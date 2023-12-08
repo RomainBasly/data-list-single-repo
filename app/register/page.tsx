@@ -1,7 +1,10 @@
-import DefaultTemplate from "@/components/Elements/DefaultTemplate";
+import DefaultTemplate from '@/components/Elements/DefaultTemplate'
+import { Loader } from '@/components/Materials/Loader'
 
 export default function Register() {
   return (
-    <DefaultTemplate></DefaultTemplate>
+    <DefaultTemplate>
+      <Loader />
+    </DefaultTemplate>
   )
 }

@@ -1,0 +1,31 @@
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+
+  .rotating-circle {
+    width: 100px;
+    height: 100px;
+    animation: rotate 0.7s ease-in infinite;
+  }
+}
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(120deg);
+  }
+  50% {
+    transform: rotate(260deg);
+  }
+  75% {
+    transform: rotate(300deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
