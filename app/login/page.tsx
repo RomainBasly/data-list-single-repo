@@ -1,6 +1,7 @@
 import React from 'react'
 import classes from './classes.module.scss'
 import { LandingHeader } from '@/components/Elements/Headers/LandingHeader'
+import Link from 'next/link'
 
 export default function Login() {
   return (
@@ -26,13 +27,18 @@ export default function Login() {
             />
             <div className={classes['error']}>Error</div>
           </div>
-          <div className={classes['button-element']}>
+          <div className={classes['button-container']}>
             <button className={classes['connexion-button']}>
               Se connecter
             </button>
-            <button className={classes['registration-button']}>
-              Pas encore de compte?
-            </button>
+            <Link
+              href="/register"
+              className={classes['registration-button-container']}
+            >
+              <button className={classes['registration-button']}>
+                Pas encore de compte?
+              </button>
+            </Link>
           </div>
         </form>
       </div>

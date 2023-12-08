@@ -76,7 +76,8 @@
           font-weight: 800;
         }
       }
-      .button-element {
+      
+      .button-container {
         display: flex;
         justify-content: center;
         flex-direction: column;
@@ -89,12 +90,19 @@
           cursor: pointer;
         }
 
-        .registration-button {
-          border: none;
-          cursor: pointer;
-          text-decoration: underline;
-          font-style: italic;
-          background-color: inherit;
+        .registration-button-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          .registration-button {
+            display: flex;
+            border: none;
+            cursor: pointer;
+            text-decoration: underline;
+            font-style: italic;
+            background-color: inherit;
+          }
         }
       }
     }

@@ -13,6 +13,7 @@ export default function Layout({
 
   useEffect(() => {
     if (!isAuthenticated && window.location.pathname !== '/register') {
+      console.log(window.location.pathname)
       router.push('/login')
     }
   }, [isAuthenticated, router])

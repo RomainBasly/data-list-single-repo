@@ -10,8 +10,10 @@ import { HomeIcon, PencilIcon, XCircleIcon } from '@heroicons/react/24/outline'
 import UserMenuStatus, {
   EOpeningState,
 } from '../../../../Stores/UserMenuStatus'
+import { useRouter } from 'next/navigation'
 
 export default function Header() {
+  const router = useRouter()
   const [userMenuState, setUserMenuState] = React.useState<EOpeningState>(
     UserMenuStatus.getInstance().status,
   )
@@ -33,9 +35,18 @@ export default function Header() {
     UserMenuStatus.getInstance().toggle()
   }
 
+  function navigateToHome() {
+    router.push('/')
+  }
+
   return (
     <div className={classes['root']}>
-      <Logo src={String(logo.src)} alt={'Logo'} className={classes['logo']} />
+      <Logo
+        src={String(logo.src)}
+        alt={'Logo'}
+        className={classes['logo']}
+        onclick={navigateToHome}
+      />
       <div className={classes['big-screen-nav-links']}>
         <NavLink
           svg={<HomeIcon />}
