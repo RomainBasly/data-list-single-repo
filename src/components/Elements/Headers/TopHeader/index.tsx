@@ -4,7 +4,7 @@ import React, { useCallback, useEffect } from 'react'
 import NavLink from '../../../Materials/NavLink'
 import Logo from '../../../Materials/Logo'
 
-import logo from '../../../../../public/images/logos/logo-big-screen.png'
+import logo from '../../../../../public/images/logos/logo-big-screen-min.png'
 import { Bars3Icon } from '@heroicons/react/24/solid'
 import { HomeIcon, PencilIcon, XCircleIcon } from '@heroicons/react/24/outline'
 import UserMenuStatus, {

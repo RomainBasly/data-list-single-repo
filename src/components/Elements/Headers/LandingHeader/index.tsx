@@ -1,5 +1,5 @@
 import Logo from '@/components/Materials/Logo'
-import picture from '../../../../../public/images/logos/logo-big-screen.png'
+import picture from '../../../../../public/images/logos/logo-big-screen-min.png'
 import classes from './classes.module.scss'
 
 export function LandingHeader() {
