@@ -1,20 +1,12 @@
 import React from 'react'
 import classes from './classes.module.scss'
-import Logo from '../../src/components/Materials/Logo'
-import picture from '../../public/images/logos/logo-big-screen.png'
+import { LandingHeader } from '@/components/Elements/Headers/LandingHeader'
 
 export default function Login() {
   return (
     <div className={classes['root']}>
       <div className={classes['content']}>
-        <Logo
-          src={String(picture.src)}
-          alt={'Logo'}
-          className={classes['logo']}
-        />
-        <h3 className={classes['title']}>
-          Gérez vos listes en toute simplicité!
-        </h3>
+        <LandingHeader />
         <p className={classes['subtitle']}>Se connecter</p>
         <form className={classes['form']}>
           <div className={classes['form-element']}>

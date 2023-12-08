@@ -1,21 +1,9 @@
-import DefaultTemplate from '@/components/Elements/DefaultTemplate'
 import Head from 'next/head'
-
 import classes from './classes.module.scss'
-import { useAuth } from '@/components/hooks/useAuth'
-import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { Loader } from '@/components/Materials/Loader'
+import { LandingHeader } from '@/components/Elements/Headers/LandingHeader'
 
 export default function Home() {
-  // const isAuthenticated = useAuth();
-  // const router = useRouter();
-
-  // useEffect(()=> {
-  //   if (!isAuthenticated) {
-  //     router.push('/login')
-  //   }
-  // }, [isAuthenticated, router])
-
   return (
     <>
       <Head>
@@ -23,7 +11,8 @@ export default function Home() {
         <link rel="icon" href="/icon.png" />
       </Head>
       <div className={classes['root']}>
-        <DefaultTemplate></DefaultTemplate>
+        <LandingHeader />
+        <Loader />
       </div>
     </>
   )

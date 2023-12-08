@@ -26,6 +26,7 @@ export function Loader() {
           strokeLinecap="round"
         />
       </svg>
+      <p>Chargement en cours...</p>
     </div>
   )
 }

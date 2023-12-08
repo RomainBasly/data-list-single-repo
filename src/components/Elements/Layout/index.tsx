@@ -1,6 +1,6 @@
 'use client'
 import { useAuth } from '@/components/hooks/useAuth'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
 export default function Layout({

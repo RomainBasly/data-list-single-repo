@@ -5,5 +5,7 @@ type IProps = {
 }
 
 export default function Logo(props: Readonly<IProps>) {
-  return <img src={String(props.src)} alt={props.alt} />
+  return (
+    <img src={String(props.src)} alt={props.alt} className={props.className} />
+  )
 }

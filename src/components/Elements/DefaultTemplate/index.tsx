@@ -1,5 +1,5 @@
 import React from 'react'
-import Header from '../Header'
+import Header from '../Headers/TopHeader'
 import SideMenu from '../SideMenu'
 import classes from './classes.module.scss'
 
