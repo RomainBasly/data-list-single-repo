@@ -1,15 +1,13 @@
 'use client'
 import classes from './classes.module.scss'
 import React, { useCallback, useEffect } from 'react'
-import NavLink from '../../../Materials/NavLink'
-import Logo from '../../../Materials/Logo'
+import NavLink from '@/components/Materials/NavLink'
+import Logo from '@/components/Materials/Logo'
 
-import logo from '../../../../../public/images/logos/logo-big-screen.png'
+import logo from '/public/images/logos/logo-big-screen.png'
 import { Bars3Icon } from '@heroicons/react/24/solid'
 import { HomeIcon, PencilIcon, XCircleIcon } from '@heroicons/react/24/outline'
-import UserMenuStatus, {
-  EOpeningState,
-} from '../../../../Stores/UserMenuStatus'
+import UserMenuStatus, { EOpeningState } from '@/Stores/UserMenuStatus'
 import { useRouter } from 'next/navigation'
 
 export default function Header() {
