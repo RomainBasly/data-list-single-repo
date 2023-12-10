@@ -14,6 +14,8 @@ export default function Logo(props: Readonly<IProps>) {
       alt={props.alt}
       className={props.className}
       onClick={props.onclick}
+      width={300}
+      height={300}
     />
   )
 }
