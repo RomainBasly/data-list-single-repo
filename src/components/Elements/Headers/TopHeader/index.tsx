@@ -1,17 +1,17 @@
 'use client'
 import classes from './classes.module.scss'
 import React, { useCallback, useEffect } from 'react'
-import NavLink from '../../../Materials/NavLink'
-import Logo from '../../../Materials/Logo'
+import NavLink from '@/components/Materials/NavLink'
+import Logo from '@/components/Materials/Logo'
 
-import logo from '../../../../../public/images/logos/logo-big-screen-min.png'
+import logo from '/public/images/logos/logo-big-screen.png'
 import { Bars3Icon } from '@heroicons/react/24/solid'
 import { HomeIcon, PencilIcon, XCircleIcon } from '@heroicons/react/24/outline'
-import UserMenuStatus, {
-  EOpeningState,
-} from '../../../../Stores/UserMenuStatus'
+import UserMenuStatus, { EOpeningState } from '@/Stores/UserMenuStatus'
+import { useRouter } from 'next/navigation'
 
 export default function Header() {
+  const router = useRouter()
   const [userMenuState, setUserMenuState] = React.useState<EOpeningState>(
     UserMenuStatus.getInstance().status,
   )
@@ -33,12 +33,21 @@ export default function Header() {
     UserMenuStatus.getInstance().toggle()
   }
 
+  function navigateToHome() {
+    router.push('/')
+  }
+
   return (
     <div className={classes['root']}>
       <Logo
+       
         src={String(logo.src)}
+       
         alt={'Logo'}
+       
         className={classes['logo']}
+        onclick={navigateToHome}
+     
         width={1018}
         height={374}
       />

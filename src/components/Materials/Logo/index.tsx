@@ -4,6 +4,7 @@ type IProps = {
   src: string
   alt: string
   className: string
+  onclick?: () => void
   width: number
   height: number
 }
@@ -14,8 +15,9 @@ export default function Logo(props: Readonly<IProps>) {
       src={String(props.src)}
       alt={props.alt}
       className={props.className}
-      width={props.width}
-      height={props.height}
+      onClick={props.onclick}
+      width={300}
+      height={300}
       loading="lazy"
       placeholder="blur"
     />
