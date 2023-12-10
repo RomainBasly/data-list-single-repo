@@ -1,11 +1,12 @@
-import { BACK_URL } from "../config";
+import assert from "assert";
 
 export enum ContentType {
   JSON = "application/json",
 }
 
 export default abstract class BaseApiService {
-  protected readonly backUrl = BACK_URL;
+  protected readonly backUrl = process.env.NEXT_PUBLIC_BACK_URL;
+  protected readonly apiKey = process.env.NEXT_PUBLIC_API_KEY;
 
   protected constructor() {}
 
@@ -61,8 +62,10 @@ export default abstract class BaseApiService {
 
   protected buildHeaders(contentType: ContentType) {
     const headers = new Headers();
+    assert(this.apiKey, "APIkey fucked up dude");
     if (contentType === ContentType.JSON) {
       headers.set("Content-Type", contentType);
+      headers.set("X-API-KEY", this.apiKey);
     }
     return headers;
   }
