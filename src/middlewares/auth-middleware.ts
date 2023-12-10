@@ -5,17 +5,27 @@ import { RoleAssignments, Roles } from "../common/types/api";
 import { JwtPayloadAccessToken } from "../domain/authentication/services";
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+const envApiKey = process.env.API_KEY;
 
 interface IRequest extends Request {
   email?: string;
   roles?: RoleAssignments;
 }
 
-export const verifyToken = (req: IRequest, res: Response, next: NextFunction) => {
-  console.log("1 req", req);
+export const verifyRequestApiKey = (req: IRequest, res: Response, next: NextFunction) => {
+  const apiKey = req.header("X-API-KEY");
+  if (!apiKey) return res.status(401).json({ error: "Missing apiKey" });
+
+  if (apiKey !== envApiKey) {
+    return res.status(403).json({ error: "apiKey not valid" });
+  }
+
+  next();
+};
+
+export const verifyUserAccessToken = (req: IRequest, res: Response, next: NextFunction) => {
   const authHeader = req.headers["authorization"];
   if (!authHeader) return res.sendStatus(401);
-  console.log("2 res", res);
   const token = authHeader.split(" ")[1];
   if (!accessTokenSecret) throw new Error("no accessToken accessible in middleware (verifyToken)");
 

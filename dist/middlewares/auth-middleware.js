@@ -3,16 +3,25 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyRoles = exports.corsOriginCheck = exports.verifyToken = void 0;
+exports.verifyRoles = exports.corsOriginCheck = exports.verifyUserAccessToken = exports.verifyRequestApiKey = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const common_1 = require("../config/common");
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
-const verifyToken = (req, res, next) => {
-    console.log("1 req", req);
+const envApiKey = process.env.API_KEY;
+const verifyRequestApiKey = (req, res, next) => {
+    const apiKey = req.header("X-API-KEY");
+    if (!apiKey)
+        return res.status(401).json({ error: "Missing apiKey" });
+    if (apiKey !== envApiKey) {
+        return res.status(403).json({ error: "apiKey not valid" });
+    }
+    next();
+};
+exports.verifyRequestApiKey = verifyRequestApiKey;
+const verifyUserAccessToken = (req, res, next) => {
     const authHeader = req.headers["authorization"];
     if (!authHeader)
         return res.sendStatus(401);
-    console.log("2 res", res);
     const token = authHeader.split(" ")[1];
     if (!accessTokenSecret)
         throw new Error("no accessToken accessible in middleware (verifyToken)");
@@ -26,7 +35,7 @@ const verifyToken = (req, res, next) => {
         next();
     });
 };
-exports.verifyToken = verifyToken;
+exports.verifyUserAccessToken = verifyUserAccessToken;
 const corsOriginCheck = (req, res, next) => {
     const origin = req.headers.origin;
     if (origin && common_1.allowedOrigins.includes(origin)) {
