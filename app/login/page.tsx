@@ -12,8 +12,8 @@ export default function Login() {
       </div>
       <div className={classes['content']}>
         <h2 className={classes['title']}>Bienvenue!</h2>
-        <h3 className={classes['subtitle']}>Connexion à l'app</h3>
-        <Form/>
+        <h3 className={classes['subtitle']}>Connexion</h3>
+        <Form />
       </div>
     </div>
   )

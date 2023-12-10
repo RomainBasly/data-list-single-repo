@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import classes from './classes.module.scss'
-import { useEffect, useState } from 'react'
+import { isValidElement, useEffect, useState } from 'react'
 import AuthApi from '@/api/Back/Auth/Auth'
 
 export type IBody = {
@@ -14,11 +14,20 @@ export function Form() {
   const [password, setPassword] = useState<string>('')
   const [errors, setErrors] = useState<{ [key: string]: string }>()
 
-  function sendForm(e: any) {
+  function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()
-    if (errors) return
-    if (!email || !password) return
-
+    if (!email) {
+      setErrors({ ... errors, email: "Votre email doit être renseigné pour vous connecter"})
+      return;
+    }
+    if(!password) {
+      setErrors({...errors, password: "Votre mot de passe doit être renseigné pour vous connecter"})
+      return;
+    }
+    if (isValidElement(email)) {
+      setErrors({...errors, email: "Votre email n'est pas valide"})
+      return;
+    }
     const body = { email, password }
     AuthApi.getInstance().login(body)
   }
