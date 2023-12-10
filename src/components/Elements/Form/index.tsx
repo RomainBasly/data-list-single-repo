@@ -3,6 +3,7 @@ import Link from 'next/link'
 import classes from './classes.module.scss'
 import { isValidElement, useEffect, useState } from 'react'
 import AuthApi from '@/api/Back/Auth/Auth'
+import { isValidEmail } from '@/Services/validation'
 
 export type IBody = {
   email: string
@@ -14,22 +15,44 @@ export function Form() {
   const [password, setPassword] = useState<string>('')
   const [errors, setErrors] = useState<{ [key: string]: string }>()
 
-  function sendForm(e: { preventDefault: () => void }) {
+  async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()
     if (!email) {
-      setErrors({ ... errors, email: "Votre email doit être renseigné pour vous connecter"})
-      return;
+      setErrors({
+        ...errors,
+        email: 'Votre email doit être renseigné pour vous connecter',
+      })
+      return
     }
-    if(!password) {
-      setErrors({...errors, password: "Votre mot de passe doit être renseigné pour vous connecter"})
-      return;
+    if (!password) {
+      setErrors({
+        ...errors,
+        password: 'Votre mot de passe doit être renseigné pour vous connecter',
+      })
+      return
     }
-    if (isValidElement(email)) {
-      setErrors({...errors, email: "Votre email n'est pas valide"})
-      return;
+    if (!isValidEmail(email)) {
+      setErrors({ ...errors, email: "L'email renseigné n'est pas valide" })
+      return
     }
     const body = { email, password }
-    AuthApi.getInstance().login(body)
+
+    try {
+      const response = await AuthApi.getInstance().login(body)
+      // Rest of the authent
+    } catch (error) {
+      if (error === 'UserDoNotExists') {
+        setErrors({
+          ...errors,
+          form: 'Veuillez vous enregistrer',
+        })
+      } else {
+        setErrors({
+          ...errors,
+          form: 'Vpaté en croute',
+        })
+      }
+    }
   }
   // sanitize the inputs
 
@@ -42,24 +65,31 @@ export function Form() {
         <input
           name="email"
           placeholder="John@john.com"
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setErrors({ ...errors, email: '' })
+            setEmail(e.target.value)
+          }}
         />
-        {errors && <div className={classes['error']}>Error</div>}
+        {errors && <div className={classes['error']}>{errors.email}</div>}
       </div>
       <div className={classes['form-element']}>
         <label htmlFor="password">Mot de passe</label>
         <input
           type="password"
           name="password"
-          placeholder="Entrez un mot de passe"
-          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Entrez votre mot de passe"
+          onChange={(e) => {
+            setErrors({ ...errors, password: '' })
+            setPassword(e.target.value)
+          }}
         />
-        {errors && <div className={classes['error']}>Error</div>}
+        {errors && <div className={classes['error']}>{errors.password}</div>}
       </div>
       <div className={classes['button-container']}>
         <button className={classes['connexion-button']} onClick={sendForm}>
           Se connecter
         </button>
+        {errors && <div className={classes['error']}>{errors.form}</div>}
         <Link
           href="/register"
           className={classes['registration-button-container']}

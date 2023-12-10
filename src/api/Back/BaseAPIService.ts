@@ -17,8 +17,8 @@ export default abstract class BaseApiService {
   protected async postRequest<T>(
     url: URL,
     body: { [key: string]: unknown } = {}
-  ) {
-    return this.sendRequest<T>(
+  ): Promise<T> {
+    const response = await this.sendRequest<T>(
       async () =>
         await fetch(url, {
           method: "POST",
@@ -27,6 +27,11 @@ export default abstract class BaseApiService {
           credentials: "include", // Include cookies
         })
     );
+    if (!response.ok) {
+      throw response;
+    }
+
+    return response.json() as Promise<T>
   }
 
   private async sendRequest<T>(request: () => Promise<Response>): Promise<T> {

@@ -6,6 +6,13 @@ export type ILogin = {
   password: string;
 };
 
+export interface LoginResponse {
+  accessToken?: string;
+  refreshToken?: string;
+  error?: string;
+  message?: string;
+}
+
 export default class AuthApi extends BaseApiService {
   private static instance: AuthApi;
   private readonly baseURL = this.backUrl;
@@ -22,12 +29,16 @@ export default class AuthApi extends BaseApiService {
     return this.instance;
   }
 
-  public async login(params: ILogin): Promise<any> {
+  public async login(params: ILogin): Promise<LoginResponse> {
     assert(this.baseURL, "missing URL inside Auth login request");
     const url = new URL(this.baseURL.concat("/auth/").concat("login"));
 
     try {
-      return await this.postRequest(url, params);
+      const response = await this.postRequest<LoginResponse>(url, params);
+      if (!response.ok) {
+        throw new Error(await response.json());
+      }
+      return await response.json()
     } catch (error) {
       this.onError(error);
       return Promise.reject(error);
