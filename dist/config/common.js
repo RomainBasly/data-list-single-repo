@@ -1,7 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.corsOptions = exports.allowedOrigins = void 0;
-exports.allowedOrigins = ["http://localhost:3000", "http://localhost:8000/"];
+exports.allowedOrigins = [
+    "http://localhost:3000",
+    "http://localhost:8000",
+    "https://data-list-collaborative.vercel.app",
+];
 exports.corsOptions = {
     origin: (origin, callback) => {
         if ((origin && exports.allowedOrigins.indexOf(origin) !== -1) || !origin) {
@@ -12,5 +16,5 @@ exports.corsOptions = {
         }
     },
     credentials: true,
-    optionsSucessStatus: 200,
+    optionsSuccessStatus: 200,
 };

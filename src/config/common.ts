@@ -1,7 +1,7 @@
 export const allowedOrigins = [
   "http://localhost:3000",
-  "http://localhost:8000/",
-  "https://data-list-collaborative.vercel.app/",
+  "http://localhost:8000",
+  "https://data-list-collaborative.vercel.app",
 ];
 
 export const corsOptions = {
@@ -13,5 +13,5 @@ export const corsOptions = {
     }
   },
   credentials: true,
-  optionsSucessStatus: 200,
+  optionsSuccessStatus: 200,
 };
