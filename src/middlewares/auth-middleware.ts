@@ -1,4 +1,4 @@
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 import { allowedOrigins } from "../config/common";
 import { RoleAssignments, Roles } from "../common/types/api";
@@ -12,8 +12,10 @@ interface IRequest extends Request {
 }
 
 export const verifyToken = (req: IRequest, res: Response, next: NextFunction) => {
+  console.log("1 req", req);
   const authHeader = req.headers["authorization"];
   if (!authHeader) return res.sendStatus(401);
+  console.log("2 res", res);
   const token = authHeader.split(" ")[1];
   if (!accessTokenSecret) throw new Error("no accessToken accessible in middleware (verifyToken)");
 

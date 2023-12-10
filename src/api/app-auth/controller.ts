@@ -1,11 +1,5 @@
-import supabase from "../../config/database/supabaseClient";
 import { Request, Response } from "express";
-import bcrypt from "bcrypt";
-import fs from "fs";
-import path from "path";
-import { AuthService } from "../../domain/authentication/services";
 import { inject, injectable } from "tsyringe";
-import { RoleAssignments, Roles } from "../../common/types/api";
 import { UserService } from "../../domain/user/services";
 import assert from "assert";
 
@@ -19,10 +13,7 @@ interface Employee {
 // If you do not get it please check tsyringe
 @injectable()
 export class AppAuthController {
-  constructor(
-    @inject(AuthService) private readonly authService: AuthService,
-    @inject(UserService) private readonly userService: UserService
-  ) {}
+  constructor(@inject(UserService) private readonly userService: UserService) {}
 
   async login(req: Request<{}, {}, Employee>, res: Response): Promise<void> {
     try {
@@ -34,7 +25,7 @@ export class AppAuthController {
       res.cookie("jwt", refreshToken, {
         httpOnly: true,
         sameSite: "none",
-        secure: false,
+        secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       });
       res.json({ accessToken });

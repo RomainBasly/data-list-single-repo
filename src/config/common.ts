@@ -1,4 +1,8 @@
-export const allowedOrigins = ["http://localhost:3000", "http://localhost:8000"];
+export const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:8000/",
+  "https://data-list-collaborative.vercel.app/",
+];
 
 export const corsOptions = {
   origin: (origin: string | undefined, callback: (arg0: Error | null, arg1: boolean) => void) => {
@@ -8,5 +12,6 @@ export const corsOptions = {
       callback(new Error("not allowed by CORS policies"), false);
     }
   },
+  credentials: true,
   optionsSucessStatus: 200,
 };

@@ -26,8 +26,7 @@ app.use(cookieParser());
 app.use(publicRouter);
 
 // Use the protected routes
-app.use(verifyToken);
-app.use(protectedRouter);
+app.use("protected", verifyToken, protectedRouter);
 
 app.use(errorHandler);
 

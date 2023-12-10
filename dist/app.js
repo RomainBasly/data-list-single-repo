@@ -25,8 +25,7 @@ app.use((0, cookie_parser_1.default)());
 // Use the public routes
 app.use(publicRoutes_1.default);
 // Use the protected routes
-app.use(auth_middleware_1.verifyToken);
-app.use(protectedRoutes_1.default);
+app.use("protected", auth_middleware_1.verifyToken, protectedRoutes_1.default);
 app.use(errors_1.errorHandler);
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
