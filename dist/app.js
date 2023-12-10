@@ -1,9 +1,7 @@
 "use strict";
-var __importDefault =
-  (this && this.__importDefault) ||
-  function (mod) {
-    return mod && mod.__esModule ? mod : { default: mod };
-  };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
@@ -19,12 +17,10 @@ require("./api/app-auth/controller");
 require("./api/app-users/controllers");
 const errors_1 = require("./domain/common/errors");
 const common_2 = require("./middlewares/common");
-const common_2 = require("./middlewares/common");
 const app = (0, express_1.default)();
 const port = 8000;
 app.use(auth_middleware_1.corsOriginCheck);
 app.use((0, cors_1.default)(common_1.corsOptions));
-app.use(common_2.limiter);
 app.use(common_2.limiter);
 // this in case the provider uses reversed proxy
 app.set("trust proxy", 1);
@@ -35,5 +31,5 @@ app.use(publicRoutes_1.default);
 app.use("protected", auth_middleware_1.verifyUserAccessToken, protectedRoutes_1.default);
 app.use(errors_1.errorHandler);
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+    console.log(`Server is running on port ${port}`);
 });
