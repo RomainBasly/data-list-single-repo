@@ -20,7 +20,11 @@ let AppUserRepository = class AppUserRepository {
         }
     }
     async getUser(email) {
-        return await supabaseClient_1.default.from("app-users").select().eq("email", email);
+        const { data, error } = await supabaseClient_1.default.from("app-users").select().eq("email", email);
+        if (error) {
+            throw new Error(`something when wrong in the appUserRepository: ${error.message}`);
+        }
+        return data ? data[0] : null;
     }
     async updateRefreshToken(refreshToken, email) {
         await supabaseClient_1.default.from("app-users").update({ refreshToken: refreshToken }).eq("email", email);

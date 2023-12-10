@@ -2,7 +2,7 @@ import { RoleAssignments } from "../../common/types/api";
 
 export interface IAppUserRepository {}
 
-export type CreateUser = {
+export type User = {
   email: string;
   password: string;
   refreshToken?: string;

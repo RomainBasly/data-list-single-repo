@@ -14,7 +14,7 @@ publicRoutes
   .post("/api/auth/register", (req, res) => {
     appUserController.registerNewUser(req, res);
   })
-  .post("/api/auth/login", (req, res) => appAuthController.login(req, res))
+  .post("/api/auth/login", (req, res, next) => appAuthController.login(req, res, next))
   .get("/api/auth/refresh-token", (req, res) => {
     appRefreshTokenController.handleRefreshToken(req, res);
   })

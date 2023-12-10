@@ -1,9 +1,9 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { inject, injectable } from "tsyringe";
 import { UserService } from "../../domain/user/services";
 import assert from "assert";
 
-interface Employee {
+interface UserInfo {
   email: string;
   roles: {};
   password: string;
@@ -15,7 +15,7 @@ interface Employee {
 export class AppAuthController {
   constructor(@inject(UserService) private readonly userService: UserService) {}
 
-  async login(req: Request<{}, {}, Employee>, res: Response): Promise<void> {
+  async login(req: Request<{}, {}, UserInfo>, res: Response, next: NextFunction): Promise<void> {
     try {
       const { email, password } = req.body;
       const { accessToken, refreshToken } = await this.userService.login(email, password);
@@ -30,8 +30,7 @@ export class AppAuthController {
       });
       res.json({ accessToken });
     } catch (error) {
-      console.log(error);
-      res.status(400).send("error in login_post");
+      next(error);
     }
   }
 

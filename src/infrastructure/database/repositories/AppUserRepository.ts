@@ -1,18 +1,22 @@
 import { injectable } from "tsyringe";
 import supabase from "../../../config/database/supabaseClient";
-import { CreateUser, IAppUserRepository } from "../../../domain/user/types";
+import { User, IAppUserRepository } from "../../../domain/user/types";
 
 @injectable()
 export class AppUserRepository implements IAppUserRepository {
-  public async create(userData: CreateUser) {
+  public async create(userData: User) {
     const { error } = await supabase.from("app-users").insert([userData]).select();
     if (error) {
       throw new Error(`something when wrong in the appUserRepository: ${error.message}`);
     }
   }
 
-  public async getUser(email: string) {
-    return await supabase.from("app-users").select().eq("email", email);
+  public async getUser(email: string): Promise<User | null> {
+    const { data, error } = await supabase.from("app-users").select().eq("email", email);
+    if (error) {
+      throw new Error(`something when wrong in the appUserRepository: ${error.message}`);
+    }
+    return data ? data[0] : null;
   }
 
   public async updateRefreshToken(refreshToken: string, email: string) {

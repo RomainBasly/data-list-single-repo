@@ -18,8 +18,8 @@ export class UserService {
   ) {}
 
   async registerUser(email: string, password: string) {
-    const checkIfUserExists = await this.userRepository.getUser(email);
-    if (checkIfUserExists.data && checkIfUserExists.data.length > 0) {
+    const user = await this.userRepository.getUser(email);
+    if (user) {
       throw new UserAlreadyExistsError(ErrorMessages.ALREADY_EXISTS);
     }
     try {
@@ -34,11 +34,10 @@ export class UserService {
 
   public async login(email: string, passwordInput: string): Promise<{ accessToken: string; refreshToken: string }> {
     try {
-      const dbQuery = await this.userRepository.getUser(email);
-      if (!dbQuery || !dbQuery.data) {
+      const user = await this.userRepository.getUser(email);
+      if (!user) {
         throw new UserDoNotExists(ErrorMessages.NOT_EXISTING_USER);
       }
-      const user = dbQuery.data[0];
       const passwordFromDB = user.password;
       const passwordMatchDB = await this.authService.checkCredentials(passwordInput, passwordFromDB);
 

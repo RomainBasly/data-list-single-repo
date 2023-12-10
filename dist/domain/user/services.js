@@ -24,8 +24,8 @@ let UserService = class UserService {
         this.authService = authService;
     }
     async registerUser(email, password) {
-        const checkIfUserExists = await this.userRepository.getUser(email);
-        if (checkIfUserExists.data && checkIfUserExists.data.length > 0) {
+        const user = await this.userRepository.getUser(email);
+        if (user) {
             throw new errors_1.UserAlreadyExistsError(errors_1.ErrorMessages.ALREADY_EXISTS);
         }
         try {
@@ -40,11 +40,10 @@ let UserService = class UserService {
     }
     async login(email, passwordInput) {
         try {
-            const dbQuery = await this.userRepository.getUser(email);
-            if (!dbQuery || !dbQuery.data) {
+            const user = await this.userRepository.getUser(email);
+            if (!user) {
                 throw new errors_1.UserDoNotExists(errors_1.ErrorMessages.NOT_EXISTING_USER);
             }
-            const user = dbQuery.data[0];
             const passwordFromDB = user.password;
             const passwordMatchDB = await this.authService.checkCredentials(passwordInput, passwordFromDB);
             if (!passwordMatchDB) {
