@@ -19,6 +19,8 @@ const port = 8000;
 app.use(corsOriginCheck);
 app.use(cors(corsOptions));
 
+app.set("trust proxy", 1);
+
 app.use(express.json());
 app.use(cookieParser());
 
