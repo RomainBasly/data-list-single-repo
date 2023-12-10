@@ -12,6 +12,7 @@ import cookieParser from "cookie-parser";
 import "./api/app-auth/controller";
 import "./api/app-users/controllers";
 import { errorHandler } from "./domain/common/errors";
+import { limiter } from "./middlewares/common";
 
 const app: Express = express();
 const port = 8000;
@@ -19,6 +20,7 @@ const port = 8000;
 app.use(corsOriginCheck);
 app.use(cors(corsOptions));
 
+app.use(limiter);
 app.set("trust proxy", 1);
 
 app.use((req, res, next) => {
