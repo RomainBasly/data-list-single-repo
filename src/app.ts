@@ -21,6 +21,12 @@ app.use(cors(corsOptions));
 
 app.set("trust proxy", 1);
 
+app.use((req, res, next) => {
+  console.log("Headers:", req.headers);
+  console.log("IP:", req.ip); // or req.ips in case of multiple IPs
+  next();
+});
+
 app.use(express.json());
 app.use(cookieParser());
 
