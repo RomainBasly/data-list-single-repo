@@ -1,6 +1,5 @@
 import assert from "assert";
 import BaseApiService from "../BaseAPIService";
-import { BACK_URL } from "@/api/config";
 
 export type ILogin = {
   email: string;
@@ -9,7 +8,7 @@ export type ILogin = {
 
 export default class AuthApi extends BaseApiService {
   private static instance: AuthApi;
-  private readonly baseURL = BACK_URL;
+  private readonly baseURL = this.backUrl;
 
   private constructor() {
     super();
