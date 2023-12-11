@@ -1,12 +1,13 @@
 import assert from "assert";
 import BaseApiService from "../BaseAPIService";
+import { BackendError } from "@/Services/errorHandlingService";
 
 export type ILogin = {
   email: string;
   password: string;
 };
 
-export interface LoginResponse {
+export interface ILoginResponse {
   accessToken?: string;
   refreshToken?: string;
   error?: string;
@@ -29,19 +30,18 @@ export default class AuthApi extends BaseApiService {
     return this.instance;
   }
 
-  public async login(params: ILogin): Promise<LoginResponse> {
+  public async login(params: ILogin): Promise<ILoginResponse> {
     assert(this.baseURL, "missing URL inside Auth login request");
     const url = new URL(this.baseURL.concat("/auth/").concat("login"));
 
     try {
-      const response = await this.postRequest<LoginResponse>(url, params);
-      if (!response.ok) {
-        throw new Error(await response.json());
-      }
-      return await response.json()
+      return await this.postRequest<ILoginResponse>(url, params);
     } catch (error) {
-      this.onError(error);
-      return Promise.reject(error);
+      if (error instanceof Response) {
+        const errorBody: BackendError = await error.json();
+        throw errorBody; // Throw the entire error object
+      }
+      throw error;
     }
   }
 }

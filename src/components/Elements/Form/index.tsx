@@ -3,7 +3,8 @@ import Link from 'next/link'
 import classes from './classes.module.scss'
 import { isValidElement, useEffect, useState } from 'react'
 import AuthApi from '@/api/Back/Auth/Auth'
-import { isValidEmail } from '@/Services/validation'
+import { isValidEmail, validateFormInputs } from '@/Services/validation'
+import { getErrorMessage } from '@/Services/errorHandlingService'
 
 export type IBody = {
   email: string
@@ -17,22 +18,9 @@ export function Form() {
 
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()
-    if (!email) {
-      setErrors({
-        ...errors,
-        email: 'Votre email doit être renseigné pour vous connecter',
-      })
-      return
-    }
-    if (!password) {
-      setErrors({
-        ...errors,
-        password: 'Votre mot de passe doit être renseigné pour vous connecter',
-      })
-      return
-    }
-    if (!isValidEmail(email)) {
-      setErrors({ ...errors, email: "L'email renseigné n'est pas valide" })
+    const formErrors = validateFormInputs(email, password)
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors)
       return
     }
     const body = { email, password }
@@ -41,17 +29,11 @@ export function Form() {
       const response = await AuthApi.getInstance().login(body)
       // Rest of the authent
     } catch (error) {
-      if (error === 'UserDoNotExists') {
-        setErrors({
-          ...errors,
-          form: 'Veuillez vous enregistrer',
-        })
-      } else {
-        setErrors({
-          ...errors,
-          form: 'Vpaté en croute',
-        })
-      }
+      const errorMessage = getErrorMessage(error)
+      setErrors({
+        ...errors,
+        form: errorMessage,
+      })
     }
   }
   // sanitize the inputs
