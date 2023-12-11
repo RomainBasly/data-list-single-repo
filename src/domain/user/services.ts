@@ -20,7 +20,7 @@ export class UserService {
   async registerUser(email: string, password: string) {
     const user = await this.userRepository.getUser(email);
     if (user) {
-      throw new UserAlreadyExistsError(ErrorMessages.ALREADY_EXISTS);
+      throw new UserAlreadyExistsError(ErrorMessages.ALREADY_EXISTING);
     }
     try {
       const hashedPassword = await this.authService.hashPassword(password);
