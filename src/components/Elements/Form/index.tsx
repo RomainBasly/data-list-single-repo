@@ -5,6 +5,7 @@ import { isValidElement, useEffect, useState } from 'react'
 import AuthApi from '@/api/Back/Auth/Auth'
 import { isValidEmail, validateFormInputs } from '@/Services/validation'
 import { getErrorMessage } from '@/Services/errorHandlingService'
+import { useRouter } from 'next/navigation'
 
 export type IBody = {
   email: string
@@ -15,6 +16,7 @@ export function Form() {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [errors, setErrors] = useState<{ [key: string]: string }>()
+  const router = useRouter()
 
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()
@@ -27,6 +29,8 @@ export function Form() {
 
     try {
       await AuthApi.getInstance().login(body)
+      console.log('coucou je suis passé le auth')
+      router.push('/private-space')
       // Rest of the authent
     } catch (error) {
       const errorMessage = getErrorMessage(error)
