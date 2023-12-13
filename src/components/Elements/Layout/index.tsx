@@ -1,20 +1,22 @@
-'use client'
-import { useAuth } from '@/components/hooks/useAuth'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import Header from '../Headers/TopHeader'
+import SideMenu from '../SideMenu'
 
-export default function Layout({
-  children,
-}: Readonly<{
+export type ILayoutProps = {
   children: React.ReactNode
-}>) {
-  const isAuthenticated = useAuth()
-  const router = useRouter()
+  pageType?: string
+}
 
-  useEffect(() => {
-    if (!isAuthenticated && window.location.pathname !== '/register') {
-      router.push('/login')
-    }
-  }, [isAuthenticated, router])
-  return <>{children}</>
+export default function Layout({ children, pageType }: ILayoutProps) {
+  return (
+    <>
+      {pageType !== 'login' && pageType !== 'register' && (
+        <>
+          <Header />
+          <SideMenu />
+        </>
+      )}
+
+      {children}
+    </>
+  )
 }

@@ -26,7 +26,7 @@ export function Form() {
     const body = { email, password }
 
     try {
-      const response = await AuthApi.getInstance().login(body)
+      await AuthApi.getInstance().login(body)
       // Rest of the authent
     } catch (error) {
       const errorMessage = getErrorMessage(error)

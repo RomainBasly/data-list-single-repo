@@ -23,7 +23,7 @@ export default abstract class BaseApiService {
         method: "POST",
         headers: this.buildHeaders(ContentType.JSON),
         body: this.buildBody(body),
-        credentials: "include", // Include cookies
+        credentials: "include", // Include cookies in the response
       })
     );
   

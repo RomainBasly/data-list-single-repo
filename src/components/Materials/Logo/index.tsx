@@ -14,8 +14,9 @@ export default function Logo(props: Readonly<IProps>) {
       alt={props.alt}
       className={props.className}
       onClick={props.onclick}
+      // TODO : this following part will be erased for production
       width={300}
-      height={300}
+      height={100}
     />
   )
 }
