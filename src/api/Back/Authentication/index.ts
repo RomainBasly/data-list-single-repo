@@ -14,18 +14,18 @@ export interface ILoginResponse {
   message?: string;
 }
 
-export default class AuthApi extends BaseApiService {
-  private static instance: AuthApi;
-  private readonly baseURL = this.backUrl;
+export default class AuthenticationApi extends BaseApiService {
+  private static instance: AuthenticationApi;
+  private readonly baseURL = this.mainBackEndUrl;
 
   private constructor() {
     super();
-    AuthApi.instance = this;
+    AuthenticationApi.instance = this;
   }
 
-  public static getInstance(): AuthApi {
-    if (!AuthApi.instance) {
-      this.instance = new AuthApi();
+  public static getInstance(): AuthenticationApi {
+    if (!AuthenticationApi.instance) {
+      this.instance = new AuthenticationApi();
     }
     return this.instance;
   }

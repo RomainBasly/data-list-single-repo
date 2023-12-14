@@ -1,7 +1,6 @@
 import React from 'react'
 import classes from './classes.module.scss'
 import { LandingHeader } from '@/components/Elements/Headers/LandingHeader'
-import Link from 'next/link'
 import { Form } from '@/components/Elements/Form'
 import Layout from '@/components/Elements/Layout'
 

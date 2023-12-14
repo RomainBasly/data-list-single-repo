@@ -1,20 +1,16 @@
-import AuthService from "@/Services/authService";
+import AuthorizationService from "@/Services/authorizationService";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
-  const excludedPaths = ["/login", "/register"];
-  if (excludedPaths.some((path) => request.nextUrl.pathname.startsWith(path))) {
-    return NextResponse.next();
-  }
-
   const token = request.cookies.get("jwt");
 
   if (!token) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  const decodedToken = AuthService.getInstance().decodeToken(token);
+  const decodedToken = AuthorizationService.getInstance().decodeToken(token);
+  console.log(decodedToken);
   if (!decodedToken) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
@@ -22,5 +18,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/private-space"],
+  matcher: ["/", "/private-space", "/login", "/register"],
 };

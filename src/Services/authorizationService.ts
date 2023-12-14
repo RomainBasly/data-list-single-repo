@@ -1,10 +1,10 @@
+import { AuthorizationApi } from "@/api/Back/Authorization";
 import jwt from "jsonwebtoken";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
-export default class AuthService {
+export default class AuthorizationService {
   public accessToken: string | null = null;
-  private static instance: AuthService | null = null;
-  private _isAuthenticated: boolean = false;
+  private static instance: AuthorizationService | null = null;
   private readonly secretKey: string;
 
   private constructor() {
@@ -14,21 +14,11 @@ export default class AuthService {
     this.secretKey = process.env.SECRET_ACCES_TOKEN_KEY;
   }
 
-  public static getInstance(): AuthService {
-    if (!AuthService.instance) {
-      AuthService.instance = new AuthService();
+  public static getInstance(): AuthorizationService {
+    if (!AuthorizationService.instance) {
+      AuthorizationService.instance = new AuthorizationService();
     }
-    return AuthService.instance;
-  }
-
-  public setToken(token: string) {}
-
-  public isAuthenticated() {
-    return this._isAuthenticated;
-  }
-
-  public logout() {
-    this._isAuthenticated = false;
+    return AuthorizationService.instance;
   }
 
   public decodeToken(token: string | RequestCookie) {

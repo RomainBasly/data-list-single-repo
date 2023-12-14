@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import classes from './classes.module.scss'
 import { isValidElement, useEffect, useState } from 'react'
-import AuthApi from '@/api/Back/Auth/Auth'
+import AuthenticationApi from '@/api/Back/Authentication'
 import { isValidEmail, validateFormInputs } from '@/Services/validation'
 import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
@@ -28,10 +28,7 @@ export function Form() {
     const body = { email, password }
 
     try {
-      await AuthApi.getInstance().login(body)
-      console.log('coucou je suis passé le auth')
-      router.push('/private-space')
-      // Rest of the authent
+      await AuthenticationApi.getInstance().login(body)
     } catch (error) {
       const errorMessage = getErrorMessage(error)
       setErrors({
