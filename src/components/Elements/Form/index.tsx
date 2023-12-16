@@ -6,6 +6,7 @@ import AuthenticationApi from '@/api/Back/Authentication'
 import { isValidEmail, validateFormInputs } from '@/Services/validation'
 import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
+import { AuthorizationApi } from '@/api/Back/Authorization'
 
 export type IBody = {
   email: string
@@ -29,6 +30,7 @@ export function Form() {
 
     try {
       await AuthenticationApi.getInstance().login(body)
+      router.push('/private-space')
     } catch (error) {
       const errorMessage = getErrorMessage(error)
       setErrors({

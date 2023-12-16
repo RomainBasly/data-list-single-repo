@@ -6,7 +6,7 @@ export type IisValidTokenResponse = {
 };
 
 export class AuthorizationApi extends BaseApiService {
-  private readonly URL: string = "/api/validate-jwt";
+  private readonly URL: string = "http://localhost:8000/api/validate-jwt";
   private static instance: AuthorizationApi | null = null;
 
   private constructor() {
@@ -21,10 +21,11 @@ export class AuthorizationApi extends BaseApiService {
   }
 
   public async isValidToken(): Promise<boolean | undefined> {
+    console.log("coucou");
     assert(this.URL, "url to authorize not furnished");
     try {
       const response = await this.getRequest<IisValidTokenResponse>(this.URL);
-
+      
       if (!response.ok) {
         throw new Error("Token validation failed");
       }

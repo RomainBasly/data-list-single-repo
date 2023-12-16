@@ -1,9 +1,9 @@
 import AuthorizationService from "@/Services/authorizationService";
 import { NextApiRequest, NextApiResponse } from "next";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export async function GET(req: NextApiRequest, res: NextApiResponse) {
   const token = req.cookies.jwt || req.headers.authorization?.split(" ")[1];
-  console.log(token);
+
   if (!token) {
     return res.status(401).json({ message: "No token provided" });
   }

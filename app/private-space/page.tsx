@@ -14,8 +14,13 @@ export default function PrivateSpace() {
   useEffect(() => {
     async function checkAuth() {
       const isJwtTokenValid = await AuthorizationApi.getInstance().isValidToken()
+      console.log(
+        'je suis dans le check auth et je isJWTokenValid is',
+        isJwtTokenValid,
+      )
 
       if (!isJwtTokenValid) {
+        console.log('je suis dans if du use Effect de la page Private space')
         router.push('/login')
       }
     }

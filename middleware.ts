@@ -4,13 +4,12 @@ import type { NextRequest } from "next/server";
 
 export function middleware(request: NextRequest) {
   const token = request.cookies.get("jwt");
-
+  console.log("token", token);
   if (!token) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
   const decodedToken = AuthorizationService.getInstance().decodeToken(token);
-  console.log(decodedToken);
   if (!decodedToken) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
@@ -18,5 +17,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/private-space", "/login", "/register"],
+  matcher: ["/", "/private-space", "/register"],
 };

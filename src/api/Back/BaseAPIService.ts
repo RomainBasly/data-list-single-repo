@@ -40,6 +40,7 @@ export default abstract class BaseApiService {
     } else {
       url = new URL(urlOrPath, this.backendOfFront);
     }
+    console.log("url", url);
     const response = await this.sendRequest(
       async () =>
         await fetch(url, {
