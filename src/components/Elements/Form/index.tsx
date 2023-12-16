@@ -2,11 +2,11 @@
 import Link from 'next/link'
 import classes from './classes.module.scss'
 import { isValidElement, useEffect, useState } from 'react'
-import AuthenticationApi from '@/api/Back/Authentication'
+import AuthenticationApi from '@/api/Back/AuthenticationApi'
 import { isValidEmail, validateFormInputs } from '@/Services/validation'
 import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
-import { AuthorizationApi } from '@/api/Back/Authorization'
+import { AuthorizationApi } from '@/api/Back/AuthorizationApi'
 
 export type IBody = {
   email: string

@@ -10,8 +10,7 @@ export type ApiResponse<T> = {
 };
 
 export default abstract class BaseApiService {
-  protected readonly mainBackEndUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-  protected readonly backendOfFront = process.env.BACK_OF_FRONT_URL;
+  protected readonly backEndUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   protected readonly apiKey = process.env.NEXT_PUBLIC_API_KEY;
 
   protected constructor() {}
@@ -23,24 +22,7 @@ export default abstract class BaseApiService {
   protected async getRequest<T>(
     url: URL,
     contentType?: ContentType
-  ): Promise<ApiResponse<T>>;
-  protected async getRequest<T>(
-    url: string,
-    contentType?: ContentType
-  ): Promise<ApiResponse<T>>;
-
-  protected async getRequest<T>(
-    urlOrPath: URL | string,
-    contentType?: ContentType
-  ): Promise<ApiResponse<T>> {
-    let url: URL;
-
-    if (urlOrPath instanceof URL) {
-      url = urlOrPath;
-    } else {
-      url = new URL(urlOrPath, this.backendOfFront);
-    }
-    console.log("url", url);
+  ): Promise<T> {
     const response = await this.sendRequest(
       async () =>
         await fetch(url, {
@@ -54,11 +36,7 @@ export default abstract class BaseApiService {
       throw response;
     }
 
-    const data = (await response.json()) as T;
-    return {
-      data,
-      ok: response.ok,
-    };
+    return response.json() as Promise<T>;
   }
 
   protected async postRequest<T>(

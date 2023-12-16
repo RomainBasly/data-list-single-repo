@@ -2,9 +2,17 @@ import AuthorizationService from "@/Services/authorizationService";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
+export default function middleware(request: NextRequest) {
   const token = request.cookies.get("jwt");
-  console.log("token", token);
+  const url = request.nextUrl.clone();
+
+  if (url.pathname === "/login" || url.pathname === "/register") {
+    if (token) {
+      return NextResponse.redirect(new URL("/private-space", request.url));
+    }
+    return NextResponse.next();
+  }
+
   if (!token) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
@@ -17,5 +25,5 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/private-space", "/register"],
+  matcher: ["/", "/private-space", "/login", "/register"],
 };

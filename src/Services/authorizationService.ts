@@ -1,4 +1,4 @@
-import { AuthorizationApi } from "@/api/Back/Authorization";
+import { AuthorizationApi } from "@/api/Back/AuthorizationApi";
 import jwt from "jsonwebtoken";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 

@@ -5,21 +5,12 @@ import classes from './classes.module.scss'
 import { LandingHeader } from '@/components/Elements/Headers/LandingHeader'
 import { Form } from '@/components/Elements/Form'
 import Layout from '@/components/Elements/Layout'
-import { AuthorizationApi } from '@/api/Back/Authorization'
+import { AuthorizationApi } from '@/api/Back/AuthorizationApi'
 import { useRouter } from 'next/navigation'
 
 export default function Login() {
-  const router = useRouter()
+  const router = useRouter();
 
-  useEffect(() => {
-    async function checkAuthentication() {
-      const isAuthenticated = await AuthorizationApi.getInstance().isValidToken()
-      if (isAuthenticated) {
-        router.push('/private-space')
-      }
-    }
-    checkAuthentication()
-  }, [router])
   return (
     <Layout pageType="login">
       <div className={classes['root']}>

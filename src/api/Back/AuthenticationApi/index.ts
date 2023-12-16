@@ -16,7 +16,7 @@ export interface ILoginResponse {
 
 export default class AuthenticationApi extends BaseApiService {
   private static instance: AuthenticationApi;
-  private readonly baseURL = this.mainBackEndUrl;
+  private readonly baseURL = this.backEndUrl;
 
   private constructor() {
     super();
