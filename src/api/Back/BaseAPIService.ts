@@ -43,6 +43,7 @@ export default abstract class BaseApiService {
     url: URL,
     body: { [key: string]: unknown } = {}
   ): Promise<T> {
+    console.log("postRequest function", url, body);
     const response = await this.sendRequest(
       async () =>
         await fetch(url, {

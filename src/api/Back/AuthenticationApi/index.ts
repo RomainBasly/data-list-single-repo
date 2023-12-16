@@ -33,10 +33,12 @@ export default class AuthenticationApi extends BaseApiService {
   public async login(params: ILogin): Promise<ILoginResponse> {
     assert(this.baseURL, "missing URL inside Auth login request");
     const url = new URL(this.baseURL.concat("/auth/").concat("login"));
-
+    console.log("url", url);
     try {
+      console.log("I am in the login try");
       return await this.postRequest<ILoginResponse>(url, params);
     } catch (error) {
+      console.log("error", error);
       if (error instanceof Response) {
         const errorBody: BackendError = await error.json();
         throw errorBody; // Throw the entire error object

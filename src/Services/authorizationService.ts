@@ -8,10 +8,10 @@ export default class AuthorizationService {
   private readonly secretKey: string;
 
   private constructor() {
-    if (!process.env.SECRET_ACCES_TOKEN_KEY) {
+    if (!process.env.ACCESS_TOKEN_SECRET) {
       throw new Error("Environment variable SECRET_ACCES_TOKEN_KEY is missing");
     }
-    this.secretKey = process.env.SECRET_ACCES_TOKEN_KEY;
+    this.secretKey = process.env.ACCESS_TOKEN_SECRET;
   }
 
   public static getInstance(): AuthorizationService {
