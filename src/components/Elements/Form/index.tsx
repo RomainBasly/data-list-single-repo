@@ -1,8 +1,12 @@
 'use client'
 import Link from 'next/link'
 import classes from './classes.module.scss'
-import { useEffect, useState } from 'react'
-import AuthApi from '@/api/Back/Auth/Auth'
+import { isValidElement, useEffect, useState } from 'react'
+import AuthenticationApi from '@/api/Back/AuthenticationApi'
+import { isValidEmail, validateFormInputs } from '@/Services/validation'
+import { getErrorMessage } from '@/Services/errorHandlingService'
+import { useRouter } from 'next/navigation'
+import { AuthorizationApi } from '@/api/Back/AuthorizationApi'
 
 export type IBody = {
   email: string
@@ -13,14 +17,27 @@ export function Form() {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [errors, setErrors] = useState<{ [key: string]: string }>()
+  const router = useRouter()
 
-  function sendForm(e: any) {
+  async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()
-    if (errors) return
-    if (!email || !password) return
-
+    const formErrors = validateFormInputs(email, password)
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors)
+      return
+    }
     const body = { email, password }
-    AuthApi.getInstance().login(body)
+
+    try {
+      await AuthenticationApi.getInstance().login(body)
+      router.push('/private-space')
+    } catch (error) {
+      const errorMessage = getErrorMessage(error)
+      setErrors({
+        ...errors,
+        form: errorMessage,
+      })
+    }
   }
   // sanitize the inputs
 
@@ -33,24 +50,31 @@ export function Form() {
         <input
           name="email"
           placeholder="John@john.com"
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setErrors({ ...errors, email: '' })
+            setEmail(e.target.value)
+          }}
         />
-        {errors && <div className={classes['error']}>Error</div>}
+        {errors && <div className={classes['error']}>{errors.email}</div>}
       </div>
       <div className={classes['form-element']}>
         <label htmlFor="password">Mot de passe</label>
         <input
           type="password"
           name="password"
-          placeholder="Entrez un mot de passe"
-          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Entrez votre mot de passe"
+          onChange={(e) => {
+            setErrors({ ...errors, password: '' })
+            setPassword(e.target.value)
+          }}
         />
-        {errors && <div className={classes['error']}>Error</div>}
+        {errors && <div className={classes['error']}>{errors.password}</div>}
       </div>
       <div className={classes['button-container']}>
         <button className={classes['connexion-button']} onClick={sendForm}>
           Se connecter
         </button>
+        {errors && <div className={classes['error']}>{errors.form}</div>}
         <Link
           href="/register"
           className={classes['registration-button-container']}

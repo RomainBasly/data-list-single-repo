@@ -4,8 +4,13 @@ export enum ContentType {
   JSON = "application/json",
 }
 
+export type ApiResponse<T> = {
+  data: T;
+  ok: boolean;
+};
+
 export default abstract class BaseApiService {
-  protected readonly backUrl = process.env.NEXT_PUBLIC_BACK_URL;
+  protected readonly backEndUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   protected readonly apiKey = process.env.NEXT_PUBLIC_API_KEY;
 
   protected constructor() {}
@@ -14,24 +19,51 @@ export default abstract class BaseApiService {
     return JSON.stringify(body);
   }
 
+  protected async getRequest<T>(
+    url: URL,
+    contentType?: ContentType
+  ): Promise<T> {
+    const response = await this.sendRequest(
+      async () =>
+        await fetch(url, {
+          method: "GET",
+          headers: this.buildHeaders(contentType ?? ContentType.JSON),
+          credentials: "include",
+        })
+    );
+
+    if (!response.ok) {
+      throw response;
+    }
+
+    return response.json() as Promise<T>;
+  }
+
   protected async postRequest<T>(
     url: URL,
     body: { [key: string]: unknown } = {}
-  ) {
-    return this.sendRequest<T>(
+  ): Promise<T> {
+    const response = await this.sendRequest(
       async () =>
         await fetch(url, {
           method: "POST",
           headers: this.buildHeaders(ContentType.JSON),
           body: this.buildBody(body),
-          credentials: "include", // Include cookies
+          credentials: "include",
         })
     );
+
+    if (!response.ok) {
+      throw response;
+    }
+
+    return response.json() as Promise<T>;
   }
 
-  private async sendRequest<T>(request: () => Promise<Response>): Promise<T> {
-    const response = await request();
-    return this.processResponse<T>(response, request);
+  private async sendRequest(
+    request: () => Promise<Response>
+  ): Promise<Response> {
+    return await request();
   }
 
   protected async processResponse<T>(

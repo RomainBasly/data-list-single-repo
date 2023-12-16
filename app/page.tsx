@@ -3,7 +3,7 @@ import classes from './classes.module.scss'
 import { Loader } from '@/components/Materials/Loader'
 import { LandingHeader } from '@/components/Elements/Headers/LandingHeader'
 
-export default function Home() {
+export default function Home({}) {
   return (
     <>
       <Head>

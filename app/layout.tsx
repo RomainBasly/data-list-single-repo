@@ -3,6 +3,8 @@ import './globals.css'
 import { Inter } from 'next/font/google'
 import React from 'react'
 import Layout from '@/components/Elements/Layout'
+import Header from '@/components/Elements/Headers/TopHeader'
+import SideMenu from '@/components/Elements/SideMenu'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -58,9 +60,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="fr">
-      <body className={inter.className}>
-        <Layout>{children}</Layout>
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   )
 }
