@@ -18,6 +18,7 @@ export class AppAuthController {
   async login(req: Request<{}, {}, Employee>, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;
+      console.log(email, password);
       const { accessToken, refreshToken } = await this.userService.login(email, password);
 
       assert(refreshToken, "problem with refreshToken inside user login service");
