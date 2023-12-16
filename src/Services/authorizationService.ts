@@ -33,14 +33,4 @@ export default class AuthorizationService {
       return null;
     }
   }
-
-  public validateJWT(token: string | RequestCookie) {
-    let tokenString = typeof token === "string" ? token : token.value;
-    try {
-      return jwt.verify(tokenString, this.secretKey);
-    } catch (error) {
-      console.error("JWT validation error:", error);
-      return null;
-    }
-  }
 }
