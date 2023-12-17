@@ -4,10 +4,10 @@ import classes from './classes.module.scss'
 import { isValidElement, useEffect, useState } from 'react'
 import AuthenticationApi from '@/api/Back/AuthenticationApi'
 import { isValidEmail, validateFormInputs } from '@/Services/validation'
-import { getErrorMessage } from '@/Services/ErrorHandlingService'
+import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
 import { AuthorizationApi } from '@/api/Back/AuthorizationApi'
-import CookieService from '@/Services/CookieService'
+import CookieService from '@/Services/cookieService'
 
 export type IBody = {
   email: string
