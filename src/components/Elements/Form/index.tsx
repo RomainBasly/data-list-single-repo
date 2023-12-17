@@ -7,7 +7,7 @@ import { isValidEmail, validateFormInputs } from '@/Services/validation'
 import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
 import { AuthorizationApi } from '@/api/Back/AuthorizationApi'
-import CookieService from '@/Services/cookieService'
+import CookieService from '@/Services/CookieService'
 
 export type IBody = {
   email: string
