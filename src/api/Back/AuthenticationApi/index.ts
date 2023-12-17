@@ -1,6 +1,6 @@
 import assert from "assert";
 import BaseApiService from "../BaseAPIService";
-import { BackendError } from "@/Services/errorHandlingService";
+import { BackendError } from "@/Services/ErrorHandlingService";
 
 export type ILogin = {
   email: string;

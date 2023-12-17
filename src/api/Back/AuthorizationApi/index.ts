@@ -1,5 +1,5 @@
 import BaseApiService from "../BaseAPIService";
-import { BackendError } from "@/Services/errorHandlingService";
+import { BackendError } from "@/Services/ErrorHandlingService";
 
 export type IValidation = {};
 
