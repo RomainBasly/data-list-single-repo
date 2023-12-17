@@ -20,7 +20,6 @@ export default function Logo(props: Readonly<IProps>) {
       width={300}
       height={300}
       loading="lazy"
-      placeholder="blur"
     />
   )
 }

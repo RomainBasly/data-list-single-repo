@@ -4,9 +4,10 @@ import classes from './classes.module.scss'
 import { isValidElement, useEffect, useState } from 'react'
 import AuthenticationApi from '@/api/Back/AuthenticationApi'
 import { isValidEmail, validateFormInputs } from '@/Services/validation'
-import { getErrorMessage } from '@/Services/errorHandlingService'
+import { getErrorMessage } from '@/Services/ErrorHandlingService'
 import { useRouter } from 'next/navigation'
 import { AuthorizationApi } from '@/api/Back/AuthorizationApi'
+import CookieService from '@/Services/CookieService'
 
 export type IBody = {
   email: string
@@ -29,7 +30,10 @@ export function Form() {
     const body = { email, password }
 
     try {
-      await AuthenticationApi.getInstance().login(body)
+      const response = await AuthenticationApi.getInstance().login(body)
+      console.log('response', response)
+      response.accessToken &&
+        CookieService.getInstance().setCookie('jwt', response.accessToken)
       router.push('/private-space')
     } catch (error) {
       const errorMessage = getErrorMessage(error)

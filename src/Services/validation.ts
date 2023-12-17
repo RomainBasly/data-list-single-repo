@@ -1,4 +1,4 @@
-import AuthorizationService from "./authorizationService";
+import AuthorizationService from "./AuthorizationService";
 
 export function isValidEmail(email: string): boolean {
   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;

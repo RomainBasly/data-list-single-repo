@@ -1,4 +1,4 @@
-import AuthorizationService from "@/Services/authorizationService";
+import AuthorizationService from "@/Services/AuthorizationService";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
