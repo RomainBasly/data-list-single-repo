@@ -5,7 +5,7 @@ export function isValidEmail(email: string): boolean {
   return emailRegex.test(email);
 }
 
-export const validateFormInputs = (
+export const validateConnectFormInputs = (
   email: string,
   password: string
 ): Record<string, string> => {
@@ -22,5 +22,17 @@ export const validateFormInputs = (
       "Votre mot de passe doit être renseigné pour vous connecter";
   }
 
+  return errors;
+};
+
+export const validateRegisterFormInputs = (
+  email: string
+): Record<string, string> => {
+  const errors: Record<string, string> = {};
+  if (!email) {
+    errors.email = "Votre email doit être renseigné pour vous connecter";
+  } else if (!isValidEmail(email)) {
+    errors.email = "L'email renseigné n'est pas valide";
+  }
   return errors;
 };

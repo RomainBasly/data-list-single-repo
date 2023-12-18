@@ -1,12 +1,11 @@
 'use client'
 import Link from 'next/link'
 import classes from './classes.module.scss'
-import { isValidElement, useEffect, useState } from 'react'
+import { useState } from 'react'
 import AuthenticationApi from '@/api/Back/AuthenticationApi'
-import { isValidEmail, validateFormInputs } from '@/Services/validation'
+import { validateConnectFormInputs } from '@/Services/validation'
 import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
-import { AuthorizationApi } from '@/api/Back/AuthorizationApi'
 import CookieService from '@/Services/CookieService'
 
 export type IBody = {
@@ -14,7 +13,7 @@ export type IBody = {
   password: string
 }
 
-export function Form() {
+export function LoginForm() {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [errors, setErrors] = useState<{ [key: string]: string }>()
@@ -22,7 +21,7 @@ export function Form() {
 
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()
-    const formErrors = validateFormInputs(email, password)
+    const formErrors = validateConnectFormInputs(email, password)
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors)
       return
@@ -31,7 +30,6 @@ export function Form() {
 
     try {
       const response = await AuthenticationApi.getInstance().login(body)
-      console.log('response', response)
       response.accessToken &&
         CookieService.getInstance().setCookie('jwt', response.accessToken)
       router.push('/private-space')
@@ -43,9 +41,6 @@ export function Form() {
       })
     }
   }
-  // sanitize the inputs
-
-  // gestion des erreurs
 
   return (
     <form className={classes['root']}>
