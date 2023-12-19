@@ -29,6 +29,7 @@ export enum ErrorMessages {
   NOT_EXISTING_USER = "User do not exists in the database, please register instead",
   INVALID_CREDENTIALS = "Invalid credentials",
   FAIL_TO_GENERATE_TOKENS = " Fail to generate Tokens",
+  NO_EXISTING_REFRESH_TOKEN = "No existing refreshToken",
 }
 
 // add a class by big types of error
@@ -53,5 +54,11 @@ export class AuthenticationError extends BaseError {
 export class FailToGenerateTokens extends BaseError {
   constructor(message: ErrorMessages.FAIL_TO_GENERATE_TOKENS) {
     super(401, 2002, message);
+  }
+}
+
+export class NoPreexistingRefreshToken extends BaseError {
+  constructor(message: ErrorMessages.NO_EXISTING_REFRESH_TOKEN) {
+    super(401, 2003, message);
   }
 }

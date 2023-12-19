@@ -24,7 +24,7 @@ let UserService = class UserService {
         this.authService = authService;
     }
     async registerUser(email, password) {
-        const user = await this.userRepository.getUser(email);
+        const user = await this.userRepository.getUserByEmail(email);
         if (user) {
             throw new errors_1.UserAlreadyExistsError(errors_1.ErrorMessages.ALREADY_EXISTING);
         }
@@ -34,13 +34,13 @@ let UserService = class UserService {
             await this.userRepository.create(newUser);
         }
         catch (error) {
-            console.error("something went wrong in the service", error);
+            console.error("something went wrong in the userservice", error);
             throw error;
         }
     }
     async login(email, passwordInput) {
         try {
-            const user = await this.userRepository.getUser(email);
+            const user = await this.userRepository.getUserByEmail(email);
             if (!user) {
                 throw new errors_1.UserDoNotExists(errors_1.ErrorMessages.NOT_EXISTING_USER);
             }

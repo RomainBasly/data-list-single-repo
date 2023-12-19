@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.FailToGenerateTokens = exports.AuthenticationError = exports.UserDoNotExists = exports.UserAlreadyExistsError = exports.ErrorMessages = exports.BaseError = exports.errorHandler = void 0;
+exports.NoPreexistingRefreshToken = exports.FailToGenerateTokens = exports.AuthenticationError = exports.UserDoNotExists = exports.UserAlreadyExistsError = exports.ErrorMessages = exports.BaseError = exports.errorHandler = void 0;
 // used as a middleware
 function errorHandler(err, req, res, next) {
     if (err instanceof BaseError) {
@@ -30,6 +30,7 @@ var ErrorMessages;
     ErrorMessages["NOT_EXISTING_USER"] = "User do not exists in the database, please register instead";
     ErrorMessages["INVALID_CREDENTIALS"] = "Invalid credentials";
     ErrorMessages["FAIL_TO_GENERATE_TOKENS"] = " Fail to generate Tokens";
+    ErrorMessages["NO_EXISTING_REFRESH_TOKEN"] = "No existing refreshToken";
 })(ErrorMessages || (exports.ErrorMessages = ErrorMessages = {}));
 // add a class by big types of error
 class UserAlreadyExistsError extends BaseError {
@@ -56,3 +57,9 @@ class FailToGenerateTokens extends BaseError {
     }
 }
 exports.FailToGenerateTokens = FailToGenerateTokens;
+class NoPreexistingRefreshToken extends BaseError {
+    constructor(message) {
+        super(401, 2003, message);
+    }
+}
+exports.NoPreexistingRefreshToken = NoPreexistingRefreshToken;

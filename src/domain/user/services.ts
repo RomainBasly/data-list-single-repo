@@ -18,7 +18,7 @@ export class UserService {
   ) {}
 
   async registerUser(email: string, password: string) {
-    const user = await this.userRepository.getUser(email);
+    const user = await this.userRepository.getUserByEmail(email);
     if (user) {
       throw new UserAlreadyExistsError(ErrorMessages.ALREADY_EXISTING);
     }
@@ -27,14 +27,14 @@ export class UserService {
       const newUser = { email: email, roles: { [Roles.USER]: true }, password: hashedPassword };
       await this.userRepository.create(newUser);
     } catch (error) {
-      console.error("something went wrong in the service", error);
+      console.error("something went wrong in the userservice", error);
       throw error;
     }
   }
 
   public async login(email: string, passwordInput: string): Promise<{ accessToken: string; refreshToken: string }> {
     try {
-      const user = await this.userRepository.getUser(email);
+      const user = await this.userRepository.getUserByEmail(email);
       if (!user) {
         throw new UserDoNotExists(ErrorMessages.NOT_EXISTING_USER);
       }

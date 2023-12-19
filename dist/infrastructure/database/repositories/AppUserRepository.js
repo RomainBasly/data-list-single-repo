@@ -19,7 +19,7 @@ let AppUserRepository = class AppUserRepository {
             throw new Error(`something when wrong in the appUserRepository: ${error.message}`);
         }
     }
-    async getUser(email) {
+    async getUserByEmail(email) {
         const { data, error } = await supabaseClient_1.default.from("app-users").select().eq("email", email);
         if (error) {
             throw new Error(`something when wrong in the appUserRepository: ${error.message}`);

@@ -11,7 +11,7 @@ export class AppUserRepository implements IAppUserRepository {
     }
   }
 
-  public async getUser(email: string): Promise<User | null> {
+  public async getUserByEmail(email: string): Promise<User | null> {
     const { data, error } = await supabase.from("app-users").select().eq("email", email);
     if (error) {
       throw new Error(`something when wrong in the appUserRepository: ${error.message}`);
