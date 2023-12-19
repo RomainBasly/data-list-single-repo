@@ -17,11 +17,13 @@ const tsyringe_1 = require("tsyringe");
 const api_1 = require("../../common/types/api");
 const AppUserRepository_1 = require("../../infrastructure/database/repositories/AppUserRepository");
 const errors_1 = require("../common/errors");
-const services_1 = require("../authentication/services");
+const services_1 = require("../token/services");
+const services_2 = require("../password/services");
 let UserService = class UserService {
-    constructor(userRepository, authService) {
+    constructor(userRepository, passwordService, tokenService) {
         this.userRepository = userRepository;
-        this.authService = authService;
+        this.passwordService = passwordService;
+        this.tokenService = tokenService;
     }
     async registerUser(email, password) {
         const user = await this.userRepository.getUserByEmail(email);
@@ -29,7 +31,7 @@ let UserService = class UserService {
             throw new errors_1.UserAlreadyExistsError(errors_1.ErrorMessages.ALREADY_EXISTING);
         }
         try {
-            const hashedPassword = await this.authService.hashPassword(password);
+            const hashedPassword = await this.passwordService.hashPassword(password);
             const newUser = { email: email, roles: { [api_1.Roles.USER]: true }, password: hashedPassword };
             await this.userRepository.create(newUser);
         }
@@ -45,15 +47,15 @@ let UserService = class UserService {
                 throw new errors_1.UserDoNotExists(errors_1.ErrorMessages.NOT_EXISTING_USER);
             }
             const passwordFromDB = user.password;
-            const passwordMatchDB = await this.authService.checkCredentials(passwordInput, passwordFromDB);
+            const passwordMatchDB = await this.passwordService.checkCredentials(passwordInput, passwordFromDB);
             if (!passwordMatchDB) {
                 throw new errors_1.AuthenticationError(errors_1.ErrorMessages.INVALID_CREDENTIALS);
             }
             const roles = this.addUserRole(user);
-            const accessToken = this.authService.generateAccessToken({
+            const accessToken = this.tokenService.generateAccessToken({
                 userInfo: { email, roles },
             });
-            const refreshToken = this.authService.generateRefreshToken({ email });
+            const refreshToken = this.tokenService.generateRefreshToken({ email });
             if (!refreshToken || !accessToken) {
                 throw new errors_1.FailToGenerateTokens(errors_1.ErrorMessages.FAIL_TO_GENERATE_TOKENS);
             }
@@ -82,7 +84,9 @@ exports.UserService = UserService;
 exports.UserService = UserService = __decorate([
     (0, tsyringe_1.injectable)(),
     __param(0, (0, tsyringe_1.inject)(AppUserRepository_1.AppUserRepository)),
-    __param(1, (0, tsyringe_1.inject)(services_1.AuthService)),
+    __param(1, (0, tsyringe_1.inject)(services_2.PasswordService)),
+    __param(2, (0, tsyringe_1.inject)(services_1.TokenService)),
     __metadata("design:paramtypes", [AppUserRepository_1.AppUserRepository,
-        services_1.AuthService])
+        services_2.PasswordService,
+        services_1.TokenService])
 ], UserService);
