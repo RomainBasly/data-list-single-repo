@@ -19,8 +19,12 @@ let AppUserRepository = class AppUserRepository {
             throw new Error(`something when wrong in the appUserRepository: ${error.message}`);
         }
     }
-    async getUser(email) {
-        return await supabaseClient_1.default.from("app-users").select().eq("email", email);
+    async getUserByEmail(email) {
+        const { data, error } = await supabaseClient_1.default.from("app-users").select().eq("email", email);
+        if (error) {
+            throw new Error(`something when wrong in the appUserRepository: ${error.message}`);
+        }
+        return data ? data[0] : null;
     }
     async updateRefreshToken(refreshToken, email) {
         await supabaseClient_1.default.from("app-users").update({ refreshToken: refreshToken }).eq("email", email);
@@ -30,6 +34,13 @@ let AppUserRepository = class AppUserRepository {
     }
     async clearUserRefreshToken(refreshToken) {
         return await supabaseClient_1.default.from("app-users").update({ refreshToken: "" }).eq("refreshToken", refreshToken);
+    }
+    async getUserByRefreshToken(token) {
+        const { data, error } = await supabaseClient_1.default.from("app-users").select().eq("refreshToken", token);
+        if (error) {
+            throw new Error(`something when wrong in the appUserRepository: ${error.message}`);
+        }
+        return data ? data[0] : null;
     }
 };
 exports.AppUserRepository = AppUserRepository;

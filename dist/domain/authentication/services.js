@@ -20,9 +20,11 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const tsyringe_1 = require("tsyringe");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const AppUserRepository_1 = require("../../infrastructure/database/repositories/AppUserRepository");
+const AppRefreshTokenRepository_1 = require("../../infrastructure/database/repositories/AppRefreshTokenRepository");
 let AuthService = class AuthService {
-    constructor(userRepository) {
+    constructor(userRepository, refreshTokenRepository) {
         this.userRepository = userRepository;
+        this.refreshTokenRepository = refreshTokenRepository;
         this.accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
         this.refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
     }
@@ -48,5 +50,7 @@ exports.AuthService = AuthService;
 exports.AuthService = AuthService = __decorate([
     (0, tsyringe_1.injectable)(),
     __param(0, (0, tsyringe_1.inject)(AppUserRepository_1.AppUserRepository)),
-    __metadata("design:paramtypes", [AppUserRepository_1.AppUserRepository])
+    __param(1, (0, tsyringe_1.inject)(AppRefreshTokenRepository_1.AppRefreshTokenRepository)),
+    __metadata("design:paramtypes", [AppUserRepository_1.AppUserRepository,
+        AppRefreshTokenRepository_1.AppRefreshTokenRepository])
 ], AuthService);

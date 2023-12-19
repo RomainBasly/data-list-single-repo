@@ -25,7 +25,7 @@ let AppAuthController = class AppAuthController {
     constructor(userService) {
         this.userService = userService;
     }
-    async login(req, res) {
+    async login(req, res, next) {
         try {
             const { email, password } = req.body;
             const { accessToken, refreshToken } = await this.userService.login(email, password);
@@ -40,8 +40,7 @@ let AppAuthController = class AppAuthController {
             res.json({ accessToken });
         }
         catch (error) {
-            console.log(error);
-            res.status(400).send("error in login_post");
+            next(error);
         }
     }
     async logoutUser(req, res) {

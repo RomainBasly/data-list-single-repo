@@ -18,27 +18,26 @@ export class UserService {
   ) {}
 
   async registerUser(email: string, password: string) {
-    const checkIfUserExists = await this.userRepository.getUser(email);
-    if (checkIfUserExists.data && checkIfUserExists.data.length > 0) {
-      throw new UserAlreadyExistsError(ErrorMessages.ALREADY_EXISTS);
+    const user = await this.userRepository.getUserByEmail(email);
+    if (user) {
+      throw new UserAlreadyExistsError(ErrorMessages.ALREADY_EXISTING);
     }
     try {
       const hashedPassword = await this.authService.hashPassword(password);
       const newUser = { email: email, roles: { [Roles.USER]: true }, password: hashedPassword };
       await this.userRepository.create(newUser);
     } catch (error) {
-      console.error("something went wrong in the service", error);
+      console.error("something went wrong in the userservice", error);
       throw error;
     }
   }
 
   public async login(email: string, passwordInput: string): Promise<{ accessToken: string; refreshToken: string }> {
     try {
-      const dbQuery = await this.userRepository.getUser(email);
-      if (!dbQuery || !dbQuery.data) {
+      const user = await this.userRepository.getUserByEmail(email);
+      if (!user) {
         throw new UserDoNotExists(ErrorMessages.NOT_EXISTING_USER);
       }
-      const user = dbQuery.data[0];
       const passwordFromDB = user.password;
       const passwordMatchDB = await this.authService.checkCredentials(passwordInput, passwordFromDB);
 
