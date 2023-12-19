@@ -35,6 +35,13 @@ let AppUserRepository = class AppUserRepository {
     async clearUserRefreshToken(refreshToken) {
         return await supabaseClient_1.default.from("app-users").update({ refreshToken: "" }).eq("refreshToken", refreshToken);
     }
+    async getUserByRefreshToken(token) {
+        const { data, error } = await supabaseClient_1.default.from("app-users").select().eq("refreshToken", token);
+        if (error) {
+            throw new Error(`something when wrong in the appUserRepository: ${error.message}`);
+        }
+        return data ? data[0] : null;
+    }
 };
 exports.AppUserRepository = AppUserRepository;
 exports.AppUserRepository = AppUserRepository = __decorate([

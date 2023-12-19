@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NoPreexistingRefreshToken = exports.FailToGenerateTokens = exports.AuthenticationError = exports.UserDoNotExists = exports.UserAlreadyExistsError = exports.ErrorMessages = exports.BaseError = exports.errorHandler = void 0;
+exports.accessTokenError = exports.ForbiddenError = exports.JWTError = exports.NoPreexistingRefreshToken = exports.FailToGenerateTokens = exports.AuthenticationError = exports.UserDoNotExists = exports.UserAlreadyExistsError = exports.ErrorMessages = exports.BaseError = exports.errorHandler = void 0;
 // used as a middleware
 function errorHandler(err, req, res, next) {
     if (err instanceof BaseError) {
@@ -31,6 +31,9 @@ var ErrorMessages;
     ErrorMessages["INVALID_CREDENTIALS"] = "Invalid credentials";
     ErrorMessages["FAIL_TO_GENERATE_TOKENS"] = " Fail to generate Tokens";
     ErrorMessages["NO_EXISTING_REFRESH_TOKEN"] = "No existing refreshToken";
+    ErrorMessages["JWT_ERROR"] = "Error with the JWT";
+    ErrorMessages["FORBIDDEN_ERROR"] = "Method not allowed";
+    ErrorMessages["ACCESSTOKEN_ERROR"] = "AccessToken not present";
 })(ErrorMessages || (exports.ErrorMessages = ErrorMessages = {}));
 // add a class by big types of error
 class UserAlreadyExistsError extends BaseError {
@@ -63,3 +66,21 @@ class NoPreexistingRefreshToken extends BaseError {
     }
 }
 exports.NoPreexistingRefreshToken = NoPreexistingRefreshToken;
+class JWTError extends BaseError {
+    constructor(message) {
+        super(401, 2004, message);
+    }
+}
+exports.JWTError = JWTError;
+class ForbiddenError extends BaseError {
+    constructor(message) {
+        super(401, 2005, message);
+    }
+}
+exports.ForbiddenError = ForbiddenError;
+class accessTokenError extends BaseError {
+    constructor(message) {
+        super(401, 2006, message);
+    }
+}
+exports.accessTokenError = accessTokenError;

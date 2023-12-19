@@ -30,6 +30,9 @@ export enum ErrorMessages {
   INVALID_CREDENTIALS = "Invalid credentials",
   FAIL_TO_GENERATE_TOKENS = " Fail to generate Tokens",
   NO_EXISTING_REFRESH_TOKEN = "No existing refreshToken",
+  JWT_ERROR = "Error with the JWT",
+  FORBIDDEN_ERROR = "Method not allowed",
+  ACCESSTOKEN_ERROR = "AccessToken not present",
 }
 
 // add a class by big types of error
@@ -60,5 +63,20 @@ export class FailToGenerateTokens extends BaseError {
 export class NoPreexistingRefreshToken extends BaseError {
   constructor(message: ErrorMessages.NO_EXISTING_REFRESH_TOKEN) {
     super(401, 2003, message);
+  }
+}
+export class JWTError extends BaseError {
+  constructor(message: ErrorMessages.JWT_ERROR) {
+    super(401, 2004, message);
+  }
+}
+export class ForbiddenError extends BaseError {
+  constructor(message: ErrorMessages.FORBIDDEN_ERROR) {
+    super(401, 2005, message);
+  }
+}
+export class accessTokenError extends BaseError {
+  constructor(message: ErrorMessages.ACCESSTOKEN_ERROR) {
+    super(401, 2006, message);
   }
 }
