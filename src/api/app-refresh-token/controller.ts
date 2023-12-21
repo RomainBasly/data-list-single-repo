@@ -4,6 +4,7 @@ import { TokenService } from "../../domain/token/services";
 import { RefreshTokenService } from "../../domain/refreshToken/services";
 import { cookieHandler } from "../../common/helpers";
 import { AppUserRepository } from "../../infrastructure/database/repositories/AppUserRepository";
+import { ErrorMessages } from "../../domain/common/errors";
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
@@ -17,32 +18,22 @@ export class AppRefreshTokenController {
   ) {}
   async handleRefreshToken(req: Request, res: Response, next: NextFunction) {
     const cookies = req.cookies;
-    if (!cookies?.jwt) return res.sendStatus(401);
+    if (!cookies?.jwt) return res.status(401).json({ error: ErrorMessages.UNAUTHORIZED });
     const refreshTokenInCookie = cookies.jwt;
-    if (!refreshTokenSecret) throw new Error("no refreshToken in middleware");
-    if (!accessTokenSecret) throw new Error("no refreshToken in middleware");
+    if (!refreshTokenSecret) throw new Error("no refreshTokenSecret in middleware");
+    if (!accessTokenSecret) throw new Error("no accessTokenSecret in middleware");
 
     try {
       const foundUser = await this.refreshTokenService.getUserByRefreshToken(refreshTokenInCookie);
-      if (!foundUser) return res.json(401);
-      const formerRefreshToken = await this.refreshTokenService.handleTokenRefresh(
+      if (!foundUser) return res.status(401).json({ error: ErrorMessages.UNAUTHORIZED });
+      const { newAccessToken, newRefreshToken } = await this.refreshTokenService.handleTokenRefresh(
         refreshTokenInCookie,
         refreshTokenSecret,
         accessTokenSecret,
         foundUser
       );
-      if (formerRefreshToken) {
-        const newAccessToken = this.tokenService.generateAccessToken({
-          userInfo: { email: foundUser.email, roles: foundUser.roles },
-        });
-        const newRefreshToken = this.tokenService.generateRefreshToken({ email: foundUser.email });
-        if (newRefreshToken) {
-          cookieHandler(req, res, newRefreshToken);
-          console.log(newRefreshToken);
-          await this.userRepository.updateRefreshToken(newRefreshToken, foundUser.email);
-        }
-        res.json({ accessToken: newAccessToken });
-      }
+      cookieHandler(req, res, newRefreshToken);
+      res.json({ accessToken: newAccessToken });
     } catch (error) {
       next(error);
     }

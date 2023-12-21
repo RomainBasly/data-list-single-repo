@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.accessTokenError = exports.ForbiddenError = exports.JWTError = exports.NoPreexistingRefreshToken = exports.FailToGenerateTokens = exports.AuthenticationError = exports.UserDoNotExists = exports.UserAlreadyExistsError = exports.ErrorMessages = exports.BaseError = exports.errorHandler = void 0;
+exports.UnauthorizedTokenError = exports.accessTokenError = exports.ForbiddenError = exports.JWTError = exports.NoPreexistingRefreshToken = exports.FailToGenerateTokens = exports.AuthenticationError = exports.UserDoNotExists = exports.UserAlreadyExistsError = exports.ErrorMessages = exports.BaseError = exports.errorHandler = void 0;
 // used as a middleware
 function errorHandler(err, req, res, next) {
     if (err instanceof BaseError) {
@@ -34,6 +34,7 @@ var ErrorMessages;
     ErrorMessages["JWT_ERROR"] = "Error with the JWT";
     ErrorMessages["FORBIDDEN_ERROR"] = "Method not allowed";
     ErrorMessages["ACCESSTOKEN_ERROR"] = "AccessToken not present";
+    ErrorMessages["UNAUTHORIZED"] = "Unauthorized";
 })(ErrorMessages || (exports.ErrorMessages = ErrorMessages = {}));
 // add a class by big types of error
 class UserAlreadyExistsError extends BaseError {
@@ -74,7 +75,7 @@ class JWTError extends BaseError {
 exports.JWTError = JWTError;
 class ForbiddenError extends BaseError {
     constructor(message) {
-        super(401, 2005, message);
+        super(403, 2005, message);
     }
 }
 exports.ForbiddenError = ForbiddenError;
@@ -84,3 +85,9 @@ class accessTokenError extends BaseError {
     }
 }
 exports.accessTokenError = accessTokenError;
+class UnauthorizedTokenError extends BaseError {
+    constructor(message) {
+        super(401, 2007, message);
+    }
+}
+exports.UnauthorizedTokenError = UnauthorizedTokenError;

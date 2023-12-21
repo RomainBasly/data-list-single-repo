@@ -29,8 +29,8 @@ let RefreshTokenService = class RefreshTokenService {
             throw new errors_1.NoPreexistingRefreshToken(errors_1.ErrorMessages.NO_EXISTING_REFRESH_TOKEN);
         return foundUser;
     }
-    async handleTokenRefresh(refreshToken, refreshTokenSecret, accessTokenSecret, foundUser) {
-        const decodedPayload = await (0, helpers_1.verifyJwt)(refreshToken, refreshTokenSecret);
+    async handleTokenRefresh(existingRefreshToken, refreshTokenSecret, accessTokenSecret, foundUser) {
+        const decodedPayload = await (0, helpers_1.verifyJwt)(existingRefreshToken, refreshTokenSecret);
         if (!decodedPayload.email || foundUser.email !== decodedPayload.email) {
             throw new errors_1.ForbiddenError(errors_1.ErrorMessages.FORBIDDEN_ERROR);
         }
@@ -38,12 +38,18 @@ let RefreshTokenService = class RefreshTokenService {
             throw new errors_1.accessTokenError(errors_1.ErrorMessages.ACCESSTOKEN_ERROR);
         }
         const { email } = foundUser;
-        const accessToken = this.tokenService.generateRefreshToken({ email });
+        const refreshToken = this.tokenService.generateRefreshToken({ email });
+        if (!refreshToken) {
+            throw new errors_1.FailToGenerateTokens(errors_1.ErrorMessages.FAIL_TO_GENERATE_TOKENS);
+        }
+        await this.userRepository.updateRefreshToken(refreshToken, email);
+        const accessToken = this.tokenService.generateAccessToken({
+            userInfo: { email, roles: foundUser.roles },
+        });
         if (!accessToken) {
             throw new errors_1.FailToGenerateTokens(errors_1.ErrorMessages.FAIL_TO_GENERATE_TOKENS);
         }
-        await this.userRepository.updateRefreshToken(accessToken, email);
-        return accessToken;
+        return { newAccessToken: accessToken, newRefreshToken: refreshToken };
     }
 };
 exports.RefreshTokenService = RefreshTokenService;

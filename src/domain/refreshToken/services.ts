@@ -26,12 +26,12 @@ export class RefreshTokenService implements IRefreshTokenService {
   }
 
   public async handleTokenRefresh(
-    refreshToken: string,
+    existingRefreshToken: string,
     refreshTokenSecret: string,
     accessTokenSecret: string,
     foundUser: User
-  ): Promise<string> {
-    const decodedPayload = await verifyJwt(refreshToken, refreshTokenSecret);
+  ): Promise<{ newAccessToken: string; newRefreshToken: string }> {
+    const decodedPayload = await verifyJwt(existingRefreshToken, refreshTokenSecret);
     if (!decodedPayload.email || foundUser.email !== decodedPayload.email) {
       throw new ForbiddenError(ErrorMessages.FORBIDDEN_ERROR);
     }
@@ -39,12 +39,17 @@ export class RefreshTokenService implements IRefreshTokenService {
       throw new accessTokenError(ErrorMessages.ACCESSTOKEN_ERROR);
     }
     const { email } = foundUser;
-    const accessToken = this.tokenService.generateRefreshToken({ email });
+    const refreshToken = this.tokenService.generateRefreshToken({ email });
+    if (!refreshToken) {
+      throw new FailToGenerateTokens(ErrorMessages.FAIL_TO_GENERATE_TOKENS);
+    }
+    await this.userRepository.updateRefreshToken(refreshToken, email);
+    const accessToken = this.tokenService.generateAccessToken({
+      userInfo: { email, roles: foundUser.roles },
+    });
     if (!accessToken) {
       throw new FailToGenerateTokens(ErrorMessages.FAIL_TO_GENERATE_TOKENS);
     }
-
-    await this.userRepository.updateRefreshToken(accessToken, email);
-    return accessToken;
+    return { newAccessToken: accessToken, newRefreshToken: refreshToken };
   }
 }
