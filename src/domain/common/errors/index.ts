@@ -33,6 +33,7 @@ export enum ErrorMessages {
   JWT_ERROR = "Error with the JWT",
   FORBIDDEN_ERROR = "Method not allowed",
   ACCESSTOKEN_ERROR = "AccessToken not present",
+  UNAUTHORIZED = "Unauthorized",
 }
 
 // add a class by big types of error
@@ -72,11 +73,16 @@ export class JWTError extends BaseError {
 }
 export class ForbiddenError extends BaseError {
   constructor(message: ErrorMessages.FORBIDDEN_ERROR) {
-    super(401, 2005, message);
+    super(403, 2005, message);
   }
 }
 export class accessTokenError extends BaseError {
   constructor(message: ErrorMessages.ACCESSTOKEN_ERROR) {
     super(401, 2006, message);
+  }
+}
+export class UnauthorizedTokenError extends BaseError {
+  constructor(message: ErrorMessages.UNAUTHORIZED) {
+    super(401, 2007, message);
   }
 }

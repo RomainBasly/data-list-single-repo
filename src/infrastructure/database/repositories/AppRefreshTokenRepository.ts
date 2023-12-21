@@ -1,5 +1,5 @@
 import { injectable } from "tsyringe";
-import { IAppRefreshTokenRepository } from "../../../domain/authentication/types";
+import { IAppRefreshTokenRepository } from "../../../domain/token/types";
 import supabase from "../../../config/database/supabaseClient";
 import { User } from "../../../domain/user/types";
 

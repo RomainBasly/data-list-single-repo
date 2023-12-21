@@ -8,13 +8,16 @@ import {
   UserAlreadyExistsError,
   UserDoNotExists,
 } from "../common/errors";
-import { AuthService } from "../authentication/services";
+import { TokenService } from "../token/services";
+import { PasswordService } from "../password/services";
+import { User } from "./types";
 
 @injectable()
 export class UserService {
   constructor(
     @inject(AppUserRepository) private readonly userRepository: AppUserRepository,
-    @inject(AuthService) private readonly authService: AuthService
+    @inject(PasswordService) private readonly passwordService: PasswordService,
+    @inject(TokenService) private readonly tokenService: TokenService
   ) {}
 
   async registerUser(email: string, password: string) {
@@ -23,7 +26,7 @@ export class UserService {
       throw new UserAlreadyExistsError(ErrorMessages.ALREADY_EXISTING);
     }
     try {
-      const hashedPassword = await this.authService.hashPassword(password);
+      const hashedPassword = await this.passwordService.hashPassword(password);
       const newUser = { email: email, roles: { [Roles.USER]: true }, password: hashedPassword };
       await this.userRepository.create(newUser);
     } catch (error) {
@@ -39,16 +42,16 @@ export class UserService {
         throw new UserDoNotExists(ErrorMessages.NOT_EXISTING_USER);
       }
       const passwordFromDB = user.password;
-      const passwordMatchDB = await this.authService.checkCredentials(passwordInput, passwordFromDB);
+      const passwordMatchDB = await this.passwordService.checkCredentials(passwordInput, passwordFromDB);
 
       if (!passwordMatchDB) {
         throw new AuthenticationError(ErrorMessages.INVALID_CREDENTIALS);
       }
       const roles = this.addUserRole(user);
-      const accessToken = this.authService.generateAccessToken({
+      const accessToken = this.tokenService.generateAccessToken({
         userInfo: { email, roles },
       });
-      const refreshToken = this.authService.generateRefreshToken({ email });
+      const refreshToken = this.tokenService.generateRefreshToken({ email });
       if (!refreshToken || !accessToken) {
         throw new FailToGenerateTokens(ErrorMessages.FAIL_TO_GENERATE_TOKENS);
       }
@@ -67,7 +70,7 @@ export class UserService {
     return true;
   }
 
-  public addUserRole(user: any) {
+  public addUserRole(user: User) {
     const defaultRole: RoleAssignments = { [Roles.USER]: true };
     const userRolesFromDB = user.roles as RoleAssignments;
     return { ...defaultRole, ...userRolesFromDB };

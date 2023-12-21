@@ -15,13 +15,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AuthService = void 0;
+exports.TokenService = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const tsyringe_1 = require("tsyringe");
-const bcrypt_1 = __importDefault(require("bcrypt"));
 const AppUserRepository_1 = require("../../infrastructure/database/repositories/AppUserRepository");
 const AppRefreshTokenRepository_1 = require("../../infrastructure/database/repositories/AppRefreshTokenRepository");
-let AuthService = class AuthService {
+let TokenService = class TokenService {
     constructor(userRepository, refreshTokenRepository) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
@@ -38,19 +37,12 @@ let AuthService = class AuthService {
             return null;
         return jsonwebtoken_1.default.sign(payload, this.refreshTokenSecret, { expiresIn: "60d" });
     }
-    async hashPassword(password) {
-        const salt = bcrypt_1.default.genSaltSync(10);
-        return await bcrypt_1.default.hash(password, salt);
-    }
-    async checkCredentials(enteredPassword, passwordFromDB) {
-        return await bcrypt_1.default.compare(enteredPassword, passwordFromDB);
-    }
 };
-exports.AuthService = AuthService;
-exports.AuthService = AuthService = __decorate([
+exports.TokenService = TokenService;
+exports.TokenService = TokenService = __decorate([
     (0, tsyringe_1.injectable)(),
     __param(0, (0, tsyringe_1.inject)(AppUserRepository_1.AppUserRepository)),
     __param(1, (0, tsyringe_1.inject)(AppRefreshTokenRepository_1.AppRefreshTokenRepository)),
     __metadata("design:paramtypes", [AppUserRepository_1.AppUserRepository,
         AppRefreshTokenRepository_1.AppRefreshTokenRepository])
-], AuthService);
+], TokenService);

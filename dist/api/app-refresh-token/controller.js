@@ -14,28 +14,35 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppRefreshTokenController = void 0;
 const tsyringe_1 = require("tsyringe");
-const services_1 = require("../../domain/refreshToken/services");
+const services_1 = require("../../domain/token/services");
+const services_2 = require("../../domain/refreshToken/services");
+const helpers_1 = require("../../common/helpers");
+const AppUserRepository_1 = require("../../infrastructure/database/repositories/AppUserRepository");
+const errors_1 = require("../../domain/common/errors");
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 let AppRefreshTokenController = class AppRefreshTokenController {
-    constructor(refreshTokenService) {
+    constructor(refreshTokenService, tokenService, userRepository) {
         this.refreshTokenService = refreshTokenService;
+        this.tokenService = tokenService;
+        this.userRepository = userRepository;
     }
     async handleRefreshToken(req, res, next) {
         const cookies = req.cookies;
         if (!(cookies === null || cookies === void 0 ? void 0 : cookies.jwt))
-            return res.sendStatus(401);
-        const refreshToken = cookies.jwt;
+            return res.status(401).json({ error: errors_1.ErrorMessages.UNAUTHORIZED });
+        const refreshTokenInCookie = cookies.jwt;
         if (!refreshTokenSecret)
-            throw new Error("no refreshToken in middleware");
+            throw new Error("no refreshTokenSecret in middleware");
         if (!accessTokenSecret)
-            throw new Error("no refreshToken in middleware");
+            throw new Error("no accessTokenSecret in middleware");
         try {
-            const foundUser = await this.refreshTokenService.getUser(refreshToken);
+            const foundUser = await this.refreshTokenService.getUserByRefreshToken(refreshTokenInCookie);
             if (!foundUser)
-                return res.json(401);
-            const accessToken = await this.refreshTokenService.verifyToken(refreshToken, refreshTokenSecret, accessTokenSecret, foundUser);
-            res.json({ accessToken });
+                return res.status(401).json({ error: errors_1.ErrorMessages.UNAUTHORIZED });
+            const { newAccessToken, newRefreshToken } = await this.refreshTokenService.handleTokenRefresh(refreshTokenInCookie, refreshTokenSecret, accessTokenSecret, foundUser);
+            (0, helpers_1.cookieHandler)(req, res, newRefreshToken);
+            res.json({ accessToken: newAccessToken });
         }
         catch (error) {
             next(error);
@@ -45,6 +52,10 @@ let AppRefreshTokenController = class AppRefreshTokenController {
 exports.AppRefreshTokenController = AppRefreshTokenController;
 exports.AppRefreshTokenController = AppRefreshTokenController = __decorate([
     (0, tsyringe_1.injectable)(),
-    __param(0, (0, tsyringe_1.inject)(services_1.RefreshTokenService)),
-    __metadata("design:paramtypes", [services_1.RefreshTokenService])
+    __param(0, (0, tsyringe_1.inject)(services_2.RefreshTokenService)),
+    __param(1, (0, tsyringe_1.inject)(services_1.TokenService)),
+    __param(2, (0, tsyringe_1.inject)(AppUserRepository_1.AppUserRepository)),
+    __metadata("design:paramtypes", [services_2.RefreshTokenService,
+        services_1.TokenService,
+        AppUserRepository_1.AppUserRepository])
 ], AppRefreshTokenController);
