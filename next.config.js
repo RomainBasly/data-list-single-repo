@@ -6,16 +6,6 @@ const {
 /** @type {import("next").NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-
-  // async redirects() {
-  //   return [
-  //     {
-  //       source: "/:path",
-  //       destination: "https://www.simplists.net/:path",
-  //       permanent: true,
-  //     },
-  //   ];
-  // },
 };
 
 module.exports = (phase) => {
