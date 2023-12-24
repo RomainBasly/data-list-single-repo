@@ -21,7 +21,6 @@ export default function RegistrationForm() {
 
   function handleEmail(e: React.ChangeEvent<HTMLInputElement>) {
     setErrors({ ...errors, email: '' })
-    console.log(e.target.value)
     setEmail(e.target.value)
   }
   return (

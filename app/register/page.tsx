@@ -12,7 +12,7 @@ export default function Register() {
         </div>
         <div className={classes['content']}>
           <h2 className={classes['title']}>Bienvenue!</h2>
-          <h3 className={classes['subtitle']}>Connexion</h3>
+          <h3 className={classes['subtitle']}>S'enregistrer</h3>
           <RegistrationForm />
         </div>
       </div>
