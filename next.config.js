@@ -14,11 +14,6 @@ const nextConfig = {
         destination: "https://www.simplists.net/:path",
         permanent: true,
       },
-      {
-        source: "/",
-        destination: "https://www.simplists.net",
-        permanent: true,
-      },
     ];
   },
 };
