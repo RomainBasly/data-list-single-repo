@@ -10,12 +10,12 @@ const nextConfig = {
   async redirects() {
     return [
       {
-        source: "http://simplists.net",
-        destination: "https://www.simplists.net",
+        source: "/:path",
+        destination: "https://www.simplists.net/:path",
         permanent: true,
       },
       {
-        source: "https://simplists.net",
+        source: "/",
         destination: "https://www.simplists.net",
         permanent: true,
       },
