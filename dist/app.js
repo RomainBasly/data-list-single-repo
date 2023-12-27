@@ -17,6 +17,8 @@ require("./api/app-auth/controller");
 require("./api/app-users/controllers");
 const errors_1 = require("./domain/common/errors");
 const common_2 = require("./middlewares/common");
+const containerConfig_1 = require("./config/tsyringe/containerConfig");
+(0, containerConfig_1.initContainers)();
 const app = (0, express_1.default)();
 const port = 8000;
 app.use(auth_middleware_1.corsOriginCheck);

@@ -17,7 +17,7 @@ const tsyringe_1 = require("tsyringe");
 const api_1 = require("../../common/types/api");
 const AppUserRepository_1 = require("../../infrastructure/database/repositories/AppUserRepository");
 const errors_1 = require("../common/errors");
-const services_1 = require("../token/services");
+const services_1 = require("../jwtToken/services");
 const services_2 = require("../password/services");
 let UserService = class UserService {
     constructor(userRepository, passwordService, tokenService) {

@@ -14,7 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppRefreshTokenController = void 0;
 const tsyringe_1 = require("tsyringe");
-const services_1 = require("../../domain/token/services");
+const services_1 = require("../../domain/jwtToken/services");
 const services_2 = require("../../domain/refreshToken/services");
 const helpers_1 = require("../../common/helpers");
 const AppUserRepository_1 = require("../../infrastructure/database/repositories/AppUserRepository");

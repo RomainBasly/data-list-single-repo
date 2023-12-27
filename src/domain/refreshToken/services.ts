@@ -9,7 +9,7 @@ import {
   accessTokenError,
 } from "../common/errors";
 import { User } from "../user/types";
-import { TokenService } from "../token/services";
+import { TokenService } from "../jwtToken/services";
 import { verifyJwt } from "../../common/helpers";
 
 @injectable()

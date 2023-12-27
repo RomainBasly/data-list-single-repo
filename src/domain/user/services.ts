@@ -8,7 +8,7 @@ import {
   UserAlreadyExistsError,
   UserDoNotExists,
 } from "../common/errors";
-import { TokenService } from "../token/services";
+import { TokenService } from "../jwtToken/services";
 import { PasswordService } from "../password/services";
 import { User } from "./types";
 
