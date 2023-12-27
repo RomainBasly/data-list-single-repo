@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -25,33 +25,22 @@ let NodeMailerService = class NodeMailerService {
     constructor(appEmailVerificationTokenRepository) {
         var _a;
         this.appEmailVerificationTokenRepository = appEmailVerificationTokenRepository;
-        this.logoUrlPath = (_a = process.env.LOGO_URL_PATH) !== null && _a !== void 0 ? _a : "";
+        this.logoUrlPath = (_a = process.env.LOGO_URL_PATH) !== null && _a !== void 0 ? _a : '';
         this.transporter = nodemailer_1.default.createTransport(Object.assign({}, email_1.mailtrapConfig));
     }
     async sendEmail(email) {
-        try {
-            const code = await this.generateAndPublishCode(email);
-            const info = await this.transporter.sendMail(Object.assign(Object.assign({}, email_1.emailConfig), { to: email, html: await this.generateHtml(code, this.logoUrlPath) }));
-            console.log("Message sent: %s", info.messageId);
-        }
-        catch (error) {
-            console.error(error);
-        }
+        const code = await this.generateAndPublishCode(email);
+        await this.transporter.sendMail(Object.assign(Object.assign({}, email_1.emailConfig), { to: email, html: await this.generateHtml(code, this.logoUrlPath) }));
     }
     async generateAndPublishCode(email) {
         const randomNumber = Math.floor(Math.random() * 1000000);
         const expiryDate = new Date(Date.now() + 3600 * 24 * 1000);
         const formattedDate = expiryDate.toISOString();
-        try {
-            await this.appEmailVerificationTokenRepository.registerToDB(email, randomNumber, formattedDate);
-            return randomNumber;
-        }
-        catch (error) {
-            throw new Error("We have a situation in the generate and publish code");
-        }
+        await this.appEmailVerificationTokenRepository.registerToDB(email, randomNumber, formattedDate);
+        return randomNumber;
     }
     async generateHtml(code, logoUrlPath) {
-        return await ejs_1.default.renderFile(path_1.default.join(__dirname, "emailTemplate.ejs"), {
+        return await ejs_1.default.renderFile(path_1.default.join(__dirname, 'emailTemplate.ejs'), {
             code,
             logoUrlPath,
         });

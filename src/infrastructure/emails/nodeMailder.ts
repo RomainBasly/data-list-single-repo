@@ -19,28 +19,21 @@ export default class NodeMailerService {
   });
 
   async sendEmail(email: string) {
-    try {
-      const code = await this.generateAndPublishCode(email);
-      await this.transporter.sendMail({
-        ...emailConfig,
-        to: email,
-        html: await this.generateHtml(code, this.logoUrlPath),
-      });
-    } catch (error) {
-      console.error(error);
-    }
+    const code = await this.generateAndPublishCode(email);
+    await this.transporter.sendMail({
+      ...emailConfig,
+      to: email,
+      html: await this.generateHtml(code, this.logoUrlPath),
+    });
   }
 
   private async generateAndPublishCode(email: string) {
     const randomNumber = Math.floor(Math.random() * 1000000);
     const expiryDate = new Date(Date.now() + 3600 * 24 * 1000);
     const formattedDate = expiryDate.toISOString();
-    try {
-      await this.appEmailVerificationTokenRepository.registerToDB(email, randomNumber, formattedDate);
-      return randomNumber;
-    } catch (error) {
-      throw new Error('We have a situation in the generate and publish code');
-    }
+
+    await this.appEmailVerificationTokenRepository.registerToDB(email, randomNumber, formattedDate);
+    return randomNumber;
   }
   async generateHtml(code: number, logoUrlPath: string) {
     return await ejs.renderFile(path.join(__dirname, 'emailTemplate.ejs'), {

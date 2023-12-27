@@ -12,20 +12,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppEmailVerificationTokenRepository = void 0;
 const tsyringe_1 = require("tsyringe");
 const supabaseClient_1 = __importDefault(require("../../../config/database/supabaseClient"));
+const errors_1 = require("../../../domain/common/errors");
 let AppEmailVerificationTokenRepository = class AppEmailVerificationTokenRepository {
     async registerToDB(email_address, verification_code, formatted_expiry_date) {
-        console.log("dans le AppEMailRepo1", email_address, verification_code, formatted_expiry_date);
-        const { data, error } = await supabaseClient_1.default.rpc("set_verification_code_into_DB", {
+        const { data, error } = await supabaseClient_1.default.rpc('set_verification_code_into_DB', {
             email_address,
             verification_code,
             formatted_expiry_date,
         });
-        console.log("dans le AppEMailRepo2", data, error);
-        if (error) {
-            throw new Error("Not being good");
+        console.log('dans le AppEMailRepo2', data, error);
+        if (error.code === '23505') {
+            throw new errors_1.UserAlreadyExistsError(errors_1.ErrorMessages.ALREADY_EXISTING);
         }
         else {
-            console.log("user registration started");
+            console.log('user registration started');
         }
     }
 };
