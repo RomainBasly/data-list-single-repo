@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { inject, injectable } from "tsyringe";
-import { TokenService } from "../../domain/token/services";
+import { TokenService } from "../../domain/jwtToken/services";
 import { RefreshTokenService } from "../../domain/refreshToken/services";
 import { cookieHandler } from "../../common/helpers";
 import { AppUserRepository } from "../../infrastructure/database/repositories/AppUserRepository";

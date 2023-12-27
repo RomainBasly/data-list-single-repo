@@ -34,6 +34,7 @@ export enum ErrorMessages {
   FORBIDDEN_ERROR = "Method not allowed",
   ACCESSTOKEN_ERROR = "AccessToken not present",
   UNAUTHORIZED = "Unauthorized",
+  VALIDATION_ERROR = "Validation Error",
 }
 
 // add a class by big types of error
@@ -84,5 +85,10 @@ export class accessTokenError extends BaseError {
 export class UnauthorizedTokenError extends BaseError {
   constructor(message: ErrorMessages.UNAUTHORIZED) {
     super(401, 2007, message);
+  }
+}
+export class ValidationError extends BaseError {
+  constructor(message: ErrorMessages.VALIDATION_ERROR, detailedMessage: string) {
+    super(400, 3001, `${message}: ${detailedMessage}`);
   }
 }

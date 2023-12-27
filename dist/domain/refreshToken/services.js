@@ -16,7 +16,7 @@ exports.RefreshTokenService = void 0;
 const tsyringe_1 = require("tsyringe");
 const AppUserRepository_1 = require("../../infrastructure/database/repositories/AppUserRepository");
 const errors_1 = require("../common/errors");
-const services_1 = require("../token/services");
+const services_1 = require("../jwtToken/services");
 const helpers_1 = require("../../common/helpers");
 let RefreshTokenService = class RefreshTokenService {
     constructor(userRepository, tokenService) {

@@ -13,7 +13,9 @@ import "./api/app-auth/controller";
 import "./api/app-users/controllers";
 import { errorHandler } from "./domain/common/errors";
 import { limiter as rateIPLimiter } from "./middlewares/common";
+import { initContainers } from "./config/tsyringe/containerConfig";
 
+initContainers();
 const app: Express = express();
 const port = 8000;
 

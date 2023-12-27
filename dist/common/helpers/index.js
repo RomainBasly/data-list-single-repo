@@ -21,7 +21,7 @@ function cookieHandler(req, res, refreshToken) {
     return res.cookie("jwt", refreshToken, {
         httpOnly: true,
         sameSite: "none",
-        secure: true,
+        secure: true, // in dev mode use false
         maxAge: 24 * 60 * 60 * 1000,
     });
 }

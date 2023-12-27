@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UnauthorizedTokenError = exports.accessTokenError = exports.ForbiddenError = exports.JWTError = exports.NoPreexistingRefreshToken = exports.FailToGenerateTokens = exports.AuthenticationError = exports.UserDoNotExists = exports.UserAlreadyExistsError = exports.ErrorMessages = exports.BaseError = exports.errorHandler = void 0;
+exports.ValidationError = exports.UnauthorizedTokenError = exports.accessTokenError = exports.ForbiddenError = exports.JWTError = exports.NoPreexistingRefreshToken = exports.FailToGenerateTokens = exports.AuthenticationError = exports.UserDoNotExists = exports.UserAlreadyExistsError = exports.ErrorMessages = exports.BaseError = exports.errorHandler = void 0;
 // used as a middleware
 function errorHandler(err, req, res, next) {
     if (err instanceof BaseError) {
@@ -35,6 +35,7 @@ var ErrorMessages;
     ErrorMessages["FORBIDDEN_ERROR"] = "Method not allowed";
     ErrorMessages["ACCESSTOKEN_ERROR"] = "AccessToken not present";
     ErrorMessages["UNAUTHORIZED"] = "Unauthorized";
+    ErrorMessages["VALIDATION_ERROR"] = "Validation Error";
 })(ErrorMessages || (exports.ErrorMessages = ErrorMessages = {}));
 // add a class by big types of error
 class UserAlreadyExistsError extends BaseError {
@@ -91,3 +92,9 @@ class UnauthorizedTokenError extends BaseError {
     }
 }
 exports.UnauthorizedTokenError = UnauthorizedTokenError;
+class ValidationError extends BaseError {
+    constructor(message, detailedMessage) {
+        super(400, 3001, `${message}: ${detailedMessage}`);
+    }
+}
+exports.ValidationError = ValidationError;
