@@ -1,7 +1,9 @@
 export const allowedOrigins = [
-  "http://localhost:3000",
-  "http://localhost:8000",
-  "https://data-list-collaborative.vercel.app",
+  'http://localhost:3000',
+  'http://localhost:8000',
+  'https://data-list-collaborative.vercel.app',
+  'https://simplists.net',
+  'https://www.simplists.net',
 ];
 
 export const corsOptions = {
@@ -9,7 +11,7 @@ export const corsOptions = {
     if ((origin && allowedOrigins.indexOf(origin) !== -1) || !origin) {
       callback(null, true);
     } else {
-      callback(new Error("not allowed by CORS policies"), false);
+      callback(new Error('not allowed by CORS policies'), false);
     }
   },
   credentials: true,
