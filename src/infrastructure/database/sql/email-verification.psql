@@ -1,6 +1,6 @@
 -- For supabase, set the two first lines with the UI and begin the declaration from DECLARE
 
-CREATE OR REPLACE FUNCTION set_verification_code_into_DB(email_address text, verification_code integer, formatted_expiry_date timestamptz)
+CREATE OR REPLACE FUNCTION set_verification_code_into_DB(email_address text, verification_code varchar, formatted_expiry_date timestamptz)
 RETURNS void AS $$
 
 
@@ -11,7 +11,6 @@ BEGIN
 INSERT INTO public."app-users" (email, is_email_verified)
 VALUES (email_address, false)
 RETURNING user_id INTO new_user_id;
-
 
 INSERT INTO public."app-email-verification-token" (user_id, code, expiry_date, is_user_email_verified)
 VALUES (new_user_id, verification_code, formatted_expiry_date, false);

@@ -4,7 +4,7 @@ import { ErrorMessages, UserAlreadyExistsError } from '../../../domain/common/er
 
 @injectable()
 export class AppEmailVerificationTokenRepository {
-  public async registerToDB(email_address: string, verification_code: number, formatted_expiry_date: string) {
+  public async registerToDB(email_address: string, verification_code: string, formatted_expiry_date: string) {
     const { data, error } = await supabase.rpc('set_verification_code_into_DB', {
       email_address,
       verification_code,

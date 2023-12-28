@@ -38,11 +38,15 @@ let NodeMailerService = class NodeMailerService {
         }
     }
     async generateAndPublishCode(email) {
-        const randomNumber = Math.floor(Math.random() * 1000000);
+        let verificationCode = '';
+        for (let i = 0; i < 6; i++) {
+            const randomNumber = Math.floor(Math.random() * 10);
+            verificationCode += randomNumber.toString();
+        }
         const expiryDate = new Date(Date.now() + 3600 * 24 * 1000);
         const formattedDate = expiryDate.toISOString();
-        await this.appEmailVerificationTokenRepository.registerToDB(email, randomNumber, formattedDate);
-        return randomNumber;
+        await this.appEmailVerificationTokenRepository.registerToDB(email, verificationCode, formattedDate);
+        return verificationCode;
     }
     async generateHtml(code, logoUrlPath) {
         try {
