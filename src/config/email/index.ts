@@ -1,6 +1,6 @@
 export const emailConfig = {
   from: process.env.EMAIL_SENDER,
-  subject: 'Le code de vérification de votre email',
+  subject: 'Simplists - Vérification de votre email',
 };
 
 export const mailtrapConfig = {
