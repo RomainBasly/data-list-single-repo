@@ -5,7 +5,7 @@ export interface BackendError {
 }
 
 export enum errorTypes {
-  ALREADY_EXISTING = "Vous existez déjà dans la base de données",
+  ALREADY_EXISTING = "Vous disposez déjà d'un compte, connectez-vous",
   NOT_EXISTING_USER = "Vous n'avez pas de compte à cette adresse",
   INVALID_CREDENTIALS = "L'email et le mot de passe ne correspondent pas",
   DEFAULT = "Une erreur inattendue est survenue",

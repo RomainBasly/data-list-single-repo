@@ -4,6 +4,8 @@ import classes from '../Login/classes.module.scss'
 import Link from 'next/link'
 import { sanitize } from 'isomorphic-dompurify'
 import { validateRegisterFormInputs } from '@/Services/validation'
+import EmailVerificationApi from '@/api/Back/EmailVerificationApi'
+import { getErrorMessage } from '@/Services/errorHandlingService'
 
 export default function RegistrationForm() {
   const [email, setEmail] = useState<string>('')
@@ -16,6 +18,16 @@ export default function RegistrationForm() {
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors)
       return
+    }
+    const body = { email }
+
+    try {
+      const response = await EmailVerificationApi.getInstance().sendVerificationEmail(
+        body,
+      )
+    } catch (error) {
+      const errorMessage = getErrorMessage(error)
+      setErrors({ ...errors, form: errorMessage })
     }
   }
 
@@ -40,7 +52,7 @@ export default function RegistrationForm() {
         </button>
         {errors && <div className={classes['error']}>{errors.form}</div>}
         <Link
-          href="/register"
+          href="/login"
           className={classes['registration-button-container']}
         >
           <button className={classes['registration-button']}>
