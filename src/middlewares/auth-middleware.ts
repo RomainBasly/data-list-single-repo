@@ -24,20 +24,24 @@ export const verifyRequestApiKey = (req: IRequest, res: Response, next: NextFunc
 };
 
 export const verifyUserAccessToken = (req: IRequest, res: Response, next: NextFunction) => {
-  const authHeader = req.headers['authorization'];
-  if (!authHeader) return res.sendStatus(401);
-  const token = authHeader.split(' ')[1];
-  if (!accessTokenSecret) throw new Error('no accessToken accessible in middleware (verifyToken)');
+  try {
+    const authHeader = req.headers['authorization'];
+    if (!authHeader) return res.sendStatus(401);
+    const token = authHeader.split(' ')[1];
+    if (!accessTokenSecret) throw new Error('no accessToken accessible in middleware (verifyToken)');
 
-  const decodedToken = jwt.verify(token, accessTokenSecret) as JwtPayloadAccessToken;
-  jwt.verify(token, accessTokenSecret, (err, decoded) => {
-    if (err) {
-      return res.sendStatus(403);
-    }
-    req.email = decodedToken.userInfo.email;
-    req.roles = decodedToken.userInfo.roles;
-    next();
-  });
+    const decodedToken = jwt.verify(token, accessTokenSecret) as JwtPayloadAccessToken;
+    jwt.verify(token, accessTokenSecret, (err, decoded) => {
+      if (err) {
+        throw err;
+      }
+      req.email = decodedToken.userInfo.email;
+      req.roles = decodedToken.userInfo.roles;
+      next();
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const corsOriginCheck = (req: Request, res: Response, next: NextFunction) => {

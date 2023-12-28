@@ -20,11 +20,15 @@ export default class NodeMailerService {
 
   async sendEmail(email: string) {
     const code = await this.generateAndPublishCode(email);
-    await this.transporter.sendMail({
-      ...emailConfig,
-      to: email,
-      html: await this.generateHtml(code, this.logoUrlPath),
-    });
+    try {
+      await this.transporter.sendMail({
+        ...emailConfig,
+        to: email,
+        html: await this.generateHtml(code, this.logoUrlPath),
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   private async generateAndPublishCode(email: string) {
@@ -35,10 +39,15 @@ export default class NodeMailerService {
     await this.appEmailVerificationTokenRepository.registerToDB(email, randomNumber, formattedDate);
     return randomNumber;
   }
+
   async generateHtml(code: number, logoUrlPath: string) {
-    return await ejs.renderFile(path.join(__dirname, 'emailTemplate.ejs'), {
-      code,
-      logoUrlPath,
-    });
+    try {
+      return await ejs.renderFile(path.join(__dirname, 'emailTemplate.ejs'), {
+        code,
+        logoUrlPath,
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 }

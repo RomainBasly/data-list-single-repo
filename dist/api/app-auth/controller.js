@@ -30,8 +30,8 @@ let AppAuthController = class AppAuthController {
         try {
             const { email, password } = req.body;
             const { accessToken, refreshToken } = await this.userService.login(email, password);
-            (0, assert_1.default)(refreshToken, "problem with refreshToken inside user login service");
-            (0, assert_1.default)(accessToken, "problem with refreshToken inside user login service");
+            (0, assert_1.default)(refreshToken, 'problem with refreshToken inside user login service');
+            (0, assert_1.default)(accessToken, 'problem with refreshToken inside user login service');
             (0, helpers_1.cookieHandler)(req, res, refreshToken);
             res.json({ accessToken });
         }
@@ -46,10 +46,10 @@ let AppAuthController = class AppAuthController {
         const refreshToken = cookies.jwt;
         const isLoggedOut = await this.userService.logoutUser(refreshToken);
         if (!isLoggedOut) {
-            res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true, maxAge: 24 * 60 * 60 * 1000 });
+            res.clearCookie('jwt', { httpOnly: true, sameSite: 'none', secure: true, maxAge: 24 * 60 * 60 * 1000 });
             return res.send(204);
         }
-        res.clearCookie("jwt", { httpOnly: true, sameSite: "none", secure: true, maxAge: 24 * 60 * 60 * 1000 });
+        res.clearCookie('jwt', { httpOnly: true, sameSite: 'none', secure: true, maxAge: 24 * 60 * 60 * 1000 });
         res.sendStatus(204);
     }
 };

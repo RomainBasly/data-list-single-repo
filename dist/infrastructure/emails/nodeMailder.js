@@ -30,7 +30,12 @@ let NodeMailerService = class NodeMailerService {
     }
     async sendEmail(email) {
         const code = await this.generateAndPublishCode(email);
-        await this.transporter.sendMail(Object.assign(Object.assign({}, email_1.emailConfig), { to: email, html: await this.generateHtml(code, this.logoUrlPath) }));
+        try {
+            await this.transporter.sendMail(Object.assign(Object.assign({}, email_1.emailConfig), { to: email, html: await this.generateHtml(code, this.logoUrlPath) }));
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
     async generateAndPublishCode(email) {
         const randomNumber = Math.floor(Math.random() * 1000000);
@@ -40,10 +45,15 @@ let NodeMailerService = class NodeMailerService {
         return randomNumber;
     }
     async generateHtml(code, logoUrlPath) {
-        return await ejs_1.default.renderFile(path_1.default.join(__dirname, 'emailTemplate.ejs'), {
-            code,
-            logoUrlPath,
-        });
+        try {
+            return await ejs_1.default.renderFile(path_1.default.join(__dirname, 'emailTemplate.ejs'), {
+                code,
+                logoUrlPath,
+            });
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
 };
 NodeMailerService = __decorate([

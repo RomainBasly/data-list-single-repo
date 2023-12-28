@@ -20,9 +20,10 @@ let AppEmailVerificationTokenRepository = class AppEmailVerificationTokenReposit
             verification_code,
             formatted_expiry_date,
         });
-        console.log('dans le AppEMailRepo2', data, error);
-        if (error.code === '23505') {
-            throw new errors_1.UserAlreadyExistsError(errors_1.ErrorMessages.ALREADY_EXISTING);
+        if (error) {
+            if (error.code === '23505') {
+                throw new errors_1.UserAlreadyExistsError(errors_1.ErrorMessages.ALREADY_EXISTING);
+            }
         }
         else {
             console.log('user registration started');
