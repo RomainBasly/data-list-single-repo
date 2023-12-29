@@ -6,6 +6,7 @@ import { sanitize } from 'isomorphic-dompurify'
 import { validateRegisterFormInputs } from '@/Services/validation'
 import EmailVerificationApi from '@/api/Back/EmailVerificationApi'
 import { getErrorMessage } from '@/Services/errorHandlingService'
+import { useRouter } from 'next/navigation'
 
 export default function RegistrationForm() {
   const [email, setEmail] = useState<string>('')
@@ -13,6 +14,7 @@ export default function RegistrationForm() {
 
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()
+    const router = useRouter()
     const sanitizedEmail = sanitize(email)
     const formErrors = validateRegisterFormInputs(sanitizedEmail)
     if (Object.keys(formErrors).length > 0) {
@@ -25,6 +27,9 @@ export default function RegistrationForm() {
       const response = await EmailVerificationApi.getInstance().sendVerificationEmail(
         body,
       )
+      if (response) {
+        router.push('/verify-code')
+      }
     } catch (error) {
       console.log('error in sendForm', error)
       const errorMessage = getErrorMessage(error)
