@@ -43,7 +43,6 @@ export default abstract class BaseApiService {
     url: URL,
     body: { [key: string]: unknown } = {}
   ): Promise<T> {
-    console.log("postRequest function", url, body);
     const response = await this.sendRequest(
       async () =>
         await fetch(url, {
@@ -95,7 +94,7 @@ export default abstract class BaseApiService {
 
   protected buildHeaders(contentType: ContentType) {
     const headers = new Headers();
-    assert(this.apiKey, "APIkey fucked up dude");
+    assert(this.apiKey, "APIkey missing");
     if (contentType === ContentType.JSON) {
       headers.set("Content-Type", contentType);
       headers.set("X-API-KEY", this.apiKey);

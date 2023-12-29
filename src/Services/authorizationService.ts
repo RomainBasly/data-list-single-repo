@@ -26,10 +26,8 @@ export default class AuthorizationService {
 
     try {
       const decoded = jwt.decode(tokenString);
-      console.log("Decoded JWT:", decoded);
       return decoded || null;
     } catch (error) {
-      console.error("Invalid JWT", error);
       return null;
     }
   }
