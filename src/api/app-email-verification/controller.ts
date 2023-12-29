@@ -17,7 +17,7 @@ export class AppEmailVerificationController {
     try {
       const verifiedObject = await this.appEmailValidation.validateEmail(email);
       await this.nodeMailerService.sendEmail(verifiedObject.email);
-      res.sendStatus(200);
+      res.status(200).json({ message: 'Email sent successfully' });
     } catch (error) {
       console.log('error get in the controller', error);
       next(error);
