@@ -11,10 +11,10 @@ import { useRouter } from 'next/navigation'
 export default function RegistrationForm() {
   const [email, setEmail] = useState<string>('')
   const [errors, setErrors] = useState<{ [key: string]: string }>()
+  const router = useRouter()
 
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()
-    const router = useRouter()
     const sanitizedEmail = sanitize(email)
     const formErrors = validateRegisterFormInputs(sanitizedEmail)
     if (Object.keys(formErrors).length > 0) {
