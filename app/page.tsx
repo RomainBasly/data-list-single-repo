@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import classes from './classes.module.scss'
-import { Loader } from '@/components/Materials/Loader'
+import { Loader } from '@/components/Elements/Loader'
 import { LandingHeader } from '@/components/Elements/Headers/LandingHeader'
 
 export default function Home({}) {

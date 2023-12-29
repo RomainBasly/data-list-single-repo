@@ -1,8 +1,9 @@
+import React from 'react'
 import classes from './classes.module.scss'
 
-export function Loader() {
+export default function LoadingMaterial() {
   return (
-    <div className={classes['root']}>
+    <div>
       <svg className={classes['rotating-circle']} viewBox="0 0 100 100">
         <defs>
           <linearGradient id="grad1" x1="0%" y1="0%" x2="80%" y2="0%">
@@ -26,7 +27,6 @@ export function Loader() {
           strokeLinecap="round"
         />
       </svg>
-      <p>Chargement en cours...</p>
     </div>
   )
 }

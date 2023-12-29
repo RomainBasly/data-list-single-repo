@@ -7,10 +7,12 @@ import { validateRegisterFormInputs } from '@/Services/validation'
 import EmailVerificationApi from '@/api/Back/EmailVerificationApi'
 import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
+import Button from '@/components/Materials/Button'
 
 export default function RegistrationForm() {
   const [email, setEmail] = useState<string>('')
   const [errors, setErrors] = useState<{ [key: string]: string }>()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const router = useRouter()
 
   async function sendForm(e: { preventDefault: () => void }) {
@@ -52,9 +54,15 @@ export default function RegistrationForm() {
         {errors && <div className={classes['error']}>{errors.email}</div>}
       </div>
       <div className={classes['button-container']}>
-        <button className={classes['connexion-button']} onClick={sendForm}>
+        <Button
+          onClick={sendForm}
+          text={"S'enregistrer"}
+          isLoading={true}
+          className={classes['connexion-button']}
+        ></Button>
+        {/* <button className={classes['connexion-button']} onClick={sendForm}>
           S'enregistrer
-        </button>
+        </button> */}
         {errors && <div className={classes['error']}>{errors.form}</div>}
         <Link
           href="/login"
