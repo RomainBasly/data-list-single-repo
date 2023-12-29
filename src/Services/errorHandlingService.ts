@@ -20,6 +20,7 @@ export const getErrorMessage = (error: BackendError | unknown): string => {
 };
 
 export function handleBackendError(error: BackendError) {
+  console.log("error in handleBackendError", error);
   switch (error.errorCode) {
     case 1001:
       return errorTypes.ALREADY_EXISTING;

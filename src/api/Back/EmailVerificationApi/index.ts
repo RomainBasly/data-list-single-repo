@@ -31,6 +31,7 @@ export default class EmailVerificationApi extends BaseApiService {
     try {
       return await this.postRequest<any>(url, params);
     } catch (error) {
+      console.log("error in the catch", error);
       if (error instanceof Response) {
         const errorBody: BackendError = await error.json();
         throw errorBody;

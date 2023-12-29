@@ -26,6 +26,7 @@ export default function RegistrationForm() {
         body,
       )
     } catch (error) {
+      console.log('error in sendForm', error)
       const errorMessage = getErrorMessage(error)
       setErrors({ ...errors, form: errorMessage })
     }
