@@ -29,9 +29,8 @@ let AppEmailVerificationController = class AppEmailVerificationController {
         const email = req.body;
         try {
             const verifiedObject = await this.appEmailValidation.validateEmail(email);
-            console.log('verifiedObject', verifiedObject);
             await this.nodeMailerService.sendEmail(verifiedObject.email);
-            res.sendStatus(200);
+            res.status(200).json({ message: 'Email sent successfully' });
         }
         catch (error) {
             console.log('error get in the controller', error);

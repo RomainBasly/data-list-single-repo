@@ -2,9 +2,11 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.corsOptions = exports.allowedOrigins = void 0;
 exports.allowedOrigins = [
-    "http://localhost:3000",
-    "http://localhost:8000",
-    "https://data-list-collaborative.vercel.app",
+    'http://localhost:3000',
+    'http://localhost:8000',
+    'https://data-list-collaborative.vercel.app',
+    'https://simplists.net',
+    'https://www.simplists.net',
 ];
 exports.corsOptions = {
     origin: (origin, callback) => {
@@ -12,7 +14,7 @@ exports.corsOptions = {
             callback(null, true);
         }
         else {
-            callback(new Error("not allowed by CORS policies"), false);
+            callback(new Error('not allowed by CORS policies'), false);
         }
     },
     credentials: true,

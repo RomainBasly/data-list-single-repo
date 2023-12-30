@@ -21,8 +21,6 @@ export default class NodeMailerService {
   async sendEmail(email: string) {
     const code = await this.generateAndPublishCode(email);
     try {
-      console.log('mailTrapConfig', mailtrapConfig);
-      console.log('email config', emailConfig);
       await this.transporter.sendMail({
         ...emailConfig,
         to: email,

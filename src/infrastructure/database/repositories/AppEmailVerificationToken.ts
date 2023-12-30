@@ -10,9 +10,11 @@ export class AppEmailVerificationTokenRepository {
       verification_code,
       formatted_expiry_date,
     });
+    console.log('data', data);
+    console.log('error', error);
 
     if (error) {
-      if (error.code === '23505') {
+      if (error.code === 'P0001') {
         throw new UserAlreadyExistsError(ErrorMessages.ALREADY_EXISTING);
       }
     } else {
