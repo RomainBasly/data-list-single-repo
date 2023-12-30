@@ -12,9 +12,18 @@ type IProps = {
 
 export default function Button(props: IProps) {
   return (
-    <div className={classNames(classes['root'], props.className)}>
-      {props.isLoading && <Loader />}
-      <button onClick={props.onClick}>{props.text}</button>
-    </div>
+    <button
+      className={classNames(classes['root'], props.className)}
+      onClick={props.onClick}
+    >
+      <div className={classes['loader-wrapper']}>
+        {props.isLoading ? (
+          <Loader />
+        ) : (
+          <div className={classes['loader-placeholder']}></div>
+        )}
+      </div>
+      {props.text}
+    </button>
   )
 }

@@ -1,7 +1,11 @@
-.rotating-circle {
-  width: 100%;
-  height: 100%;
-  animation: rotate 0.7s ease-in infinite;
+.root {
+  display: flex;
+  align-items: center;
+  .rotating-circle {
+    width: 100%;
+    max-width: 20px;
+    animation: rotate 0.7s ease-in infinite;
+  }
 }
 
 @keyframes rotate {

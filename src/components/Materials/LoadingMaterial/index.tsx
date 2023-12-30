@@ -3,7 +3,7 @@ import classes from './classes.module.scss'
 
 export default function LoadingMaterial() {
   return (
-    <div>
+    <div className={classes['root']}>
       <svg className={classes['rotating-circle']} viewBox="0 0 100 100">
         <defs>
           <linearGradient id="grad1" x1="0%" y1="0%" x2="80%" y2="0%">

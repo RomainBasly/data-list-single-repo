@@ -8,6 +8,7 @@ import EmailVerificationApi from '@/api/Back/EmailVerificationApi'
 import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/Materials/Button'
+import UserStore from '@/Stores/UserStore'
 
 export default function RegistrationForm() {
   const [email, setEmail] = useState<string>('')
@@ -26,13 +27,17 @@ export default function RegistrationForm() {
     const body = { email }
 
     try {
+      setIsLoading(!isLoading)
       const response = await EmailVerificationApi.getInstance().sendVerificationEmail(
         body,
       )
       if (response) {
-        router.push('/verify-code')
+        setIsLoading(!isLoading)
+        UserStore.getInstance().setEmail(email)
+        router.push('/register/verify-code')
       }
     } catch (error) {
+      setIsLoading(false)
       const errorMessage = getErrorMessage(error)
       setErrors({ ...errors, form: errorMessage })
     }
@@ -57,12 +62,9 @@ export default function RegistrationForm() {
         <Button
           onClick={sendForm}
           text={"S'enregistrer"}
-          isLoading={true}
+          isLoading={isLoading}
           className={classes['connexion-button']}
         ></Button>
-        {/* <button className={classes['connexion-button']} onClick={sendForm}>
-          S'enregistrer
-        </button> */}
         {errors && <div className={classes['error']}>{errors.form}</div>}
         <Link
           href="/login"
