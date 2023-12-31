@@ -1,0 +1,53 @@
+.root {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  flex-direction: column;
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-width: 500px;
+    max-width: 600px;
+    border-radius: 10px;
+    border: 1px solid #4f5d75;
+    gap: 20px;
+    background-color: #f5f3f4;
+    padding: 40px 15px;
+    margin: 10px;
+    justify-content: space-around;
+
+    @media screen and (max-width: 500px) {
+      min-width: 390px;
+    }
+    @media screen and (max-width: 400px) {
+      min-width: 350px;
+    }
+    @media screen and (max-width: 360px) {
+      min-width: 320px;
+    }
+    @media screen and (max-width: 320px) {
+      min-width: 300px;
+    }
+
+    .top {
+      display: flex;
+      gap: 5px;
+      border: 1px solid orange;
+      padding: 5px;
+      border-radius: 4px;
+      color: #343a40;
+      .icon {
+        display: flex;
+        align-items: center;
+        width: 20px;
+      }
+    }
+
+    .title,
+    .subtitle {
+      text-align: center;
+    }
+  }
+}

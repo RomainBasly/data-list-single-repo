@@ -9,6 +9,10 @@ export type ILayoutProps = {
 export default function Layout({ children, pageType }: ILayoutProps) {
   return (
     <>
+      <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+      ></meta>
       {pageType !== 'login' && pageType !== 'register' && (
         <>
           <Header />

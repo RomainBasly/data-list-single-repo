@@ -7,6 +7,7 @@ import { validateConnectFormInputs } from '@/Services/validation'
 import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
 import CookieService from '@/Services/CookieService'
+import Button from '@/components/Materials/Button'
 
 export type IBody = {
   email: string
@@ -17,6 +18,7 @@ export function LoginForm() {
   const [email, setEmail] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [errors, setErrors] = useState<{ [key: string]: string }>()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const router = useRouter()
 
   async function sendForm(e: { preventDefault: () => void }) {
@@ -32,6 +34,7 @@ export function LoginForm() {
       const response = await AuthenticationApi.getInstance().login(body)
       response.accessToken &&
         CookieService.getInstance().setCookie('jwt', response.accessToken)
+      setIsLoading(!isLoading)
       router.push('/private-space')
     } catch (error) {
       const errorMessage = getErrorMessage(error)
@@ -39,6 +42,7 @@ export function LoginForm() {
         ...errors,
         form: errorMessage,
       })
+      setIsLoading(!isLoading)
     }
   }
 
@@ -70,9 +74,12 @@ export function LoginForm() {
         {errors && <div className={classes['error']}>{errors.password}</div>}
       </div>
       <div className={classes['button-container']}>
-        <button className={classes['connexion-button']} onClick={sendForm}>
-          Se connecter
-        </button>
+        <Button
+          text="Se connecter"
+          onClick={sendForm}
+          className={classes['connexion-button']}
+          isLoading={isLoading}
+        ></Button>
         {errors && <div className={classes['error']}>{errors.form}</div>}
         <Link
           href="/register"

@@ -40,14 +40,10 @@ export default function Header() {
   return (
     <div className={classes['root']}>
       <Logo
-       
         src={String(logo.src)}
-       
         alt={'Logo'}
-       
         className={classes['logo']}
         onclick={navigateToHome}
-     
         width={1018}
         height={374}
       />
