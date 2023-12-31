@@ -1,6 +1,6 @@
 import classes from './classes.module.scss'
 import { LandingHeader } from '@/components/Elements/Headers/LandingHeader'
-import { LoginForm } from '@/components/Elements/Form/Login'
+import { LoginForm } from '@/components/Elements/Form/LoginForm'
 import Layout from '@/components/Elements/Layout'
 
 export default function Login() {

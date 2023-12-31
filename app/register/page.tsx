@@ -1,4 +1,4 @@
-import RegistrationForm from '@/components/Elements/Form/Registration'
+import RegistrationForm from '@/components/Elements/Form/RegistrationForm'
 import { LandingHeader } from '@/components/Elements/Headers/LandingHeader'
 import Layout from '@/components/Elements/Layout'
 import classes from '../login/classes.module.scss'

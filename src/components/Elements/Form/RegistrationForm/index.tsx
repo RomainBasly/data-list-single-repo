@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import classes from '../Login/classes.module.scss'
 import Link from 'next/link'
 import { sanitize } from 'isomorphic-dompurify'
-import { validateRegisterFormInputs } from '@/Services/validation'
+import { validateEmailInput } from '@/Services/validation'
 import EmailVerificationApi from '@/api/Back/EmailVerificationApi'
 import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
@@ -19,7 +19,7 @@ export default function RegistrationForm() {
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()
     const sanitizedEmail = sanitize(email)
-    const formErrors = validateRegisterFormInputs(sanitizedEmail)
+    const formErrors = validateEmailInput(sanitizedEmail)
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors)
       return
