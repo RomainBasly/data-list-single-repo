@@ -19,14 +19,15 @@ exports.AppEmailVerificationController = void 0;
 const tsyringe_1 = require("tsyringe");
 const validation_1 = __importDefault(require("../../domain/emailVerification/validation"));
 const nodeMailder_1 = __importDefault(require("../../infrastructure/emails/nodeMailder"));
-const apiKey = process.env.MAILCHIMP_API_KEY;
+const services_1 = __importDefault(require("../../domain/emailVerification/services"));
 let AppEmailVerificationController = class AppEmailVerificationController {
-    constructor(appEmailValidation, nodeMailerService) {
+    constructor(appEmailValidation, nodeMailerService, emailVerificationServices) {
         this.appEmailValidation = appEmailValidation;
         this.nodeMailerService = nodeMailerService;
+        this.emailVerificationServices = emailVerificationServices;
     }
     async sendVerificationEmail(req, res, next) {
-        const email = req.body;
+        const { email } = req.body;
         try {
             const verifiedEmailObject = await this.appEmailValidation.validateEmail(email);
             await this.nodeMailerService.sendEmail(verifiedEmailObject.email);
@@ -42,14 +43,19 @@ let AppEmailVerificationController = class AppEmailVerificationController {
         try {
             const verifiedEmailObject = await this.appEmailValidation.validateEmail(email);
             const verifiedCodeObject = await this.appEmailValidation.validateCode(code);
+            await this.emailVerificationServices.verifyCode({ email: verifiedEmailObject.email, code: verifiedCodeObject });
         }
-        catch (error) { }
+        catch (error) {
+            console.error(error);
+        }
     }
 };
 exports.AppEmailVerificationController = AppEmailVerificationController;
 exports.AppEmailVerificationController = AppEmailVerificationController = __decorate([
     (0, tsyringe_1.injectable)(),
     __param(1, (0, tsyringe_1.inject)(nodeMailder_1.default)),
+    __param(2, (0, tsyringe_1.inject)(services_1.default)),
     __metadata("design:paramtypes", [validation_1.default,
-        nodeMailder_1.default])
+        nodeMailder_1.default,
+        services_1.default])
 ], AppEmailVerificationController);

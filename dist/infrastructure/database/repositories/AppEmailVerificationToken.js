@@ -29,11 +29,12 @@ let AppEmailVerificationTokenRepository = class AppEmailVerificationTokenReposit
             console.log('user registration started');
         }
     }
-    async verifyCodeFromDB(email_address, verification_code) {
-        const { data, error } = await supabaseClient_1.default.rpc('get_verification_code_data', {
+    async getAppEmailVerificationRecord(email_address) {
+        const { data, error } = await supabaseClient_1.default.rpc('get_email_verification_data_from_DB', {
             email_address,
-            verification_code,
         });
+        if (error)
+            throw new Error('oh oh');
         return data;
     }
 };

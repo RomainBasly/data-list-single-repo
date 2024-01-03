@@ -9,21 +9,30 @@ export default class AppEmailValidation {
       email: yup.string().email('Email format invalid').required('Email is required'),
     });
     try {
-      return await schema.validate(input);
+      const emailObject = { email: input };
+      return await schema.validate(emailObject);
     } catch (error) {
-      if (error instanceof yup.ValidationError)
+      if (error instanceof yup.ValidationError) {
         throw new ValidationError(ErrorMessages.VALIDATION_ERROR, error.message);
+      }
       throw new Error('Email validating the email');
     }
   }
 
   public async validateCode(input: string): Promise<any> {
     const schema = yup.object().shape({
-      code: yup.string().trim().length(6).matches(/^d*$/, 'code furnished not numbers').required(),
+      code: yup
+        .string()
+        .trim()
+        .length(6, 'Code must be exactly 6 digits')
+        .matches(/^\d{6}$/, 'code furnished not numbers')
+        .required('code is required'),
     });
 
     try {
-      return await schema.validate(input);
+      const codeObject = { code: input };
+      console.log('codeObject', codeObject);
+      return await schema.validate(codeObject);
     } catch (error) {
       if (error instanceof yup.ValidationError)
         throw new ValidationError(ErrorMessages.VALIDATION_ERROR, error.message);

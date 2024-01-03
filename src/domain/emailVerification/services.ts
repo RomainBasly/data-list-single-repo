@@ -1,4 +1,5 @@
 import { injectable, inject } from 'tsyringe';
+import { AppEmailVerificationTokenRepository } from '../../infrastructure/database/repositories/AppEmailVerificationToken';
 
 export interface CodeVerificationPayload {
   email: string;
@@ -7,5 +8,13 @@ export interface CodeVerificationPayload {
 
 @injectable()
 export default class EmailVerificationServices {
-  public async verifyCode(payload: CodeVerificationPayload) {}
+  constructor(
+    @inject(AppEmailVerificationTokenRepository)
+    private readonly appEmailVerificationTokenRepository: AppEmailVerificationTokenRepository
+  ) {}
+  public async verifyCode(payload: CodeVerificationPayload) {
+    const { email, code } = payload;
+    const response = await this.appEmailVerificationTokenRepository.getAppEmailVerificationRecord(email);
+    console.log('response', response);
+  }
 }

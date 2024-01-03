@@ -26,11 +26,12 @@ export class AppEmailVerificationTokenRepository {
     }
   }
 
-  public async verifyCodeFromDB(email_address: string, verification_code: string): Promise<IVerificationCode> {
-    const { data, error } = await supabase.rpc('get_verification_code_data', {
+  public async getAppEmailVerificationRecord(email_address: string): Promise<IVerificationCode> {
+    const { data, error } = await supabase.rpc('get_email_verification_data_from_DB', {
       email_address,
-      verification_code,
     });
+
+    if (error) throw new Error('oh oh');
     return data;
   }
 }

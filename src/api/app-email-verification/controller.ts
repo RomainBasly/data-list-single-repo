@@ -2,18 +2,18 @@ import { Request, Response, NextFunction } from 'express';
 import { inject, injectable } from 'tsyringe';
 import AppEmailValidation from '../../domain/emailVerification/validation';
 import NodeMailerService from '../../infrastructure/emails/nodeMailder';
-
-const apiKey = process.env.MAILCHIMP_API_KEY;
+import EmailVerificationServices from '../../domain/emailVerification/services';
 
 @injectable()
 export class AppEmailVerificationController {
   constructor(
     private readonly appEmailValidation: AppEmailValidation,
-    @inject(NodeMailerService) private readonly nodeMailerService: NodeMailerService
+    @inject(NodeMailerService) private readonly nodeMailerService: NodeMailerService,
+    @inject(EmailVerificationServices) private readonly emailVerificationServices: EmailVerificationServices
   ) {}
 
   public async sendVerificationEmail(req: Request, res: Response, next: NextFunction) {
-    const email = req.body;
+    const { email } = req.body;
     try {
       const verifiedEmailObject = await this.appEmailValidation.validateEmail(email);
       await this.nodeMailerService.sendEmail(verifiedEmailObject.email);
@@ -30,6 +30,9 @@ export class AppEmailVerificationController {
     try {
       const verifiedEmailObject = await this.appEmailValidation.validateEmail(email);
       const verifiedCodeObject = await this.appEmailValidation.validateCode(code);
-    } catch (error) {}
+      await this.emailVerificationServices.verifyCode({ email: verifiedEmailObject.email, code: verifiedCodeObject });
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
