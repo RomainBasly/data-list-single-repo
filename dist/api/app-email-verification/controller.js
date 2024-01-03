@@ -17,7 +17,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppEmailVerificationController = void 0;
 const tsyringe_1 = require("tsyringe");
-const validation_1 = __importDefault(require("../../domain/email/validation"));
+const validation_1 = __importDefault(require("../../domain/emailVerification/validation"));
 const nodeMailder_1 = __importDefault(require("../../infrastructure/emails/nodeMailder"));
 const apiKey = process.env.MAILCHIMP_API_KEY;
 let AppEmailVerificationController = class AppEmailVerificationController {
@@ -28,14 +28,22 @@ let AppEmailVerificationController = class AppEmailVerificationController {
     async sendVerificationEmail(req, res, next) {
         const email = req.body;
         try {
-            const verifiedObject = await this.appEmailValidation.validateEmail(email);
-            await this.nodeMailerService.sendEmail(verifiedObject.email);
+            const verifiedEmailObject = await this.appEmailValidation.validateEmail(email);
+            await this.nodeMailerService.sendEmail(verifiedEmailObject.email);
             res.status(200).json({ message: 'Email sent successfully' });
         }
         catch (error) {
             console.log('error get in the controller', error);
             next(error);
         }
+    }
+    async verifyCode(req, res, next) {
+        const { email, code } = req.body;
+        try {
+            const verifiedEmailObject = await this.appEmailValidation.validateEmail(email);
+            const verifiedCodeObject = await this.appEmailValidation.validateCode(code);
+        }
+        catch (error) { }
     }
 };
 exports.AppEmailVerificationController = AppEmailVerificationController;

@@ -1,0 +1,25 @@
+
+CREATE OR REPLACE FUNCTION get_email_verification_data_from_DB(
+    email_address text,
+)
+
+RETURN SETOF public."app-email-verification-token" AS $$
+
+DECLARE
+    existing_user_id bigint;
+BEGIN
+
+-- get the user from email provided
+SELECT user_id INTO existing_user_id
+FROM public."app-users"
+WHERE email = email_address;
+
+-- from the existing_user_id get the code and send the whole line
+RETURN QUERY
+SELECT * 
+FROM public."app-email-verification-token"
+WHERE user_id = existing_user_id;
+
+END;
+
+$$ LANGUAGE plpgsql;

@@ -15,13 +15,11 @@ const supabaseClient_1 = __importDefault(require("../../../config/database/supab
 const errors_1 = require("../../../domain/common/errors");
 let AppEmailVerificationTokenRepository = class AppEmailVerificationTokenRepository {
     async registerToDB(email_address, verification_code, formatted_expiry_date) {
-        const { data, error } = await supabaseClient_1.default.rpc('set_verification_code_into_DB', {
+        const { error } = await supabaseClient_1.default.rpc('set_verification_code_into_DB', {
             email_address,
             verification_code,
             formatted_expiry_date,
         });
-        console.log('data', data);
-        console.log('error', error);
         if (error) {
             if (error.code === 'P0001') {
                 throw new errors_1.UserAlreadyExistsError(errors_1.ErrorMessages.ALREADY_EXISTING);
@@ -30,6 +28,13 @@ let AppEmailVerificationTokenRepository = class AppEmailVerificationTokenReposit
         else {
             console.log('user registration started');
         }
+    }
+    async verifyCodeFromDB(email_address, verification_code) {
+        const { data, error } = await supabaseClient_1.default.rpc('get_verification_code_data', {
+            email_address,
+            verification_code,
+        });
+        return data;
     }
 };
 exports.AppEmailVerificationTokenRepository = AppEmailVerificationTokenRepository;
