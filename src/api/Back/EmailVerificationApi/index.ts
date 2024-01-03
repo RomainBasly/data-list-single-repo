@@ -23,7 +23,7 @@ export default class EmailVerificationApi extends BaseApiService {
     if (!this.instance) {
       this.instance = new EmailVerificationApi();
     }
-    return EmailVerificationApi.instance;
+    return this.instance;
   }
 
   public async sendVerificationEmail(
@@ -48,10 +48,12 @@ export default class EmailVerificationApi extends BaseApiService {
     params: ISendVerificationCode
   ): Promise<any> {
     assert(this.baseUrl, "BackendURL is missing");
-    const url = new URL(this.baseUrl.concat("/resgister").concat("/code-verification"))
+    const url = new URL(
+      this.baseUrl.concat("/register").concat("/code-verification")
+    );
 
     try {
-      return await this.postRequest<any>(url, params);
+      return await this.postRequest<ISendVerificationCode>(url, params);
     } catch (error) {
       if (error instanceof Response) {
         const errorBody: BackendError = await error.json();
