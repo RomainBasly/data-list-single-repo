@@ -1,6 +1,6 @@
 'use client'
 import React, { useState } from 'react'
-import classes from '../Login/classes.module.scss'
+import classes from '../LoginForm/classes.module.scss'
 import Link from 'next/link'
 import { sanitize } from 'isomorphic-dompurify'
 import { validateEmailInput } from '@/Services/validation'

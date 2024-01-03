@@ -18,9 +18,9 @@ export default function CodeVerificationForm() {
   const [errors, setErrors] = useState<Record<string, string>>()
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  // useEffect(() => {
-  //   setEmail(UserStore.getInstance().getEmail())
-  // }, [])
+  useEffect(() => {
+    setEmail(UserStore.getInstance().getEmail())
+  }, [])
 
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()

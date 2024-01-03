@@ -49,7 +49,7 @@ export default class EmailVerificationApi extends BaseApiService {
   ): Promise<any> {
     assert(this.baseUrl, "BackendURL is missing");
     const url = new URL(
-      this.baseUrl.concat("/register").concat("/code-verification")
+      this.baseUrl.concat("/register").concat("/check-verification-code")
     );
 
     try {
