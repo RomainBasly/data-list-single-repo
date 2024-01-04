@@ -22,10 +22,15 @@ export default class UserStore {
 
   public setEmail(email: string): void {
     this.email = email;
+    localStorage.setItem("email", email);
   }
 
   public getEmail(): string {
-    assert(this.email, "Pas de mail");
+    if (!this.email) {
+      const storedEmail = localStorage.getItem("email");
+      assert(storedEmail, "no email in storage");
+      this.email = storedEmail;
+    }
     return this.email;
   }
 }

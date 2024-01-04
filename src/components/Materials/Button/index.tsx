@@ -23,7 +23,7 @@ export default function Button(props: IProps) {
           <div className={classes['loader-placeholder']}></div>
         )}
       </div>
-      {props.text}
+      <div className={classes['content']}>{props.text}</div>
     </button>
   )
 }

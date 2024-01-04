@@ -2,14 +2,27 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 5px;
+  position: relative;
 
   .loader-wrapper {
+    position: absolute;
+    left: calc(100% / 2 - 60px);
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     flex-shrink: 0;
   }
 
+  .content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
   .loader-placeholder {
-    width: 20px;
-    height: 20px;
+    display: none;
   }
 }

@@ -39,20 +39,78 @@
       border-radius: 4px;
       color: #343a40;
       background-color: #f8f9fa;
+
       .icon {
         display: flex;
         align-items: center;
         width: 20px;
       }
+
+      .text-container {
+        font-family: "Geologica", sans-serif;
+        span {
+          font-weight: 700;
+          color: #2a5293;
+        }
+      }
     }
 
-    .input {
-      border-radius: 4px;
-      border: 1px solid grey;
-      padding: 6px;
+    .email-icon {
+      display: flex;
+      width: 20px;
+    }
 
-      &:focus {
-        outline: 1px solid grey;
+    .input-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .title {
+        font-size: 26px;
+        font-family: "Geologica", sans-serif;
+        font-weight: 800;
+      }
+      .input {
+        border-radius: 4px;
+        border: 1px solid grey;
+        padding: 6px;
+
+        &:focus {
+          outline: 1px solid grey;
+        }
+      }
+
+      .error {
+        color: #950e0e;
+        font-weight: 800;
+      }
+    }
+
+    .buttons-container {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      gap: 8px;
+
+      .connexion-button {
+        padding: 8px;
+        background-color: #ffcb77;
+        border: 1px solid #fec89a;
+        cursor: pointer;
+      }
+
+      .redirection-button-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .redirection-button {
+          display: flex;
+          border: none;
+          cursor: pointer;
+          text-decoration: underline;
+          font-style: italic;
+          background-color: inherit;
+        }
       }
     }
 

@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import classes from './classes.module.scss'
 import { InformationCircleIcon } from '@heroicons/react/24/solid'
+import { EnvelopeIcon } from '@heroicons/react/24/outline'
 
 export default function CodeVerificationForm() {
   const router = useRouter()
@@ -57,25 +58,42 @@ export default function CodeVerificationForm() {
     <form className={classes['root']}>
       <div className={classes['content']}>
         <div className={classes['top']}>
-          <div className={classes['icon']}>
-            <InformationCircleIcon />
+          <div className={classes['email-icon']}>
+            <EnvelopeIcon />
           </div>
           <div className={classes['text-container']}>
             Code de vérification envoyé à
-            <span className={classes['bold-text']}>{email}</span>
+            <span className={classes['bold-text']}> {email}</span>
           </div>
         </div>
-        <label htmlFor="code" className={classes['title']}>
-          Veuillez indiquer votre code de vérification
-        </label>
-        <input type="text" className={classes['input']} onChange={handleCode} />
-        <Button
-          text="Valider"
-          isLoading={isLoading}
-          onClick={sendForm}
-          className={classes['']}
-        />
-        <Link href={'/register'}>J'aimerais recevoir un nouveau code</Link>
+        <div className={classes['input-container']}>
+          <label htmlFor="code" className={classes['title']}>
+            Veuillez indiquer votre code de vérification
+          </label>
+          <input
+            type="text"
+            className={classes['input']}
+            onChange={handleCode}
+            placeholder="Entrez votre code ici"
+          />
+          {errors && <div className={classes['error']}>{errors.code}</div>}
+        </div>
+        <div className={classes['buttons-container']}>
+          <Button
+            text="Valider"
+            isLoading={isLoading}
+            onClick={sendForm}
+            className={classes['connexion-button']}
+          />
+          <Link
+            href={'/register'}
+            className={classes['redirection-button-container']}
+          >
+            <button className={classes['redirection-button']}>
+              J'aimerais recevoir un nouveau code
+            </button>
+          </Link>
+        </div>
       </div>
     </form>
   )
