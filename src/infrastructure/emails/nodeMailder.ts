@@ -4,7 +4,7 @@ import { emailConfig, mailtrapConfig } from '../../config/email';
 import { inject, injectable } from 'tsyringe';
 import ejs from 'ejs';
 import path from 'path';
-import { AppEmailVerificationTokenRepository } from '../database/repositories/AppEmailVerificationToken';
+import { AppEmailVerificationTokenRepository } from '../database/repositories/AppEmailVerificationTokenRepository';
 
 @injectable()
 export default class NodeMailerService {

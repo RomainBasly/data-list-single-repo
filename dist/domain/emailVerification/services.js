@@ -13,20 +13,36 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const tsyringe_1 = require("tsyringe");
-const AppEmailVerificationToken_1 = require("../../infrastructure/database/repositories/AppEmailVerificationToken");
+const AppEmailVerificationTokenRepository_1 = require("../../infrastructure/database/repositories/AppEmailVerificationTokenRepository");
+const errors_1 = require("../common/errors");
 let EmailVerificationServices = class EmailVerificationServices {
     constructor(appEmailVerificationTokenRepository) {
         this.appEmailVerificationTokenRepository = appEmailVerificationTokenRepository;
     }
     async verifyCode(payload) {
         const { email, code } = payload;
-        const response = await this.appEmailVerificationTokenRepository.getAppEmailVerificationRecord(email);
-        console.log('response', response);
+        try {
+            const response = await this.appEmailVerificationTokenRepository.getAppEmailVerificationRecord(email);
+            const isCodeCorrect = code.code === response.code;
+            if (!isCodeCorrect)
+                throw new errors_1.EmailCodeError(errors_1.ErrorMessages.INCORRECT_CODE);
+            const isExpiryStillValid = new Date(Date.now()) < new Date(response.expiry_date);
+            if (!isExpiryStillValid)
+                throw new errors_1.EmailValidityCodeError(errors_1.ErrorMessages.NO_MORE_VALID);
+            if (isCodeCorrect && isExpiryStillValid) {
+                await this.appEmailVerificationTokenRepository.updateIsEmailVerified(email);
+                console.log('column updated');
+            }
+        }
+        catch (error) {
+            console.error('something went wrong in the userservice', error);
+            throw error;
+        }
     }
 };
 EmailVerificationServices = __decorate([
     (0, tsyringe_1.injectable)(),
-    __param(0, (0, tsyringe_1.inject)(AppEmailVerificationToken_1.AppEmailVerificationTokenRepository)),
-    __metadata("design:paramtypes", [AppEmailVerificationToken_1.AppEmailVerificationTokenRepository])
+    __param(0, (0, tsyringe_1.inject)(AppEmailVerificationTokenRepository_1.AppEmailVerificationTokenRepository)),
+    __metadata("design:paramtypes", [AppEmailVerificationTokenRepository_1.AppEmailVerificationTokenRepository])
 ], EmailVerificationServices);
 exports.default = EmailVerificationServices;

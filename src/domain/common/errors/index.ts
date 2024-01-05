@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction } from 'express';
 
 // used as a middleware
 export function errorHandler(err: Error, req: Request, res: Response, next: NextFunction) {
@@ -6,7 +6,7 @@ export function errorHandler(err: Error, req: Request, res: Response, next: Next
     res.status(err.statusCode).json({ error: err.name, errorCode: err.errorCode, message: err.message });
   } else {
     console.error(err);
-    res.status(500).json({ error: "InternalServerError", message: "Something went wrong" });
+    res.status(500).json({ error: 'InternalServerError', message: 'Something went wrong' });
     next(err);
   }
 }
@@ -25,16 +25,18 @@ export class BaseError extends Error {
 
 // error types handling
 export enum ErrorMessages {
-  ALREADY_EXISTING = "User already exists in database, please login instead",
-  NOT_EXISTING_USER = "User do not exists in the database, please register instead",
-  INVALID_CREDENTIALS = "Invalid credentials",
-  FAIL_TO_GENERATE_TOKENS = " Fail to generate Tokens",
-  NO_EXISTING_REFRESH_TOKEN = "No existing refreshToken",
-  JWT_ERROR = "Error with the JWT",
-  FORBIDDEN_ERROR = "Method not allowed",
-  ACCESSTOKEN_ERROR = "AccessToken not present",
-  UNAUTHORIZED = "Unauthorized",
-  VALIDATION_ERROR = "Validation Error",
+  ALREADY_EXISTING = 'User already exists in database, please login instead',
+  NOT_EXISTING_USER = 'User do not exists in the database, please register instead',
+  INVALID_CREDENTIALS = 'Invalid credentials',
+  FAIL_TO_GENERATE_TOKENS = ' Fail to generate Tokens',
+  NO_EXISTING_REFRESH_TOKEN = 'No existing refreshToken',
+  JWT_ERROR = 'Error with the JWT',
+  FORBIDDEN_ERROR = 'Method not allowed',
+  ACCESSTOKEN_ERROR = 'AccessToken not present',
+  UNAUTHORIZED = 'Unauthorized',
+  VALIDATION_ERROR = 'Validation Error',
+  INCORRECT_CODE = 'Code incorrect',
+  NO_MORE_VALID = 'Code no more valid',
 }
 
 // add a class by big types of error
@@ -90,5 +92,15 @@ export class UnauthorizedTokenError extends BaseError {
 export class ValidationError extends BaseError {
   constructor(message: ErrorMessages.VALIDATION_ERROR, detailedMessage: string) {
     super(400, 3001, `${message}: ${detailedMessage}`);
+  }
+}
+export class EmailCodeError extends BaseError {
+  constructor(message: ErrorMessages.INCORRECT_CODE) {
+    super(400, 3002, message);
+  }
+}
+export class EmailValidityCodeError extends BaseError {
+  constructor(message: ErrorMessages.NO_MORE_VALID) {
+    super(400, 3003, message);
   }
 }

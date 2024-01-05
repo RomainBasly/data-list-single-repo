@@ -31,8 +31,10 @@ export class AppEmailVerificationController {
       const verifiedEmailObject = await this.appEmailValidation.validateEmail(email);
       const verifiedCodeObject = await this.appEmailValidation.validateCode(code);
       await this.emailVerificationServices.verifyCode({ email: verifiedEmailObject.email, code: verifiedCodeObject });
+      res.status(200).json({ message: 'Code verified' });
     } catch (error) {
       console.error(error);
+      next(error);
     }
   }
 }

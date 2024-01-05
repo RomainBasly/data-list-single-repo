@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ValidationError = exports.UnauthorizedTokenError = exports.accessTokenError = exports.ForbiddenError = exports.JWTError = exports.NoPreexistingRefreshToken = exports.FailToGenerateTokens = exports.AuthenticationError = exports.UserDoNotExists = exports.UserAlreadyExistsError = exports.ErrorMessages = exports.BaseError = exports.errorHandler = void 0;
+exports.EmailValidityCodeError = exports.EmailCodeError = exports.ValidationError = exports.UnauthorizedTokenError = exports.accessTokenError = exports.ForbiddenError = exports.JWTError = exports.NoPreexistingRefreshToken = exports.FailToGenerateTokens = exports.AuthenticationError = exports.UserDoNotExists = exports.UserAlreadyExistsError = exports.ErrorMessages = exports.BaseError = exports.errorHandler = void 0;
 // used as a middleware
 function errorHandler(err, req, res, next) {
     if (err instanceof BaseError) {
@@ -8,7 +8,7 @@ function errorHandler(err, req, res, next) {
     }
     else {
         console.error(err);
-        res.status(500).json({ error: "InternalServerError", message: "Something went wrong" });
+        res.status(500).json({ error: 'InternalServerError', message: 'Something went wrong' });
         next(err);
     }
 }
@@ -36,6 +36,8 @@ var ErrorMessages;
     ErrorMessages["ACCESSTOKEN_ERROR"] = "AccessToken not present";
     ErrorMessages["UNAUTHORIZED"] = "Unauthorized";
     ErrorMessages["VALIDATION_ERROR"] = "Validation Error";
+    ErrorMessages["INCORRECT_CODE"] = "Code incorrect";
+    ErrorMessages["NO_MORE_VALID"] = "Code no more valid";
 })(ErrorMessages || (exports.ErrorMessages = ErrorMessages = {}));
 // add a class by big types of error
 class UserAlreadyExistsError extends BaseError {
@@ -98,3 +100,15 @@ class ValidationError extends BaseError {
     }
 }
 exports.ValidationError = ValidationError;
+class EmailCodeError extends BaseError {
+    constructor(message) {
+        super(400, 3002, message);
+    }
+}
+exports.EmailCodeError = EmailCodeError;
+class EmailValidityCodeError extends BaseError {
+    constructor(message) {
+        super(400, 3003, message);
+    }
+}
+exports.EmailValidityCodeError = EmailValidityCodeError;

@@ -20,7 +20,7 @@ const email_1 = require("../../config/email");
 const tsyringe_1 = require("tsyringe");
 const ejs_1 = __importDefault(require("ejs"));
 const path_1 = __importDefault(require("path"));
-const AppEmailVerificationToken_1 = require("../database/repositories/AppEmailVerificationToken");
+const AppEmailVerificationTokenRepository_1 = require("../database/repositories/AppEmailVerificationTokenRepository");
 let NodeMailerService = class NodeMailerService {
     constructor(appEmailVerificationTokenRepository) {
         var _a;
@@ -62,7 +62,7 @@ let NodeMailerService = class NodeMailerService {
 };
 NodeMailerService = __decorate([
     (0, tsyringe_1.injectable)(),
-    __param(0, (0, tsyringe_1.inject)(AppEmailVerificationToken_1.AppEmailVerificationTokenRepository)),
-    __metadata("design:paramtypes", [AppEmailVerificationToken_1.AppEmailVerificationTokenRepository])
+    __param(0, (0, tsyringe_1.inject)(AppEmailVerificationTokenRepository_1.AppEmailVerificationTokenRepository)),
+    __metadata("design:paramtypes", [AppEmailVerificationTokenRepository_1.AppEmailVerificationTokenRepository])
 ], NodeMailerService);
 exports.default = NodeMailerService;

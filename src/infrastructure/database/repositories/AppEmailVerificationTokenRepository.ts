@@ -34,4 +34,9 @@ export class AppEmailVerificationTokenRepository {
     if (error) throw new Error('oh oh');
     return data;
   }
+
+  public async updateIsEmailVerified(email: string) {
+    const { error } = await supabase.from('app-users').update({ is_email_verified: true }).eq('email', email);
+    if (error) throw new Error();
+  }
 }

@@ -59,7 +59,6 @@ let AppEmailValidation = class AppEmailValidation {
         });
         try {
             const codeObject = { code: input };
-            console.log('codeObject', codeObject);
             return await schema.validate(codeObject);
         }
         catch (error) {

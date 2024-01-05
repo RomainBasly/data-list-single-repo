@@ -31,7 +31,6 @@ export default class AppEmailValidation {
 
     try {
       const codeObject = { code: input };
-      console.log('codeObject', codeObject);
       return await schema.validate(codeObject);
     } catch (error) {
       if (error instanceof yup.ValidationError)
