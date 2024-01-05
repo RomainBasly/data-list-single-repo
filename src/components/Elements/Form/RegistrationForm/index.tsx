@@ -11,10 +11,10 @@ import Button from '@/components/Materials/Button'
 import UserStore from '@/Stores/UserStore'
 
 export default function RegistrationForm() {
+  const router = useRouter()
   const [email, setEmail] = useState<string>('')
   const [errors, setErrors] = useState<{ [key: string]: string }>()
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const router = useRouter()
 
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()

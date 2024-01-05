@@ -9,7 +9,6 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import classes from './classes.module.scss'
-import { InformationCircleIcon } from '@heroicons/react/24/solid'
 import { EnvelopeIcon } from '@heroicons/react/24/outline'
 
 export default function CodeVerificationForm() {
@@ -76,7 +75,7 @@ export default function CodeVerificationForm() {
             onChange={handleCode}
             placeholder="Entrez votre code ici"
           />
-          {errors && <div className={classes['error']}>{errors.code}</div>}
+          {errors && <div className={classes['error']}>{errors.form}</div>}
         </div>
         <div className={classes['buttons-container']}>
           <Button

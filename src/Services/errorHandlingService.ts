@@ -8,6 +8,8 @@ export enum errorTypes {
   ALREADY_EXISTING = "Vous disposez déjà d'un compte, connectez-vous",
   NOT_EXISTING_USER = "Vous n'avez pas de compte à cette adresse",
   INVALID_CREDENTIALS = "L'email et le mot de passe ne correspondent pas",
+  INVALID_CODE = "Code renseigné invalide",
+  CODE_OUT_OF_DATE = "Code expiré",
   DEFAULT = "Une erreur inattendue est survenue",
 }
 
@@ -27,6 +29,13 @@ export function handleBackendError(error: BackendError) {
       return errorTypes.NOT_EXISTING_USER;
     case 2001:
       return errorTypes.INVALID_CREDENTIALS;
+    case 3002:
+      return errorTypes.INVALID_CODE;
+    case 3003:
+      return errorTypes.CODE_OUT_OF_DATE;
+    case 3002:
+      return errorTypes.INVALID_CODE;
+
     default:
       return errorTypes.DEFAULT;
   }
