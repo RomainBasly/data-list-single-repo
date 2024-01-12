@@ -48,6 +48,7 @@
 
       .text-container {
         font-family: "Geologica", sans-serif;
+        font-size: 13px;
         span {
           font-weight: 700;
           color: #2a5293;
@@ -82,7 +83,7 @@
 
       .error {
         color: #950e0e;
-        font-weight: 800;
+        font-size: 13px;
       }
     }
 
@@ -97,22 +98,10 @@
         background-color: #ffcb77;
         border: 1px solid #fec89a;
         cursor: pointer;
-      }
-
-      .redirection-button-container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        .redirection-button {
-          display: flex;
-          border: none;
-          cursor: pointer;
-          text-decoration: underline;
-          font-style: italic;
-          background-color: inherit;
-        }
+        user-select: none;
       }
     }
+
 
     .subtitle {
       text-align: center;

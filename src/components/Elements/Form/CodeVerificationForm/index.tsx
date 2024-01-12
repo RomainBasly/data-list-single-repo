@@ -9,12 +9,17 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import classes from './classes.module.scss'
-import { EnvelopeIcon } from '@heroicons/react/24/outline'
+import {
+  EnvelopeIcon,
+  ChevronDownIcon,
+  ExclamationCircleIcon,
+} from '@heroicons/react/24/outline'
 
 export default function CodeVerificationForm() {
   const router = useRouter()
   const [email, setEmail] = useState<string>('')
   const [code, setCode] = useState<string>('')
+
   const [errors, setErrors] = useState<Record<string, string>>()
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
@@ -39,7 +44,7 @@ export default function CodeVerificationForm() {
       )
       if (response) {
         setIsLoading(!isLoading)
-        router.push('/register/password-setting')
+        router.push('/register/add-password')
       }
     } catch (error) {
       setIsLoading(false)
@@ -84,14 +89,6 @@ export default function CodeVerificationForm() {
             onClick={sendForm}
             className={classes['connexion-button']}
           />
-          <Link
-            href={'/register'}
-            className={classes['redirection-button-container']}
-          >
-            <button className={classes['redirection-button']}>
-              J'aimerais recevoir un nouveau code
-            </button>
-          </Link>
         </div>
       </div>
     </form>

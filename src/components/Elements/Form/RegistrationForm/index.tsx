@@ -53,7 +53,7 @@ export default function RegistrationForm() {
         <label htmlFor="email">Email</label>
         <input
           name="email"
-          placeholder="John@john.com"
+          placeholder="gabriel@attable.com"
           onChange={handleEmail}
         />
         {errors && <div className={classes['error']}>{errors.email}</div>}

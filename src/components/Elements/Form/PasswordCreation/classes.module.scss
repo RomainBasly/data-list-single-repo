@@ -6,27 +6,40 @@
   .form-element {
     display: flex;
     flex-direction: column;
+    gap: 10px;
 
-    input {
-      background-color: transparent;
-      border-radius: 4px;
-      padding: 10px;
-      border: 1px solid grey;
+    .input-container {
+      display: flex;
+      flex-direction: column;
 
-      &:focus {
-        outline: none;
-        border: 1px solid #ffb600;
-        background-color: #efe9ae;
+      .email {
+        background-color: transparent;
+        border-radius: 4px;
+        padding: 10px;
+        border: 1px solid grey;
+
+        &:focus {
+          outline: none;
+        }
+
+        &::placeholder {
+          color: black;
+        }
       }
 
-      &::placeholder {
-        color: #6c757d;
+      .password,
+      .username {
+        background-color: white;
+        border-radius: 4px;
+        padding: 10px;
+        border: 1px solid grey;
       }
-    }
 
-    .error {
-      color: #950e0e;
-      font-size: 13px;
+      .error {
+        max-width: 450px;
+        color: #950e0e;
+        font-size: 13px;
+      }
     }
   }
 

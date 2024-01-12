@@ -52,7 +52,7 @@ export function LoginForm() {
         <label htmlFor="email">Email</label>
         <input
           name="email"
-          placeholder="John@john.com"
+          placeholder="gabriel@attable.com"
           onChange={(e) => {
             setErrors({ ...errors, email: '' })
             setEmail(e.target.value)
