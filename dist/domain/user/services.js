@@ -25,18 +25,14 @@ let UserService = class UserService {
         this.passwordService = passwordService;
         this.tokenService = tokenService;
     }
-    async registerUser(email, password) {
-        const user = await this.userRepository.getUserByEmail(email);
-        if (user) {
-            throw new errors_1.UserAlreadyExistsError(errors_1.ErrorMessages.ALREADY_EXISTING);
-        }
+    async registerUser(userName, email, password) {
         try {
             const hashedPassword = await this.passwordService.hashPassword(password);
-            const newUser = { email: email, roles: { [api_1.Roles.USER]: true }, password: hashedPassword };
-            await this.userRepository.create(newUser);
+            const user = { userName, email, roles: { [api_1.Roles.USER]: true }, password: hashedPassword };
+            await this.userRepository.addPassword(user);
         }
         catch (error) {
-            console.error("something went wrong in the userservice", error);
+            console.error('something went wrong in the userservice', error);
             throw error;
         }
     }
@@ -63,7 +59,7 @@ let UserService = class UserService {
             return { accessToken, refreshToken };
         }
         catch (error) {
-            console.error("something went wrong in the service", error);
+            console.error('something went wrong in the service', error);
             throw error;
         }
     }

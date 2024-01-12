@@ -15,31 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppUserController = void 0;
 const tsyringe_1 = require("tsyringe");
 const services_1 = require("../../domain/user/services");
-const errors_1 = require("../../domain/common/errors");
 let AppUserController = class AppUserController {
     constructor(userService) {
         this.userService = userService;
     }
-    async registerNewUser(req, res) {
-        const { email, password } = req.body;
-        if (!email || !password) {
-            res.status(400).json('userName and password are required');
-            return;
-        }
-        try {
-            await this.userService.registerUser(email, password);
-            res.status(201).json({ message: 'new user created' });
-        }
-        catch (error) {
-            if (error instanceof errors_1.UserAlreadyExistsError) {
-                res.status(409).json({ message: error.message });
-            }
-            else {
-                console.error('Error in AppUserController', error);
-                res.status(500).json({ message: 'Internal server error' });
-            }
-        }
-    }
+    async registerNewUser(req, res) { }
     getAllUsers(req, res) {
         try {
             // to implement

@@ -13,30 +13,34 @@ exports.AppUserRepository = void 0;
 const tsyringe_1 = require("tsyringe");
 const supabaseClient_1 = __importDefault(require("../../../config/database/supabaseClient"));
 let AppUserRepository = class AppUserRepository {
-    async create(userData) {
-        const { error } = await supabaseClient_1.default.from("app-users").insert([userData]).select();
+    async addPassword(userData) {
+        const { error } = await supabaseClient_1.default
+            .from('app-users')
+            .update({ userName: userData.userName, password: userData.password })
+            .eq('email', userData.email)
+            .select();
         if (error) {
             throw new Error(`something when wrong in the appUserRepository: ${error.message}`);
         }
     }
     async getUserByEmail(email) {
-        const { data, error } = await supabaseClient_1.default.from("app-users").select().eq("email", email);
+        const { data, error } = await supabaseClient_1.default.from('app-users').select().eq('email', email);
         if (error) {
             throw new Error(`something when wrong in the appUserRepository: ${error.message}`);
         }
         return data ? data[0] : null;
     }
     async updateRefreshToken(refreshToken, email) {
-        await supabaseClient_1.default.from("app-users").update({ refreshToken: refreshToken }).eq("email", email);
+        await supabaseClient_1.default.from('app-users').update({ refreshToken: refreshToken }).eq('email', email);
     }
     async findUserByRefreshToken(refreshToken) {
-        return await supabaseClient_1.default.from("app-users").select().eq("refreshToken", refreshToken);
+        return await supabaseClient_1.default.from('app-users').select().eq('refreshToken', refreshToken);
     }
     async clearUserRefreshToken(refreshToken) {
-        return await supabaseClient_1.default.from("app-users").update({ refreshToken: "" }).eq("refreshToken", refreshToken);
+        return await supabaseClient_1.default.from('app-users').update({ refreshToken: '' }).eq('refreshToken', refreshToken);
     }
     async getUserByRefreshToken(token) {
-        const { data, error } = await supabaseClient_1.default.from("app-users").select().eq("refreshToken", token);
+        const { data, error } = await supabaseClient_1.default.from('app-users').select().eq('refreshToken', token);
         if (error) {
             throw new Error(`something when wrong in the appUserRepository: ${error.message}`);
         }

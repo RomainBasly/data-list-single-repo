@@ -1,16 +1,16 @@
-import { inject, injectable } from "tsyringe";
-import { RoleAssignments, Roles } from "../../common/types/api";
-import { AppUserRepository } from "../../infrastructure/database/repositories/AppUserRepository";
+import { inject, injectable } from 'tsyringe';
+import { RoleAssignments, Roles } from '../../common/types/api';
+import { AppUserRepository } from '../../infrastructure/database/repositories/AppUserRepository';
 import {
   AuthenticationError,
   ErrorMessages,
   FailToGenerateTokens,
   UserAlreadyExistsError,
   UserDoNotExists,
-} from "../common/errors";
-import { TokenService } from "../jwtToken/services";
-import { PasswordService } from "../password/services";
-import { User } from "./types";
+} from '../common/errors';
+import { TokenService } from '../jwtToken/services';
+import { PasswordService } from '../password/services';
+import { User } from './types';
 
 @injectable()
 export class UserService {
@@ -20,17 +20,13 @@ export class UserService {
     @inject(TokenService) private readonly tokenService: TokenService
   ) {}
 
-  async registerUser(email: string, password: string) {
-    const user = await this.userRepository.getUserByEmail(email);
-    if (user) {
-      throw new UserAlreadyExistsError(ErrorMessages.ALREADY_EXISTING);
-    }
+  async registerUser(userName: string, email: string, password: string) {
     try {
       const hashedPassword = await this.passwordService.hashPassword(password);
-      const newUser = { email: email, roles: { [Roles.USER]: true }, password: hashedPassword };
-      await this.userRepository.create(newUser);
+      const user = { userName, email, roles: { [Roles.USER]: true }, password: hashedPassword };
+      await this.userRepository.addPassword(user);
     } catch (error) {
-      console.error("something went wrong in the userservice", error);
+      console.error('something went wrong in the userservice', error);
       throw error;
     }
   }
@@ -58,7 +54,7 @@ export class UserService {
       await this.userRepository.updateRefreshToken(refreshToken, email);
       return { accessToken, refreshToken };
     } catch (error) {
-      console.error("something went wrong in the service", error);
+      console.error('something went wrong in the service', error);
       throw error;
     }
   }

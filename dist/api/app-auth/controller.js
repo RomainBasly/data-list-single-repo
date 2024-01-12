@@ -20,18 +20,39 @@ const tsyringe_1 = require("tsyringe");
 const services_1 = require("../../domain/user/services");
 const assert_1 = __importDefault(require("assert"));
 const helpers_1 = require("../../common/helpers");
+const errors_1 = require("../../domain/common/errors");
 // Here is injection dependencies used in this architecture
 // If you do not get it please check tsyringe
 let AppAuthController = class AppAuthController {
     constructor(userService) {
         this.userService = userService;
     }
+    async register(req, res, next) {
+        const { userName, email, password } = req.body;
+        if (!email || !password || !userName) {
+            res.status(400).json('userName, email and password are required');
+            return;
+        }
+        try {
+            await this.userService.registerUser(userName, email, password);
+            res.status(201).json({ message: 'new user created' });
+        }
+        catch (error) {
+            if (error instanceof errors_1.UserAlreadyExistsError) {
+                res.status(409).json({ message: error.message });
+            }
+            else {
+                console.error('Error in AppUserController', error);
+                res.status(500).json({ message: 'Internal server error' });
+            }
+        }
+    }
     async login(req, res, next) {
         try {
             const { email, password } = req.body;
             const { accessToken, refreshToken } = await this.userService.login(email, password);
-            (0, assert_1.default)(refreshToken, 'problem with refreshToken inside user login service');
-            (0, assert_1.default)(accessToken, 'problem with refreshToken inside user login service');
+            (0, assert_1.default)(refreshToken, 'problem with refreshToken inside controller');
+            (0, assert_1.default)(accessToken, 'problem with accesstoken inside controller');
             (0, helpers_1.cookieHandler)(req, res, refreshToken);
             res.json({ accessToken });
         }

@@ -12,8 +12,8 @@ const appRefreshTokenController = tsyringe_1.container.resolve(controller_2.AppR
 const appUserController = tsyringe_1.container.resolve(controllers_1.AppUserController);
 const appEmailVerification = tsyringe_1.container.resolve(controller_3.AppEmailVerificationController);
 publicRoutes
-    .post('/api/auth/register', (req, res) => {
-    appUserController.registerNewUser(req, res);
+    .post('/api/auth/register', (req, res, next) => {
+    appAuthController.register(req, res, next);
 })
     .post('/api/auth/login', (req, res, next) => appAuthController.login(req, res, next))
     .get('/api/refresh-token', (req, res, next) => {
