@@ -15,7 +15,7 @@ export default function middleware(request: NextRequest) {
       const decodedToken =
         AuthorizationService.getInstance().decodeToken(token);
       if (
-        token &&
+        decodedToken &&
         AuthorizationService.getInstance().isTokenValid(decodedToken)
       ) {
         return NextResponse.redirect(new URL("/private-space", request.url));
