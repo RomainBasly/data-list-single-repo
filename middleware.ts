@@ -6,9 +6,20 @@ export default function middleware(request: NextRequest) {
   const token = request.cookies.get("jwt");
   const url = request.nextUrl.clone();
 
-  if (url.pathname === "/login" || url.pathname === "/register") {
+  if (
+    url.pathname === "/" ||
+    url.pathname === "/login" ||
+    url.pathname === "/register"
+  ) {
     if (token) {
-      return NextResponse.redirect(new URL("/private-space", request.url));
+      const decodedToken =
+        AuthorizationService.getInstance().decodeToken(token);
+      if (
+        token &&
+        AuthorizationService.getInstance().isTokenValid(decodedToken)
+      ) {
+        return NextResponse.redirect(new URL("/private-space", request.url));
+      }
     }
     return NextResponse.next();
   }

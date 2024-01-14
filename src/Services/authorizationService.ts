@@ -1,5 +1,5 @@
 import { AuthorizationApi } from "@/api/Back/AuthorizationApi";
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 export default class AuthorizationService {
@@ -30,5 +30,24 @@ export default class AuthorizationService {
     } catch (error) {
       return null;
     }
+  }
+
+  public isTokenValid(decodedToken: string | JwtPayload | null): boolean {
+    const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+
+    if (typeof decodedToken === "string" || decodedToken === null) return false;
+
+    const expirationTime = decodedToken.exp;
+    if (typeof expirationTime !== "number") return false;
+
+    if (
+      typeof decodedToken === "object" &&
+      decodedToken !== null &&
+      "exp" in decodedToken
+    ) {
+      console.log(expirationTime > currentTimeInSeconds);
+      return expirationTime > currentTimeInSeconds;
+    }
+    return false;
   }
 }

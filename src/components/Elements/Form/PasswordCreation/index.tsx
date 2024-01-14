@@ -26,7 +26,7 @@ export default function RegistrationForm() {
 
   useEffect(() => {
     setEmail(UserStore.getInstance().getEmail())
-  })
+  }, [])
 
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()

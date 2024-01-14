@@ -19,7 +19,9 @@ export default class CookieService {
       name + "=" + value + "; expires=" + date.toUTCString() + "path=/";
   }
 
-  // getCookie
+  public getCookie(): string {
+    return document.cookie;
+  }
 
   // deleteCookie
 }
