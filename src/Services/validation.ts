@@ -54,9 +54,10 @@ export const validateCodeInput = (code: string): Record<string, string> => {
 };
 
 export function isValidPassword(input: string): boolean {
-  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{6,}$/;
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
   return regex.test(input);
 }
+
 
 export function validatePasswordInput(input: string): Record<string, string> {
   const errors: Record<string, string> = {};
