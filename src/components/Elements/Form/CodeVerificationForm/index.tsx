@@ -11,8 +11,6 @@ import React, { useEffect, useState } from 'react'
 import classes from './classes.module.scss'
 import {
   EnvelopeIcon,
-  ChevronDownIcon,
-  ExclamationCircleIcon,
 } from '@heroicons/react/24/outline'
 
 export default function CodeVerificationForm() {

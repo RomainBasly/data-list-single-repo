@@ -18,13 +18,14 @@ export default function RegistrationForm() {
 
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()
-    const sanitizedEmail = sanitize(email)
+    const lowerCaseEmail = email.toLowerCase()
+    const sanitizedEmail = sanitize(lowerCaseEmail)
     const formErrors = validateEmailInput(sanitizedEmail)
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors)
       return
     }
-    const body = { email }
+    const body = { email: lowerCaseEmail }
 
     try {
       setIsLoading(!isLoading)

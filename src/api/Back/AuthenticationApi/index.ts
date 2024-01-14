@@ -60,7 +60,6 @@ export default class AuthenticationApi extends BaseApiService {
     const url = new URL(this.baseURL.concat("/auth").concat("/register"));
 
     try {
-      console.log("url", url);
       return await this.postRequest<IRegisterResponse>(url, params);
     } catch (error) {
       if (error instanceof Response) {

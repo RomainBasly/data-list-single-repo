@@ -58,7 +58,6 @@ export function isValidPassword(input: string): boolean {
   return regex.test(input);
 }
 
-
 export function validatePasswordInput(input: string): Record<string, string> {
   const errors: Record<string, string> = {};
   if (input.length < 6) {
@@ -86,7 +85,6 @@ export function matchingPasswords(
   passwordInput: string
 ): Record<string, string> {
   const errors: Record<string, string> = {};
-  console.log("pass", prePasswordInput, passwordInput);
   if (prePasswordInput !== passwordInput) {
     errors.matchingPassword = "Les deux mots de passe ne correspondent pas";
   }

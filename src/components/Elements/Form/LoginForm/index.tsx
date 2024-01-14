@@ -23,12 +23,13 @@ export function LoginForm() {
 
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()
-    const formErrors = validateConnectFormInputs(email, password)
+    const lowerCaseEmail = email.toLowerCase()
+    const formErrors = validateConnectFormInputs(lowerCaseEmail, password)
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors)
       return
     }
-    const body = { email, password }
+    const body = { email: lowerCaseEmail, password }
 
     try {
       const response = await AuthenticationApi.getInstance().login(body)
@@ -46,6 +47,18 @@ export function LoginForm() {
     }
   }
 
+  function handlePassword(e: React.ChangeEvent<HTMLInputElement>) {
+    setErrors({ ...errors, password: '', form: '' })
+    setIsLoading(false)
+    setPassword(e.target.value)
+  }
+
+  function handleEmail(e: React.ChangeEvent<HTMLInputElement>) {
+    setErrors({ ...errors, email: '', form: '' })
+    setIsLoading(false)
+    setEmail(e.target.value)
+  }
+
   return (
     <form className={classes['root']}>
       <div className={classes['form-element']}>
@@ -53,10 +66,7 @@ export function LoginForm() {
         <input
           name="email"
           placeholder="gabriel@attable.com"
-          onChange={(e) => {
-            setErrors({ ...errors, email: '' })
-            setEmail(e.target.value)
-          }}
+          onChange={handleEmail}
         />
         {errors && <div className={classes['error']}>{errors.email}</div>}
       </div>
@@ -66,10 +76,7 @@ export function LoginForm() {
           type="password"
           name="password"
           placeholder="Entrez votre mot de passe"
-          onChange={(e) => {
-            setErrors({ ...errors, password: '' })
-            setPassword(e.target.value)
-          }}
+          onChange={handlePassword}
         />
         {errors && <div className={classes['error']}>{errors.password}</div>}
       </div>
