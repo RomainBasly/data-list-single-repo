@@ -32,7 +32,7 @@ export function LoginForm() {
     const body = { email: lowerCaseEmail, password }
 
     try {
-      await AuthenticationApi.getInstance().login(body)
+      const response = await AuthenticationApi.getInstance().login(body)
       setIsLoading(!isLoading)
       router.push('/private-space')
     } catch (error) {
