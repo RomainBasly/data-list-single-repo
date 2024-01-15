@@ -33,6 +33,8 @@ export function LoginForm() {
 
     try {
       const response = await AuthenticationApi.getInstance().login(body)
+      response.accessToken &&
+        CookieService.getInstance().setCookie('jwt', response.accessToken)
       setIsLoading(!isLoading)
       router.push('/private-space')
     } catch (error) {
