@@ -32,9 +32,7 @@ export function LoginForm() {
     const body = { email: lowerCaseEmail, password }
 
     try {
-      const response = await AuthenticationApi.getInstance().login(body)
-      response.accessToken &&
-        CookieService.getInstance().setCookie('jwt', response.accessToken)
+      await AuthenticationApi.getInstance().login(body)
       setIsLoading(!isLoading)
       router.push('/private-space')
     } catch (error) {
