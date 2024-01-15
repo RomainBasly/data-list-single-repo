@@ -1,5 +1,4 @@
 "use client";
-
 import assert from "assert";
 
 export default class UserStore {
@@ -17,6 +16,7 @@ export default class UserStore {
   }
 
   public isConnected(): boolean {
+        // Do I need to set it here and fetch the localSTorage instead
     return Boolean(this.accessToken);
   }
 

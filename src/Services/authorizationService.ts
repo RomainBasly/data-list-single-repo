@@ -1,4 +1,3 @@
-import { AuthorizationApi } from "@/api/Back/AuthorizationApi";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
@@ -26,7 +25,8 @@ export default class AuthorizationService {
 
     try {
       const decoded = jwt.decode(tokenString);
-      return decoded || null;
+      // verify here the token as well as decode it and rename the function
+      return decoded ?? null;
     } catch (error) {
       return null;
     }
@@ -45,7 +45,6 @@ export default class AuthorizationService {
       decodedToken !== null &&
       "exp" in decodedToken
     ) {
-      console.log(expirationTime > currentTimeInSeconds);
       return expirationTime > currentTimeInSeconds;
     }
     return false;
