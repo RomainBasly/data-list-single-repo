@@ -38,12 +38,12 @@ export function LoginForm() {
       setIsLoading(!isLoading)
       router.push('/private-space')
     } catch (error) {
+      setIsLoading(false)
       const errorMessage = getErrorMessage(error)
       setErrors({
         ...errors,
         form: errorMessage,
       })
-      setIsLoading(!isLoading)
     }
   }
 
