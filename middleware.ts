@@ -5,6 +5,7 @@ import type { NextRequest } from "next/server";
 
 export default function middleware(request: NextRequest) {
   const refreshToken = request.cookies.get("refreshToken");
+  console.log("refreshToken", refreshToken);
   const url = request.nextUrl.clone();
 
   const isValidToken = (token: string | RequestCookie) => {
