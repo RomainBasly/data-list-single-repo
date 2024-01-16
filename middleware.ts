@@ -9,11 +9,25 @@ export default function middleware(request: NextRequest) {
 
   const isValidToken = (token: string | RequestCookie) => {
     const decodedToken = AuthorizationService.getInstance().decodeToken(token);
-    return decodedToken && AuthorizationService.getInstance().isTokenValid(decodedToken);
+    console.log("decodedToken", decodedToken);
+    console.log(
+      "isValid",
+      AuthorizationService.getInstance().isTokenValid(decodedToken)
+    );
+    return (
+      decodedToken &&
+      AuthorizationService.getInstance().isTokenValid(decodedToken)
+    );
   };
 
   // Redirect to private space if the user is already authenticated and accessing login/register pages
-  if ((url.pathname === "/" || url.pathname === "/login" || url.pathname === "/register") && token && isValidToken(token)) {
+  if (
+    (url.pathname === "/" ||
+      url.pathname === "/login" ||
+      url.pathname === "/register") &&
+    token &&
+    isValidToken(token)
+  ) {
     return NextResponse.redirect(new URL("/private-space", request.url));
   }
 
