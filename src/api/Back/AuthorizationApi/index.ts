@@ -1,3 +1,4 @@
+import assert from "assert";
 import BaseApiService from "../BaseAPIService";
 import { BackendError } from "@/Services/errorHandlingService";
 
@@ -18,15 +19,14 @@ export class AuthorizationApi extends BaseApiService {
     return this.instance;
   }
 
-  // public async isTokenStillValid(): Promise<boolean> {
-  //   try {
-  //     return await this.getRequest<IValidation>(url);
-  //   } catch (error) {
-  //     if (error instanceof Response) {
-  //       const errorBody: BackendError = await error.json();
-  //       throw errorBody; // Throw the entire error object
-  //     }
-  //     throw error;
-  //   }
-  // }
+  public async getNewAccessToken(): Promise<{ accessToken: string }> {
+    assert(this.baseURL, "No Url inside the AUthoAPI");
+    const url = new URL(this.baseURL.concat("/refresh-token"));
+    try {
+      return this.postRequest(url);
+    } catch (error) {
+      console.error("failed to refreshAccessToken", error);
+      throw error;
+    }
+  }
 }

@@ -4,16 +4,11 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export default function middleware(request: NextRequest) {
-  const token = request.cookies.get("jwt");
+  const refreshToken = request.cookies.get("refreshToken");
   const url = request.nextUrl.clone();
 
   const isValidToken = (token: string | RequestCookie) => {
     const decodedToken = AuthorizationService.getInstance().decodeToken(token);
-    console.log("decodedToken", decodedToken);
-    console.log(
-      "isValid",
-      AuthorizationService.getInstance().isTokenValid(decodedToken)
-    );
     return (
       decodedToken &&
       AuthorizationService.getInstance().isTokenValid(decodedToken)
@@ -25,14 +20,14 @@ export default function middleware(request: NextRequest) {
     (url.pathname === "/" ||
       url.pathname === "/login" ||
       url.pathname === "/register") &&
-    token &&
-    isValidToken(token)
+    refreshToken &&
+    isValidToken(refreshToken)
   ) {
     return NextResponse.redirect(new URL("/private-space", request.url));
   }
 
   // Redirect to login if the token is not valid or not present, except for login/register pages
-  if (!token || !isValidToken(token)) {
+  if (!refreshToken || !isValidToken(refreshToken)) {
     if (url.pathname !== "/login" && url.pathname !== "/register") {
       return NextResponse.redirect(new URL("/login", request.url));
     }

@@ -1,10 +1,10 @@
-export default class CookieService {
-  private static instance: CookieService;
+export default class StorageService {
+  private static instance: StorageService;
   private constructor() {}
 
-  public static getInstance(): CookieService {
+  public static getInstance(): StorageService {
     if (!this.instance) {
-      this.instance = new CookieService();
+      this.instance = new StorageService();
     }
     return this.instance;
   }
@@ -13,14 +13,18 @@ export default class CookieService {
     if (!value || !name) throw new Error("Cookie name or value is empty");
     const date = new Date();
 
-    date.setTime(date.getTime() + 3600 * 1000 * 24);
+    date.setTime(date.getTime() + 3600 * 1000);
 
     document.cookie =
       name + "=" + value + "; expires=" + date.toUTCString() + "; path=/";
+    localStorage.setItem("accessToken", value);
   }
 
-  public getCookie(): string {
-    return document.cookie;
+  public getAccessToken(name: string): string | null {
+    if (!localStorage.getItem(name)) {
+      return null;
+    }
+    return localStorage.getItem(name);
   }
 
   // deleteCookie

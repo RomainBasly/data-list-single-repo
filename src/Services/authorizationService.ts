@@ -1,17 +1,12 @@
+import { AuthorizationApi } from "@/api/Back/AuthorizationApi";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 
 export default class AuthorizationService {
   public accessToken: string | null = null;
   private static instance: AuthorizationService | null = null;
-  private readonly secretKey: string;
 
-  private constructor() {
-    if (!process.env.ACCESS_TOKEN_SECRET) {
-      throw new Error("Environment variable SECRET_ACCES_TOKEN_KEY is missing");
-    }
-    this.secretKey = process.env.ACCESS_TOKEN_SECRET;
-  }
+  private constructor() {}
 
   public static getInstance(): AuthorizationService {
     if (!AuthorizationService.instance) {
@@ -47,6 +42,7 @@ export default class AuthorizationService {
     ) {
       return expirationTime > currentTimeInSeconds;
     }
+
     return false;
   }
 }

@@ -6,7 +6,7 @@ import AuthenticationApi from '@/api/Back/AuthenticationApi'
 import { validateConnectFormInputs } from '@/Services/validation'
 import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
-import CookieService from '@/Services/CookieService'
+import StorageService from '@/Services/CookieService'
 import Button from '@/components/Materials/Button'
 
 export type IBody = {
@@ -34,7 +34,10 @@ export function LoginForm() {
     try {
       const response = await AuthenticationApi.getInstance().login(body)
       response.accessToken &&
-        CookieService.getInstance().setCookie('jwt', response.accessToken)
+        StorageService.getInstance().setCookie(
+          'accessToken',
+          response.accessToken,
+        )
       setIsLoading(!isLoading)
       router.push('/private-space')
     } catch (error) {
