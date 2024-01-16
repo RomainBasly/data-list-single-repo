@@ -8,7 +8,10 @@ export default function middleware(request: NextRequest) {
   console.log("refreshToken", refreshToken);
   const url = request.nextUrl.clone();
 
-  const isValidToken = (token: string | RequestCookie) => {
+  const isValidToken = (token: string | RequestCookie | undefined) => {
+    if (typeof token === "undefined" || token === "") {
+      return false;
+    }
     const decodedToken = AuthorizationService.getInstance().decodeToken(token);
     return (
       decodedToken &&
@@ -29,7 +32,10 @@ export default function middleware(request: NextRequest) {
 
   // Redirect to login if the token is not valid or not present, except for login/register pages
   if (!refreshToken || !isValidToken(refreshToken)) {
+    console.log("refreshToken", !refreshToken);
+    console.log("!isValid", !isValidToken(refreshToken));
     if (url.pathname !== "/login" && url.pathname !== "/register") {
+      console.log("I passed Here", refreshToken);
       return NextResponse.redirect(new URL("/login", request.url));
     }
   }
