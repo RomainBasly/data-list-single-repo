@@ -44,7 +44,7 @@ export class AppAuthController {
 
       assert(refreshToken, 'problem with refreshToken inside controller');
       assert(accessToken, 'problem with accesstoken inside controller');
-      cookieHandler(req, res, refreshToken);
+      cookieHandler(req, res, refreshToken, '.simplists.net');
       res.json({ accessToken });
     } catch (error) {
       next(error);
