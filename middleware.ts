@@ -2,14 +2,17 @@ import AuthorizationService from "@/Services/authorizationService";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import cookie from "cookie"
 
 export default function middleware(request: NextRequest) {
-  const refreshToken = request.cookies.get("refreshToken");
+  //const refreshToken = request.cookies.get("refreshToken");
+  const cookies = cookie.parse(request.headers.get('cookie') || '');
+  const refreshToken = cookies.refreshToken;
   console.log("refreshToken", refreshToken);
   const url = request.nextUrl.clone();
 
-  const isValidToken = (token: string | RequestCookie | undefined) => {
-    if (typeof token === "undefined" || token === "") {
+  const isValidToken = (token: string | undefined) => {
+    if (typeof token === "undefined") {
       return false;
     }
     const decodedToken = AuthorizationService.getInstance().decodeToken(token);
