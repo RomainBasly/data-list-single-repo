@@ -2,11 +2,13 @@ import AuthorizationService from "@/Services/authorizationService";
 import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import cookie from "cookie"
+import cookie from "cookie";
 
 export default function middleware(request: NextRequest) {
   //const refreshToken = request.cookies.get("refreshToken");
-  const cookies = cookie.parse(request.headers.get('cookie') || '');
+  const cookies = cookie.parse(request.headers.get("cookie") || "");
+  const headers = request.headers;
+  console.log("headers", headers);
   const refreshToken = cookies.refreshToken;
   console.log("refreshToken", refreshToken);
   const url = request.nextUrl.clone();
@@ -35,8 +37,6 @@ export default function middleware(request: NextRequest) {
 
   // Redirect to login if the token is not valid or not present, except for login/register pages
   if (!refreshToken || !isValidToken(refreshToken)) {
-    console.log("refreshToken", !refreshToken);
-    console.log("!isValid", !isValidToken(refreshToken));
     if (url.pathname !== "/login" && url.pathname !== "/register") {
       console.log("I passed Here", refreshToken);
       return NextResponse.redirect(new URL("/login", request.url));
