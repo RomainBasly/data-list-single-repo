@@ -29,13 +29,13 @@ let AppRefreshTokenController = class AppRefreshTokenController {
     }
     async handleRefreshToken(req, res, next) {
         const cookies = req.cookies;
-        if (!(cookies === null || cookies === void 0 ? void 0 : cookies.jwt))
+        if (!(cookies === null || cookies === void 0 ? void 0 : cookies.refreshToken))
             return res.status(401).json({ error: errors_1.ErrorMessages.UNAUTHORIZED });
-        const refreshTokenInCookie = cookies.jwt;
+        const refreshTokenInCookie = cookies.refreshToken;
         if (!refreshTokenSecret)
-            throw new Error("no refreshTokenSecret in middleware");
+            throw new Error('no refreshTokenSecret in middleware');
         if (!accessTokenSecret)
-            throw new Error("no accessTokenSecret in middleware");
+            throw new Error('no accessTokenSecret in middleware');
         try {
             const foundUser = await this.refreshTokenService.getUserByRefreshToken(refreshTokenInCookie);
             if (!foundUser)

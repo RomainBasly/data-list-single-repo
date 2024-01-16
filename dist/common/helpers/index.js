@@ -18,11 +18,11 @@ function verifyJwt(token, secret) {
 }
 exports.verifyJwt = verifyJwt;
 function cookieHandler(req, res, refreshToken) {
-    return res.cookie('jwt', refreshToken, {
+    return res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         sameSite: 'none',
         secure: true, // in dev mode use false
-        maxAge: 24 * 60 * 60 * 1000,
+        maxAge: 24 * 60 * 60 * 60 * 1000,
     });
 }
 exports.cookieHandler = cookieHandler;

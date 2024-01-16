@@ -12,11 +12,11 @@ export function verifyJwt(token: string, secret: string): Promise<JwtPayload> {
 }
 
 export function cookieHandler(req: Request, res: Response, refreshToken: string) {
-  return res.cookie('jwt', refreshToken, {
+  return res.cookie('refreshToken', refreshToken, {
     httpOnly: true,
     sameSite: 'none',
     secure: true, // in dev mode use false
-    maxAge: 24 * 60 * 60 * 1000,
+    maxAge: 24 * 60 * 60 * 60 * 1000,
   });
 }
 
