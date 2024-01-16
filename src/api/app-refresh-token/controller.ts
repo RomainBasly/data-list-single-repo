@@ -32,7 +32,7 @@ export class AppRefreshTokenController {
         accessTokenSecret,
         foundUser
       );
-      cookieHandler(req, res, newRefreshToken, '.simplists.net');
+      cookieHandler(req, res, newRefreshToken);
       res.json({ accessToken: newAccessToken });
     } catch (error) {
       next(error);
