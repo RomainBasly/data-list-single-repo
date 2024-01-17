@@ -17,7 +17,9 @@ export default function PrivateSpace() {
         'accessToken',
       )
       if (accessToken) {
-        if (!AuthorizationService.getInstance().isTokenValid(accessToken)) {
+        if (
+          !AuthorizationService.getInstance().isTokenNotExpired(accessToken)
+        ) {
           try {
             const newAccessToken = await AuthorizationApi.getInstance().getNewAccessToken()
             if (newAccessToken) {
