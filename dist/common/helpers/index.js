@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateRandomNumber = exports.cookieHandler = exports.verifyJwt = void 0;
+exports.generateRandomNumber = exports.verifyJwt = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const errors_1 = require("../../domain/common/errors");
 function verifyJwt(token, secret) {
@@ -17,16 +17,15 @@ function verifyJwt(token, secret) {
     });
 }
 exports.verifyJwt = verifyJwt;
-function cookieHandler(req, res, refreshToken) {
-    return res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-        sameSite: 'none',
-        secure: true, // in dev mode use false
-        maxAge: 24 * 60 * 60 * 60 * 1000,
-        path: '/',
-    });
-}
-exports.cookieHandler = cookieHandler;
+// export function cookieHandler(req: Request, res: Response, refreshToken: string) {
+//   return res.cookie('refreshToken', refreshToken, {
+//     httpOnly: true,
+//     sameSite: 'none',
+//     secure: true, // in dev mode use false
+//     maxAge: 24 * 60 * 60 * 60 * 1000,
+//     path: '/',
+//   });
+// }
 function generateRandomNumber() {
     const array = [];
     for (let i = 0; i < 7; i++) {
