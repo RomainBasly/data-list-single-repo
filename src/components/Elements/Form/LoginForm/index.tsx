@@ -6,7 +6,7 @@ import AuthenticationApi from '@/api/Back/AuthenticationApi'
 import { validateConnectFormInputs } from '@/Services/validation'
 import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
-import CookieService from '@/Services/CookieService'
+import StorageService from '@/Services/CookieService'
 import Button from '@/components/Materials/Button'
 
 export type IBody = {
@@ -32,7 +32,19 @@ export function LoginForm() {
     const body = { email: lowerCaseEmail, password }
 
     try {
-      await AuthenticationApi.getInstance().login(body)
+      const response = await AuthenticationApi.getInstance().login(body)
+      response.accessToken &&
+        StorageService.getInstance().setCookies(
+          'accessToken',
+          response.accessToken,
+          true,
+        )
+      response.refreshToken &&
+        StorageService.getInstance().setCookies(
+          'refreshToken',
+          response.refreshToken,
+          false,
+        )
       setIsLoading(!isLoading)
       router.push('/private-space')
     } catch (error) {

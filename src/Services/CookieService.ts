@@ -1,35 +1,31 @@
-export default class CookieService {
-  private static instance: CookieService;
+const SHORT_LIVED = 3600 * 1000; 
+const LONG_LIVED = 3600 * 24 * 30 * 1000; 
+
+export default class StorageService {
+  private static instance: StorageService;
   private constructor() {}
 
-  public static getInstance(): CookieService {
+  public static getInstance(): StorageService {
     if (!this.instance) {
-      this.instance = new CookieService();
+      this.instance = new StorageService();
     }
     return this.instance;
   }
 
-  // public setCookie(name: string, value: string): void {
-  //   if (!value || !name) throw new Error("Cookie name or value is empty");
-  //   const date = new Date();
-
-<<<<<<< Updated upstream
-  //   date.setTime(date.getTime() + 3600 * 1000 * 24);
-
-  //   document.cookie =
-  //     name + "=" + value + "; expires=" + date.toUTCString() + "; path=/";
-  // }
-=======
-    date.setTime(date.getTime() + 3600 * 1000);
+  public setCookies(name: string, value: string, isAccessToken: boolean): void {
+    if (!value || !name) throw new Error("Cookie name or value is empty");
+    let date = new Date();
+    let expirationTime = isAccessToken ? date.setTime(date.getTime() + SHORT_LIVED): date.setTime(date.getTime() + LONG_LIVED);
 
     document.cookie =
-      name + "=" + value + "; expires=" + date.toUTCString() + "; path=/";
-    console.log("set cookie", document.cookie);
+      name + "=" + value + "; expires=" + expirationTime + "; path=/; secure;sameSite=Lax";
   }
->>>>>>> Stashed changes
 
-  public getCookie(): string {
-    return document.cookie;
+  public getAccessToken(name: string): string | null {
+    if (!localStorage.getItem(name)) {
+      return null;
+    }
+    return localStorage.getItem(name);
   }
 
   // deleteCookie

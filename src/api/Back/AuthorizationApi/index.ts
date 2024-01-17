@@ -20,7 +20,7 @@ export class AuthorizationApi extends BaseApiService {
     return this.instance;
   }
 
-  public async getNewAccessToken() {
+  public async getNewAccessToken(): Promise<{ accessToken: string }> {
     assert(this.baseURL, "url is missing in refreshToken Method");
     const url = new URL(this.baseURL.concat("/refresh-token"));
 
