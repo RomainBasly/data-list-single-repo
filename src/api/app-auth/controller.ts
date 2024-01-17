@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'tsyringe';
 import { UserService } from '../../domain/user/services';
 import assert from 'assert';
-import { cookieHandler } from '../../common/helpers';
+//import { cookieHandler } from '../../common/helpers';
 import { UserAlreadyExistsError } from '../../domain/common/errors';
 
 interface UserInfo {
@@ -44,8 +44,8 @@ export class AppAuthController {
 
       assert(refreshToken, 'problem with refreshToken inside controller');
       assert(accessToken, 'problem with accesstoken inside controller');
-      cookieHandler(req, res, refreshToken, '.simplists.net');
-      res.json({ accessToken });
+      //cookieHandler(req, res, refreshToken);
+      res.json({ accessToken, refreshToken });
     } catch (error) {
       next(error);
     }
