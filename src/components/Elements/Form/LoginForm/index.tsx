@@ -34,7 +34,7 @@ export function LoginForm() {
     try {
       const response = await AuthenticationApi.getInstance().login(body)
       response.accessToken &&
-        StorageService.getInstance().setCookie(
+        StorageService.getInstance().setLocalStorage(
           'accessToken',
           response.accessToken,
         )
