@@ -19,7 +19,7 @@ exports.AppAuthController = void 0;
 const tsyringe_1 = require("tsyringe");
 const services_1 = require("../../domain/user/services");
 const assert_1 = __importDefault(require("assert"));
-//import { cookieHandler } from '../../common/helpers';
+const helpers_1 = require("../../common/helpers");
 const errors_1 = require("../../domain/common/errors");
 // Here is injection dependencies used in this architecture
 // If you do not get it please check tsyringe
@@ -53,7 +53,7 @@ let AppAuthController = class AppAuthController {
             const { accessToken, refreshToken } = await this.userService.login(email, password);
             (0, assert_1.default)(refreshToken, 'problem with refreshToken inside controller');
             (0, assert_1.default)(accessToken, 'problem with accesstoken inside controller');
-            //cookieHandler(req, res, refreshToken);
+            (0, helpers_1.cookieHandler)(req, res, refreshToken);
             res.json({ accessToken, refreshToken });
         }
         catch (error) {

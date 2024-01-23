@@ -40,6 +40,7 @@ export class AppUserRepository implements IAppUserRepository {
     if (error) {
       throw new Error(`something when wrong in the appUserRepository: ${error.message}`);
     }
+    console.log('data', data, data[0]);
     return data ? data[0] : null;
   }
 }

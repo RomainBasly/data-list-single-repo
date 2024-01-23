@@ -34,7 +34,7 @@ var ErrorMessages;
     ErrorMessages["JWT_ERROR"] = "Error with the JWT";
     ErrorMessages["FORBIDDEN_ERROR"] = "Method not allowed";
     ErrorMessages["ACCESSTOKEN_ERROR"] = "AccessToken not present";
-    ErrorMessages["UNAUTHORIZED"] = "Unauthorized";
+    ErrorMessages["UNAUTHORIZED"] = "Unauthorized prick";
     ErrorMessages["VALIDATION_ERROR"] = "Validation Error";
     ErrorMessages["INCORRECT_CODE"] = "Code incorrect";
     ErrorMessages["NO_MORE_VALID"] = "Code no more valid";

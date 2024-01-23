@@ -33,7 +33,7 @@ export enum ErrorMessages {
   JWT_ERROR = 'Error with the JWT',
   FORBIDDEN_ERROR = 'Method not allowed',
   ACCESSTOKEN_ERROR = 'AccessToken not present',
-  UNAUTHORIZED = 'Unauthorized',
+  UNAUTHORIZED = 'Unauthorized prick',
   VALIDATION_ERROR = 'Validation Error',
   INCORRECT_CODE = 'Code incorrect',
   NO_MORE_VALID = 'Code no more valid',
