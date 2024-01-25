@@ -21,13 +21,13 @@ export default abstract class BaseApiService {
 
   protected async getRequest<T>(
     url: URL,
-    contentType?: ContentType
+    contentType?: ContentType, refreshToken?: string
   ): Promise<T> {
     const response = await this.sendRequest(
       async () =>
         await fetch(url, {
           method: "GET",
-          headers: this.buildHeaders(contentType ?? ContentType.JSON),
+          headers: this.buildHeaders(contentType ?? ContentType.JSON, refreshToken),
           credentials: "include",
         })
     );
@@ -92,12 +92,15 @@ export default abstract class BaseApiService {
     return responseContent;
   }
 
-  protected buildHeaders(contentType: ContentType) {
+  protected buildHeaders(contentType: ContentType, refreshToken?: string) {
     const headers = new Headers();
     assert(this.apiKey, "APIkey missing");
     if (contentType === ContentType.JSON) {
       headers.set("Content-Type", contentType);
       headers.set("X-API-KEY", this.apiKey);
+    }
+    if (refreshToken) {
+      headers.set("Authorization", `Bearer ${refreshToken}`)
     }
     return headers;
   }

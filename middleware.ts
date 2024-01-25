@@ -1,6 +1,4 @@
-import AuthorizationService from "@/Services/authorizationService";
 import JwtService from "@/Services/jwtService";
-import { RequestCookie } from "next/dist/compiled/@edge-runtime/cookies";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 

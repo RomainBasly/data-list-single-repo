@@ -3,6 +3,7 @@ import classes from './classes.module.scss'
 
 type IProps = {
   variant?: string
+  className?: string
 }
 
 export function Loader(props: IProps) {

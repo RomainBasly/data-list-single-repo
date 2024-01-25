@@ -1,5 +1,5 @@
-const SHORT_LIVED = 3600 * 1000; 
-const LONG_LIVED = 3600 * 24 * 30 * 1000; 
+const SHORT_LIVED = 3600 * 1000;
+const LONG_LIVED = 3600 * 24 * 30 * 1000;
 
 export default class StorageService {
   private static instance: StorageService;
@@ -15,10 +15,17 @@ export default class StorageService {
   public setCookies(name: string, value: string, isAccessToken: boolean): void {
     if (!value || !name) throw new Error("Cookie name or value is empty");
     let date = new Date();
-    let expirationTime = isAccessToken ? date.setTime(date.getTime() + SHORT_LIVED): date.setTime(date.getTime() + LONG_LIVED);
+    let durationInNumber = isAccessToken ? SHORT_LIVED : LONG_LIVED;
+    date.setTime(date.getTime() + durationInNumber);
+    const expirationTimeIntUTC = date.toUTCString();
 
     document.cookie =
-      name + "=" + value + "; expires=" + expirationTime + "; path=/; secure;sameSite=Lax";
+      name +
+      "=" +
+      value +
+      "; expires=" +
+      expirationTimeIntUTC +
+      "; path=/; secure;sameSite=Lax";
   }
 
   public getAccessToken(name: string): string | null {
