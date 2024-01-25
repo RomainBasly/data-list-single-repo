@@ -2,14 +2,12 @@ import { Router } from 'express';
 import { AppAuthController } from '../api/app-auth/controller';
 import { container } from 'tsyringe';
 import { AppRefreshTokenController } from '../api/app-refresh-token/controller';
-import { AppUserController } from '../api/app-users/controllers';
 import { AppEmailVerificationController } from '../api/app-email-verification/controller';
 
 const publicRoutes = Router();
 
 const appAuthController = container.resolve(AppAuthController);
 const appRefreshTokenController = container.resolve(AppRefreshTokenController);
-const appUserController = container.resolve(AppUserController);
 const appEmailVerification = container.resolve(AppEmailVerificationController);
 
 publicRoutes

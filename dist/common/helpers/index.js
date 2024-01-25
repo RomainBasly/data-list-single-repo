@@ -22,7 +22,7 @@ function cookieHandler(req, res, refreshToken) {
         httpOnly: true,
         sameSite: 'none',
         secure: false, // in dev mode use false
-        maxAge: 24 * 60 * 60 * 60 * 1000,
+        maxAge: 24 * 3600 * 30 * 1000,
         path: '/',
     });
 }
