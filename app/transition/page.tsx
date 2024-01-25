@@ -17,19 +17,16 @@ export default function Transition() {
       const refreshToken = Cookies.get('refreshToken')
 
       try {
-        console.log('je suis dans le try')
         if (refreshToken) {
           const response = await AuthorizationApi.getInstance().getNewAccessToken(
             refreshToken,
           )
-          console.log('response', response)
           response.accessToken &&
             StorageService.getInstance().setCookies(
               'accessToken',
               response.accessToken,
               true,
             )
-          console.log('response.accessToken', response.accessToken)
           router.push('/private-space')
         } else {
           router.push('/login')

@@ -49,10 +49,4 @@ export default class AuthorizationService {
 
     return false;
   }
-
-  public async getNewAccessToken() {
-    const newAccessToken =
-      await AuthorizationApi.getInstance().getNewAccessToken();
-    return newAccessToken;
-  }
 }
