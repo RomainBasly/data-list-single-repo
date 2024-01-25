@@ -10,8 +10,9 @@ export default class JwtService {
     const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
     const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 
-    if (!accessTokenSecret || !refreshTokenSecret)
+    if (!accessTokenSecret || !refreshTokenSecret) {
       throw new Error("error here");
+    }
     this.accessTokenSecret = accessTokenSecret;
     this.refreshTokenSecret = refreshTokenSecret;
   }
