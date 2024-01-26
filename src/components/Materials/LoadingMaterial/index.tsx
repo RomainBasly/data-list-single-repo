@@ -1,19 +1,20 @@
 'use client'
-
 import React, { useState, useEffect } from 'react'
 import classes from './classes.module.scss'
+import { headers } from 'next/headers'
 
 export default function LoadingMaterial() {
   const [nonce, setNonce] = useState<string>('')
 
   useEffect(() => {
     const styleNonce = document
-      .querySelector('meta[name="x-style-nonce"]')
-      ?.getAttribute('content')
-    if (styleNonce) {
-      setNonce(styleNonce)
-    }
-  }, [])
+    .querySelector('meta[name="x-nonce"]')
+    ?.getAttribute('content')
+  if (styleNonce) {
+    setNonce(styleNonce)
+  }
+  console.log('nonce', nonce)
+  }, [nonce])
 
   return (
     <div className={classes['root']} nonce={nonce}>

@@ -20,6 +20,9 @@ export default async function middleware(request: NextRequest) {
   img-src 'self' data:;
   connect-src 'self' https://stingray-app-69yxe.ondigitalocean.app;
 `;
+  const contentSecurityPolicyHeaderValue = cspHeader
+    .replace(/\s{2,}/g, " ")
+    .trim();
 
   const accessToken = request.cookies.get("accessToken")?.value;
   const decodedAccessToken = JwtService.getInstance().decodeJwt(
@@ -45,12 +48,11 @@ export default async function middleware(request: NextRequest) {
   }
 
   const response = NextResponse.next();
+  response.headers.set("x-nonce", nonce);
   response.headers.set(
     "Content-Security-Policy",
-    cspHeader.trim().replace(/\s{2,}/g, " ")
+    contentSecurityPolicyHeaderValue
   );
-  response.headers.set("x-style-nonce", nonce);
-
   return response;
 }
 

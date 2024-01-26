@@ -9,7 +9,7 @@ export function LandingHeader() {
 
   useEffect(() => {
     const styleNonce = document
-      .querySelector('meta[name="x-style-nonce"]')
+      .querySelector('meta[name="x-nonce"]')
       ?.getAttribute('content')
     if (styleNonce) {
       setNonce(styleNonce)

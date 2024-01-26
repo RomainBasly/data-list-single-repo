@@ -12,6 +12,18 @@ type IProps = {
 }
 
 export default function Logo(props: Readonly<IProps>) {
+  const [nonce, setNonce] = useState<string>('')
+
+  useEffect(() => {
+    const styleNonce = document
+      .querySelector('meta[name="x-nonce"]')
+      ?.getAttribute('content')
+    if (styleNonce) {
+      setNonce(styleNonce)
+    }
+    console.log('nonce', nonce)
+  }, [nonce])
+
   return (
     <Image
       src={String(props.src)}
@@ -22,6 +34,7 @@ export default function Logo(props: Readonly<IProps>) {
       width={300}
       height={300}
       loading="lazy"
+      nonce={nonce}
     />
   )
 }

@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { Inter } from 'next/font/google'
 import React from 'react'
+import Script from 'next/script'
+import { headers } from 'next/headers'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -54,9 +56,11 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const nonce = headers().get('x-nonce')
   return (
     <html lang="fr">
       <body className={inter.className}>{children}</body>
+      <Script strategy="afterInteractive" nonce={nonce ?? 'nothing'} />
     </html>
   )
 }
