@@ -13,17 +13,6 @@ export default function Layout({ children, pageType }: ILayoutProps) {
         name="viewport"
         content="width=device-width, initial-scale=1"
       ></meta>
-      <meta
-            httpEquiv="Content-Security-Policy"
-            content="
-              default-src 'self';
-              script-src 'self';
-              style-src 'self' 'unsafe-inline' fonts.googleapis.com;
-              font-src 'self' fonts.gstatic.com;
-              img-src 'self' data:;
-              connect-src 'self' https://stingray-app-69yxe.ondigitalocean.app;
-            "
-          />
       {pageType !== 'login' && pageType !== 'register' && (
         <>
           <Header />

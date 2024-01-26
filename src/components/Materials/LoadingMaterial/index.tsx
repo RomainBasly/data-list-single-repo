@@ -1,9 +1,22 @@
-import React from 'react'
+'use client'
+
+import React, { useState, useEffect } from 'react'
 import classes from './classes.module.scss'
 
 export default function LoadingMaterial() {
+  const [nonce, setNonce] = useState<string>('')
+
+  useEffect(() => {
+    const styleNonce = document
+      .querySelector('meta[name="x-style-nonce"]')
+      ?.getAttribute('content')
+    if (styleNonce) {
+      setNonce(styleNonce)
+    }
+  }, [])
+
   return (
-    <div className={classes['root']}>
+    <div className={classes['root']} nonce={nonce}>
       <svg className={classes['rotating-circle']} viewBox="0 0 100 100">
         <defs>
           <linearGradient id="grad1" x1="0%" y1="0%" x2="80%" y2="0%">
