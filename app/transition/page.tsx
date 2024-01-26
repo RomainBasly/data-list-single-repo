@@ -15,9 +15,8 @@ export default function Transition() {
   useEffect(() => {
     ;(async () => {
       const refreshToken = Cookies.get('refreshToken')
-
-      try {
-        if (refreshToken) {
+      if (refreshToken) {
+        try {
           const response = await AuthorizationApi.getInstance().getNewAccessToken(
             refreshToken,
           )
@@ -28,15 +27,15 @@ export default function Transition() {
               true,
             )
           router.push('/private-space')
-        } else {
+        } catch (error) {
           router.push('/login')
+          console.error('error', error)
         }
-      } catch (error) {
-        console.error(error)
+      } else {
         router.push('/login')
       }
     })()
-  }, [])
+  }, [router])
   return (
     <Layout pageType="login">
       <div className={classes['root']}>
@@ -44,7 +43,7 @@ export default function Transition() {
           <LandingHeader />
         </div>
         <div className={classes['content']}>
-          <Loader variant="page" className={classes['toto']} />
+          <Loader variant="page" />
         </div>
       </div>
     </Layout>
