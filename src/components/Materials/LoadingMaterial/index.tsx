@@ -8,12 +8,11 @@ export default function LoadingMaterial() {
 
   useEffect(() => {
     const styleNonce = document
-    .querySelector('meta[name="x-nonce"]')
-    ?.getAttribute('content')
-  if (styleNonce) {
-    setNonce(styleNonce)
-  }
-  console.log('nonce', nonce)
+      .querySelector('meta[name="x-nonce"]')
+      ?.getAttribute('content')
+    if (styleNonce) {
+      setNonce(styleNonce)
+    }
   }, [nonce])
 
   return (
