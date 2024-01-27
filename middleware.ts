@@ -29,7 +29,12 @@ export default async function middleware(request: NextRequest) {
     accessToken ? accessToken : null
   );
   const url = request.nextUrl.clone();
-
+  const response = NextResponse.next();
+  response.headers.set("x-nonce", nonce);
+  response.headers.set(
+    "Content-Security-Policy",
+    contentSecurityPolicyHeaderValue
+  );
   if (
     accessToken &&
     !JwtService.getInstance().isTokenExpired(decodedAccessToken) &&
@@ -42,20 +47,14 @@ export default async function middleware(request: NextRequest) {
     !accessToken ||
     JwtService.getInstance().isTokenExpired(decodedAccessToken)
   ) {
-    if (url.pathname !== "/login" && url.pathname !== "/register") {
+    if (url.pathname !== "/login" && url.pathname !== "/register" && url.pathname !== "/transition") {
       return NextResponse.redirect(new URL("/transition", request.url));
     }
   }
 
-  const response = NextResponse.next();
-  response.headers.set("x-nonce", nonce);
-  response.headers.set(
-    "Content-Security-Policy",
-    contentSecurityPolicyHeaderValue
-  );
   return response;
 }
 
 export const config = {
-  matcher: ["/", "/private-space", "/login", "/register"],
+  matcher: ["/**"],
 };
