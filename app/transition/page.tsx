@@ -15,6 +15,7 @@ export default function Transition() {
   useEffect(() => {
     ;(async () => {
       const refreshToken = Cookies.get('refreshToken')
+      console.log('refreshToken', refreshToken)
       if (refreshToken) {
         try {
           const response = await AuthorizationApi.getInstance().getNewAccessToken(
@@ -32,6 +33,7 @@ export default function Transition() {
           console.error('error', error)
         }
       } else {
+        console.log('je passe dans le else')
         router.push('/login')
       }
     })()

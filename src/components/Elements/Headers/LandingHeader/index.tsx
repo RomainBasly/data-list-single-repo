@@ -14,7 +14,6 @@ export function LandingHeader() {
     if (styleNonce) {
       setNonce(styleNonce)
     }
-    console.log('nonce', nonce)
   }, [nonce])
   return (
     <div className={classes['root']}>

@@ -21,7 +21,6 @@ export default function Logo(props: Readonly<IProps>) {
     if (styleNonce) {
       setNonce(styleNonce)
     }
-    console.log('nonce', nonce)
   }, [nonce])
 
   return (
