@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const privatePages = [
+  "/",
   "/private-space",
   "/profile",
   "/create-list",
@@ -36,6 +37,7 @@ export default async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
   const isLogPage = logPagesArray.includes(url.pathname);
   const isGetMethod = request.method === "GET";
+  const isPostMethod = request.method === "POST";
 
   const isLoggedIn =
     accessToken && !JwtService.getInstance().isTokenExpired(decodedAccessToken);
@@ -45,6 +47,10 @@ export default async function middleware(request: NextRequest) {
     "Content-Security-Policy",
     contentSecurityPolicyHeaderValue
   );
+
+  if (isPostMethod) {
+    return NextResponse.next();
+  }
   if (isGetMethod) {
     if (isLoggedIn && isLogPage) {
       return NextResponse.redirect(new URL("/profile", request.url));

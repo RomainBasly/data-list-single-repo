@@ -1,7 +1,7 @@
 'use client'
 import { LandingHeader } from '@/components/Elements/Headers/LandingHeader'
 import Layout from '@/components/Elements/Layout'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import classes from '../classes.module.scss'
 import { Loader } from '@/components/Elements/Loader'
 import Cookies from 'js-cookie'
@@ -11,11 +11,21 @@ import StorageService from '@/Services/CookieService'
 
 export default function Transition() {
   const router = useRouter()
+  const [nonce, setNonce] = useState<string>('')
+
+  useEffect(() => {
+    const styleNonce = document
+      .querySelector('meta[name="x-nonce"]')
+      ?.getAttribute('content')
+    if (styleNonce) {
+      setNonce(styleNonce)
+    }
+  }, [nonce])
 
   useEffect(() => {
     ;(async () => {
       const refreshToken = Cookies.get('refreshToken')
-      console.log('refreshToken', refreshToken)
+
       if (refreshToken) {
         try {
           const response = await AuthorizationApi.getInstance().getNewAccessToken(
@@ -33,13 +43,12 @@ export default function Transition() {
           console.error('error', error)
         }
       } else {
-        console.log('je passe dans le else')
         router.push('/login')
       }
     })()
   }, [router])
   return (
-    <Layout pageType="login">
+    // <Layout pageType="login">
       <div className={classes['root']}>
         <div className={classes['top']}>
           <LandingHeader />
@@ -48,6 +57,6 @@ export default function Transition() {
           <Loader variant="page" />
         </div>
       </div>
-    </Layout>
+    // </Layout>
   )
 }
