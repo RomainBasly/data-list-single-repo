@@ -11,7 +11,7 @@ const privatePages = [
   "/list-page2",
 ];
 
-const logPagesArray = ["/login", "register"];
+const logPagesArray = ["/login", "/register"];
 
 export default async function middleware(request: NextRequest) {
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
@@ -49,6 +49,9 @@ export default async function middleware(request: NextRequest) {
   );
 
   if (isPostMethod) {
+    if (isLoggedIn && isLogPage) {
+      return NextResponse.redirect(new URL("/profile", request.url));
+    }
     return NextResponse.next();
   }
   if (isGetMethod) {
