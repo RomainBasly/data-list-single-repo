@@ -12,10 +12,8 @@ const appRefreshTokenController = container.resolve(AppRefreshTokenController);
 
 const protectedRoutes = Router();
 
-protectedRoutes
-  .get('/api/users/all', verifyRoles(Roles.ADMIN, Roles.USER), (req, res) => appUserController.getAllUsers(req, res))
-  .get('/api/refresh-token', (req, res, next) => {
-    appRefreshTokenController.handleRefreshToken(req, res, next);
-  });
+protectedRoutes.get('/api/users/all', verifyRoles(Roles.ADMIN, Roles.USER), (req, res) =>
+  appUserController.getAllUsers(req, res)
+);
 
 export default protectedRoutes;

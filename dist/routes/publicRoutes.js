@@ -14,9 +14,6 @@ publicRoutes
     appAuthController.register(req, res, next);
 })
     .post('/api/auth/login', (req, res, next) => appAuthController.login(req, res, next))
-    .get('/api/refresh-token', (req, res, next) => {
-    appRefreshTokenController.handleRefreshToken(req, res, next);
-})
     .get('/api/auth/logout', (req, res) => {
     appAuthController.logoutUser(req, res);
 })

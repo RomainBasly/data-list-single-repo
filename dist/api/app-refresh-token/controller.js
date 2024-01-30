@@ -28,17 +28,10 @@ let AppRefreshTokenController = class AppRefreshTokenController {
         this.userRepository = userRepository;
     }
     async handleRefreshToken(req, res, next) {
-        console.log('I passed here');
-        //const cookies = req.cookies;
         const authHeader = req.headers.authorization;
-        console.log('authheader', authHeader);
-        // console.log('cookies', cookies);
         if (!authHeader)
             return res.status(401).json({ error: 'Here is a problem of being Unauthorized' });
-        //if (!cookies?.refreshToken) return res.status(401).json({ error: ErrorMessages.UNAUTHORIZED });
-        //const refreshTokenInCookie = cookies.refreshToken;
         const token = authHeader.split(' ')[1];
-        console.log('token in handleRefresh', token);
         if (!refreshTokenSecret)
             throw new Error('no refreshTokenSecret in middleware');
         if (!accessTokenSecret)
@@ -48,7 +41,6 @@ let AppRefreshTokenController = class AppRefreshTokenController {
             if (!foundUser)
                 return res.status(401).json({ error: errors_1.ErrorMessages.UNAUTHORIZED });
             const { newAccessToken } = await this.refreshTokenService.handleTokenRefresh(token, refreshTokenSecret, accessTokenSecret, foundUser);
-            //cookieHandler(req, res, newRefreshToken);
             res.json({ accessToken: newAccessToken });
         }
         catch (error) {
