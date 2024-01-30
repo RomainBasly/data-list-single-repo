@@ -9,9 +9,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import classes from './classes.module.scss'
-import {
-  EnvelopeIcon,
-} from '@heroicons/react/24/outline'
+import { EnvelopeIcon } from '@heroicons/react/24/outline'
 
 export default function CodeVerificationForm() {
   const router = useRouter()
@@ -74,6 +72,7 @@ export default function CodeVerificationForm() {
           </label>
           <input
             type="text"
+            id="code"
             className={classes['input']}
             onChange={handleCode}
             placeholder="Entrez votre code ici"

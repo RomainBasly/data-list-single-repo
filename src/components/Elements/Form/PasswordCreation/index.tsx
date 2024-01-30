@@ -99,6 +99,7 @@ export default function RegistrationForm() {
           <label htmlFor="username">Nom d'utilisateur</label>
           <input
             name="username"
+            id="username"
             placeholder="Gabriel Attable"
             type="text"
             className={classes['username']}
@@ -113,6 +114,7 @@ export default function RegistrationForm() {
           <label htmlFor="password">Mot de passe</label>
           <input
             name="password"
+            id="password"
             placeholder="Entrez votre mot de passe"
             type="password"
             className={classes['password']}
@@ -129,6 +131,7 @@ export default function RegistrationForm() {
           </label>
           <input
             name="password-confirmation"
+            id="password-confirmation"
             placeholder="Mot de passe"
             type="password"
             className={classes['password']}
