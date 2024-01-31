@@ -5,9 +5,11 @@ import classNames from 'classnames'
 
 type IProps = {
   text: string
-  onClick: (e: React.MouseEvent<HTMLButtonElement>) => void
-  isLoading: boolean
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
+  isLoading?: boolean
   className: string
+  leftIcon?: JSX.Element
+  rightIcon?: JSX.Element
 }
 
 export default function Button(props: IProps) {
@@ -20,10 +22,11 @@ export default function Button(props: IProps) {
         {props.isLoading ? (
           <Loader />
         ) : (
-          <div className={classes['loader-placeholder']}></div>
+          <div className={classes['loader-placeholder']}>{props.leftIcon}</div>
         )}
       </div>
       <div className={classes['content']}>{props.text}</div>
+      {props.rightIcon && <div className={classes["right-icon"]}>{props.rightIcon}</div>}
     </button>
   )
 }

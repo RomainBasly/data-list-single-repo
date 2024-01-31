@@ -46,7 +46,7 @@ export function LoginForm() {
           false,
         )
       setIsLoading(!isLoading)
-      router.push('/private-space')
+      router.push('/home')
     } catch (error) {
       setIsLoading(false)
       const errorMessage = getErrorMessage(error)
