@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 
 const privatePages = [
   "/",
-  "/private-space",
+  "/home",
   "/profile",
   "/create-list",
   "/list-page1",
@@ -77,5 +77,5 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/login", "/register", "/private-space", "/profile"],
+  matcher: ["/", "/login", "/register", "/home", "/profile"],
 };
