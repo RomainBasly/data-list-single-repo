@@ -34,7 +34,7 @@ export default function Header() {
   }
 
   function navigateToHome() {
-    router.push('/')
+    router.push('/home')
   }
 
   return (

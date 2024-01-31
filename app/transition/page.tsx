@@ -37,7 +37,7 @@ export default function Transition() {
               response.accessToken,
               true,
             )
-          router.push('/private-space')
+          router.push('/home')
         } catch (error) {
           router.push('/login')
           console.error('error', error)
@@ -49,14 +49,14 @@ export default function Transition() {
   }, [router])
   return (
     // <Layout pageType="login">
-      <div className={classes['root']}>
-        <div className={classes['top']}>
-          <LandingHeader />
-        </div>
-        <div className={classes['content']}>
-          <Loader variant="page" />
-        </div>
+    <div className={classes['root']}>
+      <div className={classes['top']}>
+        <LandingHeader />
       </div>
+      <div className={classes['content']}>
+        <Loader variant="page" />
+      </div>
+    </div>
     // </Layout>
   )
 }

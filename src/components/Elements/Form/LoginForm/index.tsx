@@ -46,7 +46,7 @@ export function LoginForm() {
           false,
         )
       setIsLoading(!isLoading)
-      router.push('/private-space')
+      router.push('/home')
     } catch (error) {
       setIsLoading(false)
       const errorMessage = getErrorMessage(error)
@@ -76,6 +76,7 @@ export function LoginForm() {
         <input
           name="email"
           placeholder="gabriel@attable.com"
+          id="email"
           onChange={handleEmail}
         />
         {errors && <div className={classes['error']}>{errors.email}</div>}
@@ -85,6 +86,7 @@ export function LoginForm() {
         <input
           type="password"
           name="password"
+          id="password"
           placeholder="Entrez votre mot de passe"
           onChange={handlePassword}
         />

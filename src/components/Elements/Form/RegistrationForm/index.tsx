@@ -54,6 +54,7 @@ export default function RegistrationForm() {
         <label htmlFor="email">Email</label>
         <input
           name="email"
+          id="email"
           placeholder="gabriel@attable.com"
           onChange={handleEmail}
         />

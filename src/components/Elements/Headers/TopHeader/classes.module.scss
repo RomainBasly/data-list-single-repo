@@ -5,9 +5,10 @@
   height: 70px;
   border-bottom: 1px solid #adb5bd;
 
-  img {
+  .logo {
     display: flex;
-    height: 80%;
+    height: 100%;
+    max-width: 200px;
     margin-left: 30px;
   }
 

@@ -1,7 +1,7 @@
 .root {
   display: flex;
   align-items: center;
-  width: 60px;
+  max-width: 40px;
   .rotating-circle {
     width: 100%;
     animation: rotate 0.7s ease-in infinite;
