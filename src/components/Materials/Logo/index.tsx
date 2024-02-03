@@ -30,8 +30,8 @@ export default function Logo(props: Readonly<IProps>) {
       className={props.className}
       onClick={props.onclick}
       // TODO : this following part will be erased for production
-      width={300}
-      height={300}
+      width={props.width}
+      height={props.height}
       loading="lazy"
       nonce={nonce}
     />
