@@ -37,7 +37,7 @@ export default function Transition() {
               response.accessToken,
               true,
             )
-          router.push('/home')
+          router.push('/')
         } catch (error) {
           router.push('/login')
           console.error('error', error)

@@ -35,7 +35,7 @@ export default function Header() {
   }
 
   function navigateToHome() {
-    router.push('/home')
+    router.push('/')
   }
 
   return (
@@ -77,7 +77,10 @@ export default function Header() {
           width={50}
           height={50}
         />
-        <Bars3Icon className={classes['burger-icon']} onClick={toggleUserMenu} />
+        <Bars3Icon
+          className={classes['burger-icon']}
+          onClick={toggleUserMenu}
+        />
       </div>
     </div>
   )

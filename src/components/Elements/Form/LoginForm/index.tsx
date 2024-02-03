@@ -46,7 +46,7 @@ export function LoginForm() {
           false,
         )
       setIsLoading(!isLoading)
-      router.push('/home')
+      router.push('/')
     } catch (error) {
       setIsLoading(false)
       const errorMessage = getErrorMessage(error)

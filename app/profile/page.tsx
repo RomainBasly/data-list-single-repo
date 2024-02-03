@@ -5,7 +5,7 @@ export default function Profile() {
   return (
     <div>
       Profile
-      <Link href="/home">Lien</Link>
+      <Link href="/">Lien</Link>
     </div>
   )
 }

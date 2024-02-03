@@ -1,7 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react'
 import classes from './classes.module.scss'
-import { headers } from 'next/headers'
 
 export default function LoadingMaterial() {
   const [nonce, setNonce] = useState<string>('')

@@ -15,7 +15,8 @@ const privatePages = [
 const logPagesArray = ["/login", "/register"];
 
 export default async function middleware(request: NextRequest) {
-  const { nonce, contentSecurityPolicyHeaderValue} = CspService.getInstance().initiateCsp()
+  const { nonce, contentSecurityPolicyHeaderValue } =
+    CspService.getInstance().initiateCsp();
 
   const accessToken = request.cookies.get("accessToken")?.value;
   const refreshToken = request.cookies.get("refreshToken")?.value;
@@ -31,6 +32,7 @@ export default async function middleware(request: NextRequest) {
     accessToken && !JwtService.getInstance().isTokenExpired(decodedAccessToken);
   const response = NextResponse.next();
   response.headers.set("x-nonce", nonce);
+  console.log("response.headers", response.headers);
   response.headers.set(
     "Content-Security-Policy",
     contentSecurityPolicyHeaderValue
