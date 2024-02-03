@@ -5,6 +5,7 @@ import NavLink from '@/components/Materials/NavLink'
 import Logo from '@/components/Materials/Logo'
 
 import logo from '/public/images/logos/logo-big-screen.png'
+import logoSmall from '/public/images/logos/logo-256x256.png'
 import { Bars3Icon } from '@heroicons/react/24/solid'
 import { HomeIcon, PencilIcon, XCircleIcon } from '@heroicons/react/24/outline'
 import UserMenuStatus, { EOpeningState } from '@/Stores/UserMenuStatus'
@@ -42,7 +43,7 @@ export default function Header() {
       <Logo
         src={String(logo.src)}
         alt={'Logo'}
-        className={classes['logo']}
+        className={classes['logo-big-screen']}
         onclick={navigateToHome}
         width={1018}
         height={374}
@@ -68,7 +69,15 @@ export default function Header() {
         />
       </div>
       <div className={classes['mobile']}>
-        <Bars3Icon className={classes['icon']} onClick={toggleUserMenu} />
+        <Logo
+          src={String(logoSmall.src)}
+          alt={'Logo'}
+          className={classes['logo-mobile']}
+          onclick={navigateToHome}
+          width={50}
+          height={50}
+        />
+        <Bars3Icon className={classes['burger-icon']} onClick={toggleUserMenu} />
       </div>
     </div>
   )
