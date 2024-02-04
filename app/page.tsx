@@ -1,28 +1,53 @@
-import classes from './classes.module.scss'
-import { Loader } from '@/components/Elements/Loader'
-import { LandingHeader } from '@/components/Elements/Headers/LandingHeader'
-import Layout from '@/components/Elements/Layout'
-import Button from '@/components/Materials/Button'
-import { FolderPlusIcon } from '@heroicons/react/24/solid'
-import Link from 'next/link'
+.root {
+  display: flex;
+  padding: 40px 100px;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 650px;
+  justify-content: center;
+  margin: auto;
 
-export default function Home() {
-  return (
-    <Layout pageType="default">
-      <div className={classes['root']}>
-        <div className={classes['title-container']}>
-          <h2 className={classes['title']}>Mes listes</h2>
-        </div>
-        <div className={classes['redirection-button-container']}>
-          <Link href="/lists/create-list">
-            <Button
-              text={'Créer une liste'}
-              className={classes['create-list-button']}
-              leftIcon={<FolderPlusIcon />}
-            />
-          </Link>
-        </div>
-      </div>
-    </Layout>
-  )
+  @media screen and (max-width: 500px) {
+    padding: 20px 60px;
+  }
+
+  .title-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .title {
+      color: #353535;
+    }
+    svg {
+      width: 20px;
+    }
+  }
+
+  .redirection-button-container {
+    border: 1px solid #dee2e6;
+    padding: 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #efe9ae;
+    //background-color: #ffcb77b3;
+
+    transition: border-color 1s, background-color 1s;
+
+    &:hover {
+      border-color: #adb5bd;
+      background-color: #ffcb77b3;
+    }
+    .create-list-button {
+      border: none;
+      cursor: pointer;
+      background-color: inherit;
+
+      svg {
+        max-width: 20px;
+        max-height: 20px;
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
 }

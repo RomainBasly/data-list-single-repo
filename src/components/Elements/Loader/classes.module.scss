@@ -4,4 +4,12 @@
   justify-content: center;
   background-color: inherit;
   flex-direction: column;
+
+  .loader-content {
+    text-align: center;
+
+    .blocked {
+      font-size: 12px;
+    }
+  }
 }

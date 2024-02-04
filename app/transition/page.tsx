@@ -1,6 +1,5 @@
 'use client'
 import { LandingHeader } from '@/components/Elements/Headers/LandingHeader'
-import Layout from '@/components/Elements/Layout'
 import React, { useEffect, useState } from 'react'
 import classes from '../classes.module.scss'
 import { Loader } from '@/components/Elements/Loader'
@@ -28,16 +27,20 @@ export default function Transition() {
 
       if (refreshToken) {
         try {
+          console.log('I passed here 1')
           const response = await AuthorizationApi.getInstance().getNewAccessToken(
             refreshToken,
           )
-          response.accessToken &&
+
+          if (response.accessToken) {
             StorageService.getInstance().setCookies(
               'accessToken',
               response.accessToken,
               true,
             )
-          router.push('/')
+            console.log('I passed here 2', response.accessToken)
+            router.push('/home')
+          }
         } catch (error) {
           router.push('/login')
           console.error('error', error)
@@ -47,8 +50,8 @@ export default function Transition() {
       }
     })()
   }, [router])
+
   return (
-    // <Layout pageType="login">
     <div className={classes['root']}>
       <div className={classes['top']}>
         <LandingHeader />
@@ -57,6 +60,5 @@ export default function Transition() {
         <Loader variant="page" />
       </div>
     </div>
-    // </Layout>
   )
 }

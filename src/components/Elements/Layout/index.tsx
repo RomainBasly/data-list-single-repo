@@ -9,7 +9,6 @@ export type ILayoutProps = {
 
 export default function Layout({ children, pageType }: ILayoutProps) {
   const nonce = headers().get('x-nonce')
-  console.log('nonce', nonce)
   return (
     <>
       <meta

@@ -6,16 +6,13 @@ export default function LoadingMaterial() {
   const [nonce, setNonce] = useState<string>('')
 
   useEffect(() => {
-    console.log('nonce', nonce)
     ;(async () => {
       const styleNonce = document
         .querySelector('meta[name="x-nonce"]')
         ?.getAttribute('content')
       if (styleNonce) {
         setNonce(styleNonce)
-        console.log('nonce inside the loading material', nonce)
       }
-      console.log('nonce after just in case', nonce)
     })()
   }, [nonce])
 

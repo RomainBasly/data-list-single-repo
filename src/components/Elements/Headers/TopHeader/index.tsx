@@ -35,6 +35,7 @@ export default function Header() {
   }
 
   function navigateToHome() {
+    console.log('click')
     router.push('/')
   }
 

@@ -27,23 +27,37 @@ export default async function middleware(request: NextRequest) {
   const isLogPage = logPagesArray.includes(url.pathname);
   const isGetMethod = request.method === "GET";
   const isPostMethod = request.method === "POST";
+  const isRootPage = url.pathname === "/";
 
   const isLoggedIn =
     accessToken && !JwtService.getInstance().isTokenExpired(decodedAccessToken);
   const response = NextResponse.next();
   response.headers.set("x-nonce", nonce);
-  console.log("response.headers", response.headers);
   response.headers.set(
     "Content-Security-Policy",
     contentSecurityPolicyHeaderValue
   );
 
+  // Redirect when I hit the / page to redirect to home and check in the same time if connected
+  if (isRootPage) {
+    if (isLoggedIn && refreshToken) {
+      return NextResponse.redirect(new URL("/home", request.url));
+    } else if (refreshToken && !isLoggedIn) {
+      // let the transition page make the call and retrive new accessToken
+      return NextResponse.redirect(new URL("/transition", request.url));
+    } else {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+  }
+
+  // if it faces a post method, do not alter it (otherwise will get a 307 on a form posting)
   if (isPostMethod) {
     return NextResponse.next();
   }
+
   if (isGetMethod) {
     if (isLoggedIn && isLogPage) {
-      return NextResponse.redirect(new URL("/profile", request.url));
+      return NextResponse.redirect(new URL("/home", request.url));
     }
 
     if (!isLoggedIn && privatePages.includes(url.pathname)) {

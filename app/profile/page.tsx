@@ -1,11 +1,11 @@
 import React from 'react'
 import Link from 'next/link'
+import Layout from '@/components/Elements/Layout'
 
 export default function Profile() {
   return (
-    <div>
-      Profile
+    <Layout pageType="default">
       <Link href="/">Lien</Link>
-    </div>
+    </Layout>
   )
 }
