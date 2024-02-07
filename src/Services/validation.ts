@@ -36,7 +36,7 @@ export const validateConnectFormInputs = (
 export const validateEmailInput = (email: string): Record<string, string> => {
   const errors: Record<string, string> = {};
   if (!email) {
-    errors.email = "Votre email doit être renseigné pour vous connecter";
+    errors.email = "L'email doit être renseigné pour continuer";
   } else if (!isValidEmail(email)) {
     errors.email = "L'email renseigné n'est pas valide";
   }

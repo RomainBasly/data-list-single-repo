@@ -7,20 +7,32 @@
     display: flex;
     flex-direction: column;
 
-    input {
-      background-color: transparent;
-      border-radius: 4px;
-      padding: 10px;
-      border: 1px solid grey;
+    .input-container {
+      display: flex;
+      width: 100%;
+      align-items: center;
 
-      &:focus {
-        outline: none;
-        border: 1px solid #ffb600;
-        background-color: #efe9ae;
+      input {
+        background-color: transparent;
+        border-radius: 4px;
+        padding: 10px;
+        border: 1px solid grey;
+        width: 100%;
+
+        &:focus {
+          outline: none;
+          border: 1px solid #ffb600;
+          background-color: #efe9ae;
+        }
+
+        &::placeholder {
+          color: #6c757d;
+        }
       }
 
-      &::placeholder {
-        color: #6c757d;
+      .plus-icon {
+        max-height: 30px;
+        height: 100%;
       }
     }
 

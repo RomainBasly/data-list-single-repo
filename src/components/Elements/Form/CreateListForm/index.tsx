@@ -3,11 +3,17 @@ import Link from 'next/link'
 import classes from './classes.module.scss'
 import { useState } from 'react'
 import AuthenticationApi from '@/api/Back/AuthenticationApi'
-import { validateConnectFormInputs } from '@/Services/validation'
+import {
+  isValidEmail,
+  validateConnectFormInputs,
+  validateEmailInput,
+} from '@/Services/validation'
 import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
 import StorageService from '@/Services/CookieService'
 import Button from '@/components/Materials/Button'
+import { PlusIcon } from '@heroicons/react/24/solid'
+import { sanitize } from 'isomorphic-dompurify'
 
 export type IBody = {
   email: string
@@ -16,6 +22,8 @@ export type IBody = {
 
 export function CreateListForm() {
   const [email, setEmail] = useState<string>('')
+  const [emailsArray, setEmailsArray] = useState<string[]>([])
+  const [name, setName] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [errors, setErrors] = useState<{ [key: string]: string }>()
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -23,30 +31,30 @@ export function CreateListForm() {
 
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()
-    const lowerCaseEmail = email.toLowerCase()
-    const formErrors = validateConnectFormInputs(lowerCaseEmail, password)
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors)
-      return
-    }
-    const body = { email: lowerCaseEmail, password }
+    //const lowerCaseEmail = emailsArray.toLowerCase()
+    //const formErrors = validateConnectFormInputs(lowerCaseEmail, password)
+    // if (Object.keys(formErrors).length > 0) {
+    //   setErrors(formErrors)
+    //   return
+    // }
+    // const body = { email: lowerCaseEmail, password }
 
     try {
-      const response = await AuthenticationApi.getInstance().login(body)
-      response.accessToken &&
-        StorageService.getInstance().setCookies(
-          'accessToken',
-          response.accessToken,
-          true,
-        )
-      response.refreshToken &&
-        StorageService.getInstance().setCookies(
-          'refreshToken',
-          response.refreshToken,
-          false,
-        )
-      setIsLoading(!isLoading)
-      router.push('/')
+      //   const response = await AuthenticationApi.getInstance().login(body)
+      //   response.accessToken &&
+      //     StorageService.getInstance().setCookies(
+      //       'accessToken',
+      //       response.accessToken,
+      //       true,
+      //     )
+      //   response.refreshToken &&
+      //     StorageService.getInstance().setCookies(
+      //       'refreshToken',
+      //       response.refreshToken,
+      //       false,
+      //     )
+      //   setIsLoading(!isLoading)
+      //   router.push('/')
     } catch (error) {
       setIsLoading(false)
       const errorMessage = getErrorMessage(error)
@@ -69,30 +77,71 @@ export function CreateListForm() {
     setEmail(e.target.value)
   }
 
+  function handleEnterKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key.toLowerCase() === 'enter') {
+      addEmailToList()
+    }
+  }
+
+  function addEmailToList() {
+    const sanitizedEmail = sanitize(email)
+    const formErrors = validateEmailInput(sanitizedEmail)
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors)
+      return
+    }
+
+    if (email) {
+      setEmailsArray([...emailsArray, sanitizedEmail])
+      setEmail('')
+    }
+  }
+
+  function removeEmailFromList() {}
+
+  function handleName(e: React.ChangeEvent<HTMLInputElement>) {
+    setErrors({ ...errors, name: '', form: '' })
+    setIsLoading(false)
+    setName(e.target.value)
+  }
   return (
     <form className={classes['root']}>
       <div className={classes['form-element']}>
-        <label htmlFor="email">
+        <label htmlFor="name">
           Comment souhaitez-vous nommer votre liste ?
         </label>
-        <input
-          name="name"
-          placeholder="Ma super liste"
-          id="name"
-          onChange={handleEmail}
-        />
+        <div className={classes['input-container']}>
+          <input
+            name="name"
+            placeholder="(ex: Liste de courses)"
+            id="name"
+            onChange={handleName}
+          />
+        </div>
         {errors && <div className={classes['error']}>{errors.name}</div>}
       </div>
       <div className={classes['form-element']}>
-        <label htmlFor="password">Avec qui partager votre liste ?</label>
-        <input
-          type="email"
-          name="email"
-          id="email"
-          placeholder="Entrez ici l'email de la personne à qui partager votre liste"
-          onChange={handleEmail}
-        />
-        {errors && <div className={classes['error']}>{errors.partage}</div>}
+        <label htmlFor="email">Avec qui partager votre liste ?</label>
+        <div className={classes['input-container']}>
+          <input
+            type="text"
+            name="email"
+            id="email"
+            placeholder="Entrez ici l'email des personnes avec qui partager votre liste"
+            onChange={handleEmail}
+            onKeyDown={handleEnterKeyDown}
+            value={email}
+          />
+          <PlusIcon onClick={addEmailToList} className={classes['plus-icon']} />
+        </div>
+        {errors && <div className={classes['error']}>{errors.email}</div>}
+      </div>
+      <div className={classes['emails']}>
+        {emailsArray.map((email, index) => (
+          <div className={classes['emailElement']} key={index}>
+            {email}
+          </div>
+        ))}
       </div>
       <div className={classes['button-container']}>
         <Button
