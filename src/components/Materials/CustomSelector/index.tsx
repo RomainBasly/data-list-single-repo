@@ -7,14 +7,20 @@ type IProps = {
     value: string
     icon: JSX.Element
     label: string
+    description: string
   }[]
-  id: string
+  onSelectionChange: (value: string) => void
 }
 
 export default function CustomSelector(props: IProps) {
   const [selected, setSelected] = useState<string>('')
+
+  function handleOptionClick(value: string) {
+    setSelected(value)
+    props.onSelectionChange(value)
+  }
   return (
-    <div className={classes['root']} id={props.id}>
+    <div className={classes['root']}>
       <div className={classes['options-container']}>
         {props.options.map((option, index) => (
           <div
@@ -22,12 +28,13 @@ export default function CustomSelector(props: IProps) {
               [classes['selected']]: selected === option.value,
             })}
             key={index}
-            onClick={() => {
-              setSelected(option.value)
-            }}
+            onClick={() => handleOptionClick(option.value)}
           >
             <div className={classes['option-label']}>{option.label}</div>
             <div className={classes['option-svg']}>{option.icon}</div>
+            <div className={classes['option-description']}>
+              {option.description}
+            </div>
           </div>
         ))}
       </div>

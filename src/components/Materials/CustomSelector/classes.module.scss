@@ -22,9 +22,10 @@
       padding: 15px 20px;
       align-items: center;
       gap: 15px;
+      transition: border-color 0.5s, background-color 0.5s;
 
       &.selected {
-        border: 1px solid #ffb600;
+        border-color: #ffb600;
         background-color: #efe9ae;
       }
 
@@ -36,6 +37,13 @@
       .option-svg {
         display: flex;
         max-width: 30px;
+        width: 100%;
+      }
+
+      .option-description {
+        display: flex;
+        font-size: 12px;
+        font-style: italic;
         width: 100%;
       }
     }

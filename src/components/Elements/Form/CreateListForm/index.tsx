@@ -29,6 +29,7 @@ export type IBody = {
 export function CreateListForm() {
   const [email, setEmail] = useState<string>('')
   const [emailsArray, setEmailsArray] = useState<string[]>([])
+  const [confidentiality, setConfidentiality] = useState<string>('')
   const [name, setName] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [errors, setErrors] = useState<{ [key: string]: string }>()
@@ -111,10 +112,29 @@ export function CreateListForm() {
     setName(e.target.value)
   }
 
+  function handleConfidentialityChange(selectedValue: string) {
+    setConfidentiality(selectedValue)
+  }
+
   const options = [
-    { value: 'private', icon: <EyeSlashIcon />, label: 'Privée' },
-    { value: 'shared', icon: <ShareIcon />, label: 'Partagée' },
-    { value: 'public', icon: <GlobeAltIcon />, label: 'Publique' },
+    {
+      value: 'private',
+      icon: <EyeSlashIcon />,
+      label: 'Privée',
+      description: 'Seul(e) vous avez accès à la liste',
+    },
+    {
+      value: 'shared',
+      icon: <ShareIcon />,
+      label: 'Partagée',
+      description: 'Vous indiquez qui est autorisé',
+    },
+    {
+      value: 'public',
+      icon: <GlobeAltIcon />,
+      label: 'Publique',
+      description: 'Accessible à tout le monde',
+    },
   ]
 
   return (
@@ -134,9 +154,11 @@ export function CreateListForm() {
         {errors && <div className={classes['error']}>{errors.name}</div>}
       </div>
       <div className={classes['form-element']}>
-        <label htmlFor="share">Souhaitez vous que votre liste soit...</label>
-        <CustomSelector options={options} id="share" />
-
+        <label htmlFor="share">Votre liste est...</label>
+        <CustomSelector
+          options={options}
+          onSelectionChange={handleConfidentialityChange}
+        />
         {errors && <div className={classes['error']}>{errors.name}</div>}
       </div>
       <div className={classes['form-element']}>
