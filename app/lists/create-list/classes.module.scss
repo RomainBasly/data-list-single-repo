@@ -2,10 +2,13 @@
   display: flex;
   justify-content: center;
   max-width: 650px;
-  width: 100%;
   border: 1px solid #4f5d75;
   margin: 20px auto;
   border-radius: 4px;
+
+  @media screen and (max-width: 500px) {
+    margin: 10px 20px;
+  }
 
   .content {
     display: flex;
@@ -15,6 +18,9 @@
     width: 100%;
     padding: 12px 60px;
 
+    @media screen and (max-width: 500px) {
+      padding: 12px 30px;
+    }
     .subtitle {
       display: flex;
     }

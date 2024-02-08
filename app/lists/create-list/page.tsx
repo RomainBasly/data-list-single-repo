@@ -8,7 +8,7 @@ export default function CreateList() {
     <Layout pageType="default">
       <div className={classes['root']}>
         <div className={classes['content']}>
-          <h3 className={classes['subtitle']}>Créer une liste</h3>
+          <h2 className={classes['subtitle']}>Créer une liste</h2>
           <CreateListForm />
         </div>
       </div>

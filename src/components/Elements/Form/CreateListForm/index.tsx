@@ -38,6 +38,12 @@ export function CreateListForm() {
 
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()
+
+    // TODO perform a check if selectedValue !== "shared" => set the EmailsArray to []
+
+
+
+    
     //const lowerCaseEmail = emailsArray.toLowerCase()
     //const formErrors = validateConnectFormInputs(lowerCaseEmail, password)
     // if (Object.keys(formErrors).length > 0) {
@@ -135,7 +141,7 @@ export function CreateListForm() {
       icon: <GlobeAltIcon />,
       label: 'Publique',
       description:
-        "Accessible aux personnes à qui vous envoyez l'url de votre liste, mais ne pourront pas la modifier",
+        "Accessible aux personnes à qui vous envoyez l'url de votre liste, mais ils ne pourront pas la modifier",
     },
   ]
 
@@ -163,29 +169,38 @@ export function CreateListForm() {
         />
         {errors && <div className={classes['error']}>{errors.name}</div>}
       </div>
-      <div className={classes['form-element']}>
-        <label htmlFor="email">Avec qui partager votre liste ?</label>
-        <div className={classes['input-container']}>
-          <input
-            type="text"
-            name="email"
-            id="email"
-            placeholder="Entrez ici l'email des personnes avec qui partager votre liste"
-            onChange={handleEmail}
-            onKeyDown={handleEnterKeyDown}
-            value={email}
-          />
-          <PlusIcon onClick={addEmailToList} className={classes['plus-icon']} />
-        </div>
-        {errors && <div className={classes['error']}>{errors.email}</div>}
-      </div>
-      <div className={classes['emails']}>
-        {emailsArray.map((email, index) => (
-          <div className={classes['emailElement']} key={index}>
-            {email}
+      {confidentiality === 'shared' && (
+        <div className={classes['form-element']}>
+          <label htmlFor="email">Avec qui partager votre liste ?</label>
+          <div className={classes['input-container']}>
+            <input
+              type="text"
+              name="email"
+              id="email"
+              placeholder="Entrez ici l'email des personnes avec qui partager votre liste"
+              onChange={handleEmail}
+              onKeyDown={handleEnterKeyDown}
+              value={email}
+            />
+            <PlusIcon
+              onClick={addEmailToList}
+              className={classes['plus-icon']}
+            />
           </div>
-        ))}
-      </div>
+          {errors && <div className={classes['error']}>{errors.email}</div>}
+        </div>
+      )}
+
+      {confidentiality === 'shared' && (
+        <div className={classes['emails']}>
+          {emailsArray.map((email, index) => (
+            <div className={classes['emailElement']} key={index}>
+              {email}
+            </div>
+          ))}
+        </div>
+      )}
+
       <div className={classes['button-container']}>
         <Button
           text="Créer"
