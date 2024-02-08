@@ -24,16 +24,28 @@ export default function CustomSelector(props: IProps) {
       <div className={classes['options-container']}>
         {props.options.map((option, index) => (
           <div
-            className={classnames(classes['option'], {
-              [classes['selected']]: selected === option.value,
-            })}
+            className={classes['option']}
             key={index}
             onClick={() => handleOptionClick(option.value)}
           >
-            <div className={classes['option-label']}>{option.label}</div>
-            <div className={classes['option-svg']}>{option.icon}</div>
-            <div className={classes['option-description']}>
-              {option.description}
+            <div className={classes['flip-card-container']}>
+              <div
+                className={classnames(classes['card-front'], {
+                  [classes['selected']]: selected === option.value,
+                })}
+              >
+                <div className={classes['option-label']}>{option.label}</div>
+                <div className={classes['option-svg']}>{option.icon}</div>
+              </div>
+              <div
+                className={classnames(classes['card-back'], {
+                  [classes['selected']]: selected === option.value,
+                })}
+              >
+                <div className={classes['option-description']}>
+                  {option.description}
+                </div>
+              </div>
             </div>
           </div>
         ))}

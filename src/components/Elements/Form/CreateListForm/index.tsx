@@ -127,13 +127,15 @@ export function CreateListForm() {
       value: 'shared',
       icon: <ShareIcon />,
       label: 'Partagée',
-      description: 'Vous indiquez qui est autorisé',
+      description:
+        'Est accessible aux personnes dont vous renseignez le mail, et qui pourront modifier la liste',
     },
     {
       value: 'public',
       icon: <GlobeAltIcon />,
       label: 'Publique',
-      description: 'Accessible à tout le monde',
+      description:
+        "Accessible aux personnes à qui vous envoyez l'url de votre liste, mais ne pourront pas la modifier",
     },
   ]
 
