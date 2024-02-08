@@ -12,8 +12,14 @@ import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
 import StorageService from '@/Services/CookieService'
 import Button from '@/components/Materials/Button'
-import { PlusIcon } from '@heroicons/react/24/solid'
+import {
+  PlusIcon,
+  EyeSlashIcon,
+  ShareIcon,
+  GlobeAltIcon,
+} from '@heroicons/react/24/solid'
 import { sanitize } from 'isomorphic-dompurify'
+import CustomSelector from '@/components/Materials/CustomSelector'
 
 export type IBody = {
   email: string
@@ -104,6 +110,13 @@ export function CreateListForm() {
     setIsLoading(false)
     setName(e.target.value)
   }
+
+  const options = [
+    { value: 'private', icon: <EyeSlashIcon />, label: 'Privée' },
+    { value: 'shared', icon: <ShareIcon />, label: 'Partagée' },
+    { value: 'public', icon: <GlobeAltIcon />, label: 'Publique' },
+  ]
+
   return (
     <form className={classes['root']}>
       <div className={classes['form-element']}>
@@ -118,6 +131,12 @@ export function CreateListForm() {
             onChange={handleName}
           />
         </div>
+        {errors && <div className={classes['error']}>{errors.name}</div>}
+      </div>
+      <div className={classes['form-element']}>
+        <label htmlFor="share">Souhaitez vous que votre liste soit...</label>
+        <CustomSelector options={options} id="share" />
+
         {errors && <div className={classes['error']}>{errors.name}</div>}
       </div>
       <div className={classes['form-element']}>
