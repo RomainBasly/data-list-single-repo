@@ -1,4 +1,4 @@
-const SHORT_LIVED = 60 * 1000;
+const SHORT_LIVED = 3600 * 1000;
 const LONG_LIVED = 3600 * 24 * 30 * 1000;
 
 export default class StorageService {
