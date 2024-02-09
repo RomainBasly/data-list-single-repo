@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import classes from './classes.module.scss'
 import classnames from 'classnames'
+import { InformationCircleIcon } from '@heroicons/react/24/solid'
 
 type IProps = {
   options: {
@@ -12,8 +13,13 @@ type IProps = {
   onSelectionChange: (value: string) => void
 }
 
+type HoveredState = {
+  [key: string]: boolean;
+};
+
 export default function CustomSelector(props: IProps) {
   const [selected, setSelected] = useState<string>('')
+  const [hovered, setHovered] = useState<HoveredState>({});
 
   function handleOptionClick(value: string) {
     setSelected(value)
@@ -28,14 +34,22 @@ export default function CustomSelector(props: IProps) {
             key={index}
             onClick={() => handleOptionClick(option.value)}
           >
-            <div className={classes['flip-card-container']}>
+            <div className={classnames(classes['flip-card-container'], {
+                [classes['flip-card-hovered']]: hovered[option.value],
+              })}>
               <div
                 className={classnames(classes['card-front'], {
                   [classes['selected']]: selected === option.value,
                 })}
               >
-                <div className={classes['option-label']}>{option.label}</div>
                 <div className={classes['option-svg']}>{option.icon}</div>
+                <div className={classes['option-label']}>{option.label}</div>
+                <div className={classes['info-svg']}>
+                  <InformationCircleIcon 
+                  onMouseEnter={() => setHovered({ ...hovered, [option.value]: true })}
+                  onMouseLeave={() => setHovered({ ...hovered, [option.value]: false })}
+                  />
+                </div>
               </div>
               <div
                 className={classnames(classes['card-back'], {
