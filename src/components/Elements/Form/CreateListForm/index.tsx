@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import classes from './classes.module.scss'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import AuthenticationApi from '@/api/Back/AuthenticationApi'
 import {
   isValidEmail,
@@ -17,7 +17,9 @@ import {
   EyeSlashIcon,
   ShareIcon,
   GlobeAltIcon,
-} from '@heroicons/react/24/solid'
+  ChevronRightIcon,
+  MinusIcon,
+} from '@heroicons/react/24/outline'
 import { sanitize } from 'isomorphic-dompurify'
 import CustomSelector from '@/components/Materials/CustomSelector'
 
@@ -41,9 +43,6 @@ export function CreateListForm() {
 
     // TODO perform a check if selectedValue !== "shared" => set the EmailsArray to []
 
-
-
-    
     //const lowerCaseEmail = emailsArray.toLowerCase()
     //const formErrors = validateConnectFormInputs(lowerCaseEmail, password)
     // if (Object.keys(formErrors).length > 0) {
@@ -87,7 +86,7 @@ export function CreateListForm() {
   function handleEmail(e: React.ChangeEvent<HTMLInputElement>) {
     setErrors({ ...errors, email: '', form: '' })
     setIsLoading(false)
-    setEmail(e.target.value)
+    setEmail(e.target.value.toLowerCase())
   }
 
   function handleEnterKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -110,7 +109,12 @@ export function CreateListForm() {
     }
   }
 
-  function removeEmailFromList() {}
+  function removeEmailFromList(index: number) {
+    const newArray = emailsArray.filter(
+      (_, currentIndex) => currentIndex !== index,
+    )
+    setEmailsArray(newArray)
+  }
 
   function handleName(e: React.ChangeEvent<HTMLInputElement>) {
     setErrors({ ...errors, name: '', form: '' })
@@ -120,6 +124,16 @@ export function CreateListForm() {
 
   function handleConfidentialityChange(selectedValue: string) {
     setConfidentiality(selectedValue)
+  }
+
+  function displayEmail(email: string): string {
+    if (window.innerWidth < 500 && email.length > 30) {
+      return email.slice(0, 6) + '...@' + email.split('@')[1]
+    }
+    if (window.innerWidth < 340 && email.length > 24) {
+      return email.slice(0, 6) + '...@' + email.split('@')[1]
+    }
+    return email
   }
 
   const options = [
@@ -141,28 +155,33 @@ export function CreateListForm() {
       icon: <GlobeAltIcon />,
       label: 'Publique',
       description:
-        "Accessible aux personnes à qui vous envoyez l'url de votre liste, mais ils ne pourront pas la modifier",
+        'Accessible aux personnes à qui vous envoyez son url, mais ils ne pourront pas la modifier',
     },
   ]
 
   return (
     <form className={classes['root']}>
       <div className={classes['form-element']}>
-        <label htmlFor="name">
+        <label htmlFor="name" className={classes['label']}>
           Comment souhaitez-vous nommer votre liste ?
         </label>
-        <div className={classes['input-container']}>
-          <input
-            name="name"
-            placeholder="(ex: Liste de courses)"
-            id="name"
-            onChange={handleName}
-          />
+        <div className={classes['input-section']}>
+          <div className={classes['input-container']}>
+            <input
+              name="name"
+              placeholder="(ex: Liste de courses)"
+              id="name"
+              onChange={handleName}
+              className={classes['input']}
+            />
+            {errors && <div className={classes['error']}>{errors.name}</div>}
+          </div>
         </div>
-        {errors && <div className={classes['error']}>{errors.name}</div>}
       </div>
       <div className={classes['form-element']}>
-        <label htmlFor="share">Votre liste est...</label>
+        <label htmlFor="share" className={classes['label']}>
+          Votre liste est...
+        </label>
         <CustomSelector
           options={options}
           onSelectionChange={handleConfidentialityChange}
@@ -170,37 +189,52 @@ export function CreateListForm() {
         {errors && <div className={classes['error']}>{errors.name}</div>}
       </div>
       {confidentiality === 'shared' && (
-        <div className={classes['form-element']}>
-          <label htmlFor="email">Avec qui partager votre liste ?</label>
-          <div className={classes['input-container']}>
-            <input
-              type="text"
-              name="email"
-              id="email"
-              placeholder="Entrez ici l'email des personnes avec qui partager votre liste"
-              onChange={handleEmail}
-              onKeyDown={handleEnterKeyDown}
-              value={email}
-            />
-            <PlusIcon
-              onClick={addEmailToList}
-              className={classes['plus-icon']}
-            />
-          </div>
-          {errors && <div className={classes['error']}>{errors.email}</div>}
-        </div>
-      )}
-
-      {confidentiality === 'shared' && (
-        <div className={classes['emails']}>
-          {emailsArray.map((email, index) => (
-            <div className={classes['emailElement']} key={index}>
-              {email}
+        <div className={classes['emails-section']}>
+          <div className={classes['form-element']}>
+            <label htmlFor="email" className={classes['label']}>
+              Avec qui partager votre liste ?
+            </label>
+            <div className={classes['input-section']}>
+              <div className={classes['input-container']}>
+                <input
+                  type="text"
+                  name="email"
+                  id="email"
+                  placeholder="Entrez ici l'email des personnes avec qui partager votre liste"
+                  onChange={handleEmail}
+                  onKeyDown={handleEnterKeyDown}
+                  value={email}
+                  className={classes['input']}
+                />
+                <PlusIcon
+                  onClick={addEmailToList}
+                  className={classes['plus-icon']}
+                />
+              </div>
+              {errors && <div className={classes['error']}>{errors.email}</div>}
             </div>
-          ))}
+          </div>
+
+          <div className={classes['emails']}>
+            {emailsArray.map((email, index) => (
+              <div className={classes['email-element']} key={index}>
+                <div className={classes['email-picto']}>
+                  <ChevronRightIcon className={classes['chevron-icon']} />
+                </div>
+                <div className={classes['email-text']}>
+                  {displayEmail(email)}
+                </div>
+                <div className={classes['email-picto']}>
+                  <MinusIcon
+                    className={classes['minus-icon']}
+                    onClick={() => removeEmailFromList(index)}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
-
       <div className={classes['button-container']}>
         <Button
           text="Créer"

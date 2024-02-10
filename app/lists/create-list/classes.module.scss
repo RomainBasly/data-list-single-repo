@@ -9,6 +9,9 @@
   @media screen and (max-width: 500px) {
     margin: 10px 20px;
   }
+  @media screen and (max-width: 340px) {
+    margin: 10px 16px;
+  }
 
   .content {
     display: flex;
@@ -16,10 +19,13 @@
     gap: 12px;
     //border: 1px solid orange;
     width: 100%;
-    padding: 12px 60px;
+    padding: 30px 60px;
 
     @media screen and (max-width: 500px) {
       padding: 12px 30px;
+    }
+    @media screen and (max-width: 500px) {
+      padding: 10px 16px;
     }
     .subtitle {
       display: flex;

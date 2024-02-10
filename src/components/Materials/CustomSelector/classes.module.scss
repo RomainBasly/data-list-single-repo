@@ -7,15 +7,17 @@
     justify-content: space-around;
     width: 100%;
     min-height: 200px;
+    gap: 20px;
 
     @media screen and (max-width: 500px) {
       flex-direction: column;
-      min-height: 350px;
+      min-height: 250px;
+      gap: 0px;
     }
 
     .option {
-      perspective: 1000px;
       display: flex;
+      perspective: 1000px;
       flex-direction: column;
       width: 100%;
       min-width: 150px;
@@ -24,12 +26,13 @@
       border-radius: 8px;
       cursor: pointer;
       text-align: center;
-      padding: 15px 20px;
       align-items: center;
       gap: 15px;
+      padding: 0 15px;
 
       @media screen and (max-width: 500px) {
         padding: 8px 0px;
+        flex-direction: row;
       }
 
       .flip-card-hovered {
@@ -62,6 +65,7 @@
         transition: border-color 0.5s, background-color 0.5s;
 
         @media screen and (max-width: 500px) {
+          flex-direction: row;
           padding: 8px 10px;
         }
         &.selected {
@@ -72,11 +76,14 @@
         .option-label {
           display: flex;
           text-align: center;
+          font-family: "Geologica", sans-serif;
+          font-weight: 600;
+          font-size: 16px;
         }
 
         .option-svg {
           display: flex;
-          max-width: 30px;
+          max-width: 20px;
           width: 100%;
         }
 
@@ -90,14 +97,13 @@
         .info-svg {
           display: flex;
           svg {
-            width: 15px;
+            width: 20px;
           }
         }
       }
 
       .card-back {
         transform: rotateY(180deg);
-        z-index: 1; // Ensure back face is above when the container is flipped
         font-size: 12px;
         font-style: italic;
       }
