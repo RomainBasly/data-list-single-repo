@@ -163,7 +163,7 @@ export function CreateListForm() {
     <form className={classes['root']}>
       <div className={classes['form-element']}>
         <label htmlFor="name" className={classes['label']}>
-          Comment souhaitez-vous nommer votre liste ?
+          Quel nom pour votre liste ?
         </label>
         <div className={classes['input-section']}>
           <div className={classes['input-container']}>
@@ -180,7 +180,7 @@ export function CreateListForm() {
       </div>
       <div className={classes['form-element']}>
         <label htmlFor="share" className={classes['label']}>
-          Votre liste est...
+          Elle est...
         </label>
         <CustomSelector
           options={options}
@@ -192,7 +192,7 @@ export function CreateListForm() {
         <div className={classes['emails-section']}>
           <div className={classes['form-element']}>
             <label htmlFor="email" className={classes['label']}>
-              Avec qui partager votre liste ?
+              Avec qui la partager ?
             </label>
             <div className={classes['input-section']}>
               <div className={classes['input-container']}>
@@ -200,7 +200,7 @@ export function CreateListForm() {
                   type="text"
                   name="email"
                   id="email"
-                  placeholder="Entrez ici l'email des personnes avec qui partager votre liste"
+                  placeholder="Renseignez leur email"
                   onChange={handleEmail}
                   onKeyDown={handleEnterKeyDown}
                   value={email}
