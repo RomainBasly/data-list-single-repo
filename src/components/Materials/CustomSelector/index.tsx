@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
 import classes from './classes.module.scss'
 import classnames from 'classnames'
-import { InformationCircleIcon } from '@heroicons/react/24/outline'
+import {
+  InformationCircleIcon,
+  ArrowLeftIcon,
+} from '@heroicons/react/24/outline'
 
 type IProps = {
   options: {
@@ -62,6 +65,13 @@ export default function CustomSelector(props: IProps) {
                   [classes['selected']]: selected === option.value,
                 })}
               >
+                <div className={classes['back-svg-icon']}>
+                <ArrowLeftIcon
+                  onClick={() =>
+                    setHovered({ ...hovered, [option.value]: false })
+                  }
+                />
+                </div>
                 <div className={classes['option-description']}>
                   {option.description}
                 </div>
