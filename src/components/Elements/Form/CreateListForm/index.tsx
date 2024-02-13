@@ -23,7 +23,6 @@ import {
 import { sanitize } from 'isomorphic-dompurify'
 import CustomSelector from '@/components/Materials/CustomSelector'
 import classnames from 'classnames'
-import debug from 'debug'
 
 export type IBody = {
   email: string
@@ -115,7 +114,6 @@ export function CreateListForm() {
   }
 
   function removeEmailFromList(index: number) {
-    debugger
     setRemoveEmailAnimationIndex(index)
     setTimeout(() => {
       const newArray = emailsArray.filter(
