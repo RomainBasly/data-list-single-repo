@@ -35,31 +35,33 @@ export default function FAQ() {
             />
           </div>
         </div>
-        {isNotReceivedOpened && (
-          <div className={classes['content-not-received']}>
-            <div className={classes['text']}>
-              Veuillez vérifier que votre email est correctement orthographié,
-              et que le mail n'est pas dans vos spams.
-            </div>
-            <div className={classes['text']}>
-              Si au bout de 30 minutes vous ne voyez toujours rien ni dans vos
-              mails, ni dans vos spams, vous pouvez solliciter nouveau un code
-              via ce
-              <Link href={'/register'}>
-                <span className={classes['redirection-button']}>lien</span>
-              </Link>
-              .
-            </div>
-            <div className={classes['text']}>
-              Si malgré vos tentatives, vous n'avez toujours pas reçu de code,
-              vous pouvez envoyer un mail à l'adresse
-              <Link href={'mailto:isisetthea@gmail.com'}>
-                <span className={classes['redirection-button']}>suivante</span>
-              </Link>
-              .
-            </div>
+        <div
+          className={classnames(classes['content-not-received'], {
+            [classes['content-visible']]: isNotReceivedOpened,
+          })}
+        >
+          <div className={classes['text']}>
+            Veuillez vérifier que votre email est correctement orthographié, et
+            que le mail n'est pas dans vos spams.
           </div>
-        )}
+          <div className={classes['text']}>
+            Si au bout de 30 minutes vous ne voyez toujours rien ni dans vos
+            mails, ni dans vos spams, vous pouvez solliciter nouveau un code via
+            ce
+            <Link href={'/register'}>
+              <span className={classes['redirection-button']}>lien</span>
+            </Link>
+            .
+          </div>
+          <div className={classes['text']}>
+            Si malgré vos tentatives, vous n'avez toujours pas reçu de code,
+            vous pouvez envoyer un mail à l'adresse
+            <Link href={'mailto:isisetthea@gmail.com'}>
+              <span className={classes['redirection-button']}>suivante</span>
+            </Link>
+            .
+          </div>
+        </div>
       </div>
     </div>
   )

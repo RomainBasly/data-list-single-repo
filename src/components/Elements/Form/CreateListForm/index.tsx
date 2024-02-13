@@ -22,6 +22,8 @@ import {
 } from '@heroicons/react/24/outline'
 import { sanitize } from 'isomorphic-dompurify'
 import CustomSelector from '@/components/Materials/CustomSelector'
+import classnames from 'classnames'
+import debug from 'debug'
 
 export type IBody = {
   email: string
@@ -29,7 +31,10 @@ export type IBody = {
 }
 
 export function CreateListForm() {
-  const [email, setEmail] = useState<string>('')
+  const [emailState, setEmailState] = useState<string>('')
+  const [removeEmailAnimationIndex, setRemoveEmailAnimationIndex] = useState<
+    number | null
+  >(null)
   const [emailsArray, setEmailsArray] = useState<string[]>([])
   const [confidentiality, setConfidentiality] = useState<string>('')
   const [name, setName] = useState<string>('')
@@ -86,7 +91,7 @@ export function CreateListForm() {
   function handleEmail(e: React.ChangeEvent<HTMLInputElement>) {
     setErrors({ ...errors, email: '', form: '' })
     setIsLoading(false)
-    setEmail(e.target.value.toLowerCase())
+    setEmailState(e.target.value.toLowerCase())
   }
 
   function handleEnterKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
@@ -96,24 +101,29 @@ export function CreateListForm() {
   }
 
   function addEmailToList() {
-    const sanitizedEmail = sanitize(email)
+    const sanitizedEmail = sanitize(emailState)
     const formErrors = validateEmailInput(sanitizedEmail)
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors)
       return
     }
 
-    if (email) {
+    if (emailState) {
       setEmailsArray([...emailsArray, sanitizedEmail])
-      setEmail('')
+      setEmailState('')
     }
   }
 
   function removeEmailFromList(index: number) {
-    const newArray = emailsArray.filter(
-      (_, currentIndex) => currentIndex !== index,
-    )
-    setEmailsArray(newArray)
+    debugger
+    setRemoveEmailAnimationIndex(index)
+    setTimeout(() => {
+      const newArray = emailsArray.filter(
+        (_, currentIndex) => currentIndex !== index,
+      )
+      setEmailsArray(newArray)
+      setRemoveEmailAnimationIndex(null)
+    }, 400)
   }
 
   function handleName(e: React.ChangeEvent<HTMLInputElement>) {
@@ -189,7 +199,11 @@ export function CreateListForm() {
         {errors && <div className={classes['error']}>{errors.name}</div>}
       </div>
       {confidentiality === 'shared' && (
-        <div className={classes['emails-section']}>
+        <div
+          className={classnames(classes['emails-section'], {
+            [classes['email-section-visible']]: confidentiality === 'shared',
+          })}
+        >
           <div className={classes['form-element']}>
             <label htmlFor="email" className={classes['label']}>
               Avec qui la partager ?
@@ -203,7 +217,7 @@ export function CreateListForm() {
                   placeholder="Renseignez leur email"
                   onChange={handleEmail}
                   onKeyDown={handleEnterKeyDown}
-                  value={email}
+                  value={emailState}
                   className={classes['input']}
                 />
                 <PlusIcon
@@ -215,10 +229,16 @@ export function CreateListForm() {
             </div>
           </div>
 
-          <div className={classes['emails']}>
+          <div className={classes['emails-container']}>
             {emailsArray.map((email, index) => (
-              <div className={classes['email-element']} key={index}>
-                <div className={classes['email-picto']}>
+              <div
+                className={classnames(classes['email-element'], {
+                  [classes['email-invisible']]:
+                    removeEmailAnimationIndex === index,
+                })}
+                key={index}
+              >
+                <div className={classnames(classnames(classes['email-picto']))}>
                   <ChevronRightIcon className={classes['chevron-icon']} />
                 </div>
                 <div className={classes['email-text']}>
