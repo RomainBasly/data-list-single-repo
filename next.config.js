@@ -1,3 +1,4 @@
+// @ts-check
 const {
   PHASE_DEVELOPMENT_SERVER,
   PHASE_PRODUCTION_BUILD,
@@ -12,13 +13,18 @@ module.exports = (phase) => {
   if (phase === PHASE_DEVELOPMENT_SERVER || phase === PHASE_PRODUCTION_BUILD) {
     const withPWA = require("@ducanh2912/next-pwa").default({
       dest: "public",
-      runtimeCaching: [
-        {
-          urlPattern: /\/api\/auth\//, // Regex for your authentication endpoints
-          handler: "NetworkOnly", // Use NetworkOnly strategy for these endpoints
-        },
-      ],
+      // dynamicStartUrlRedirect: "/home",
+      // cacheOnFrontEndNav: true,
+      // cacheStartUrl: true,
+      customWorkerSrc: "swInit.js",
+      // fallbacks: {
+      //   document: "/offline",
+      // },
+      // sw: "sw.js",
+      // register: true,
+      // reloadOnOnline: true,
     });
+
     return withPWA(nextConfig);
   }
   return nextConfig;

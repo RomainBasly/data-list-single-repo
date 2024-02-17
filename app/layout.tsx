@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import React from 'react'
 import Script from 'next/script'
 import { headers } from 'next/headers'
+import ServiceWorkerInitiator from '@/components/Elements/ServiceWorkerInitiator'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -61,6 +62,7 @@ export default function RootLayout({
     <html lang="fr">
       <body className={inter.className}>{children}</body>
       <Script strategy="afterInteractive" nonce={nonce ?? 'nothing'} />
+      <ServiceWorkerInitiator />
     </html>
   )
 }

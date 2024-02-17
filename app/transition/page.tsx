@@ -27,7 +27,6 @@ export default function Transition() {
 
       if (refreshToken) {
         try {
-          console.log('I passed here 1')
           const response = await AuthorizationApi.getInstance().getNewAccessToken(
             refreshToken,
           )
@@ -38,7 +37,6 @@ export default function Transition() {
               response.accessToken,
               true,
             )
-            console.log('I passed here 2', response.accessToken)
             router.push('/home')
           }
         } catch (error) {
