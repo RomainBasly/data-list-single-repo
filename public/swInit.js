@@ -4,7 +4,7 @@ importScripts(
 
 if (workbox) {
   workbox.precaching.precacheAndRoute([
-    { url: "/", revision: "4" },
+    { url: "/", revision: "15" },
     // Add other assets here
   ]);
 
