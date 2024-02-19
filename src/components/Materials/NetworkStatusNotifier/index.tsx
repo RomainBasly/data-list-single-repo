@@ -7,17 +7,11 @@ export default function NetworkStatusNotifier() {
   const [isConnected, setIsConnected] = useState<boolean | null>(null)
 
   useEffect(() => {
-    console.log('inside 1st useEffect initial value is', isConnected)
     setIsConnected(window.navigator.onLine)
   }, [isConnected])
 
   useEffect(() => {
     const updateConnectionStatus = () => {
-      console.log(
-        'inside 2nd useEffect initial value is',
-        isConnected,
-        window.navigator.onLine,
-      )
       setIsConnected(window.navigator.onLine)
     }
 
