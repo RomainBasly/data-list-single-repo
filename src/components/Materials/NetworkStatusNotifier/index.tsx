@@ -8,17 +8,15 @@ export default function NetworkStatusNotifier() {
 
   useEffect(() => {
     setIsConnected(window.navigator.onLine)
-  }, [])
+  }, [isConnected])
 
   useEffect(() => {
-    const handleOnline = () => {
-      setIsConnected(true)
+    const updateConnectionStatus = () => {
+      setIsConnected(window.navigator.onLine)
     }
-    const handleOffline = () => {
-      setIsConnected(false)
-    }
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
+
+    window.addEventListener('online', updateConnectionStatus)
+    window.addEventListener('offline', updateConnectionStatus)
   }, [isConnected])
 
   return (
@@ -30,9 +28,9 @@ export default function NetworkStatusNotifier() {
       ></div>
       {
         <p className={classes['text']}>
-          {isConnected === true
-            ? 'Connecté à internet'
-            : "Déconnecté d'internet"}
+          {isConnected === false || null
+            ? 'Déconnecté à internet'
+            : "Connecté d'internet"}
         </p>
       }
     </div>
