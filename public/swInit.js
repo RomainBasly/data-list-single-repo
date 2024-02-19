@@ -40,7 +40,10 @@ if (workbox) {
       matchOptions: {
         ignoreSearch: true,
       },
-    })
+    }),
+    {
+      ignoreURLParametersMatching: [/^_rsc$/],
+    }
   );
 
   workbox.routing.registerRoute(
