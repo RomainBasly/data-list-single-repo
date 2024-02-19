@@ -1,6 +1,7 @@
 import { headers } from 'next/headers'
 import Header from '../Headers/TopHeader'
 import SideMenu from '../SideMenu'
+import NetworkStatusNotifier from '@/components/Materials/NetworkStatusNotifier'
 
 export type ILayoutProps = {
   children: React.ReactNode
@@ -21,6 +22,7 @@ export default function Layout({ children, pageType }: ILayoutProps) {
         <>
           <Header />
           <SideMenu />
+          <NetworkStatusNotifier />
         </>
       )}
 
