@@ -4,7 +4,7 @@ importScripts(
 
 if (workbox) {
   workbox.precaching.precacheAndRoute([
-    { url: "/", revision: "15" },
+    { url: "/", revision: "17" },
     // Add other assets here
   ]);
 
@@ -25,7 +25,7 @@ if (workbox) {
   );
   workbox.routing.registerRoute(
     ({ url, request }) => request.mode === "navigate",
-    new workbox.strategies.NetworkFirst({
+    new workbox.strategies.CacheFirst({
       cacheName: "pages-cache",
       plugins: [
         new workbox.cacheableResponse.CacheableResponsePlugin({
@@ -40,10 +40,7 @@ if (workbox) {
       matchOptions: {
         ignoreSearch: true,
       },
-    }),
-    {
-      ignoreURLParametersMatching: [/^_rsc$/],
-    }
+    })
   );
 
   workbox.routing.registerRoute(
@@ -64,7 +61,7 @@ if (workbox) {
 
   workbox.routing.registerRoute(
     ({ request }) => ["style", "script", "image"].includes(request.destination),
-    new workbox.strategies.StaleWhileRevalidate({
+    new workbox.strategies.CacheFirst({
       cacheName: "assets-cache",
       plugins: [
         new workbox.expiration.ExpirationPlugin({
