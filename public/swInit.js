@@ -23,17 +23,23 @@ if (workbox) {
       ],
     })
   );
-
   workbox.routing.registerRoute(
-    ({ request }) => request.mode === "navigate",
+    ({ url, request }) => request.mode === "navigate",
     new workbox.strategies.NetworkFirst({
       cacheName: "pages-cache",
       plugins: [
+        new workbox.cacheableResponse.CacheableResponsePlugin({
+          statuses: [0, 200],
+        }),
         new workbox.expiration.ExpirationPlugin({
-          maxEntries: 50, // Adjust based on your needs
-          purgeOnQuotaError: true, // Automatically purge caches if quota is exceeded
+          maxEntries: 50,
+          maxAgeSeconds: 30 * 24 * 60 * 60,
         }),
       ],
+      // Ignore all query parameters when matching URLs for this route
+      matchOptions: {
+        ignoreSearch: true,
+      },
     })
   );
 
