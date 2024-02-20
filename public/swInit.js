@@ -3,12 +3,7 @@ importScripts(
 );
 
 if (workbox) {
-  workbox.precaching.precacheAndRoute([
-    { url: "/", revision: "19" },
-    { url: "/home", revision: "19" },
-    { url: "/lists/create-list", revision: "19" },
-    { url: "/profile", revision: "19" },
-  ]);
+  workbox.precaching.precacheAndRoute([{ url: "/", revision: "20" }]);
 
   workbox.routing.registerRoute(
     ({ url, request }) => request.mode === "navigate",
