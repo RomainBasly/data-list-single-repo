@@ -3,7 +3,7 @@ importScripts(
 );
 
 if (workbox) {
-  workbox.precaching.precacheAndRoute([{ url: "/", revision: "20" }]);
+  workbox.precaching.precacheAndRoute([{ url: "/", revision: "22" }]);
 
   workbox.routing.registerRoute(
     ({ url, request }) => request.mode === "navigate",
@@ -18,7 +18,10 @@ if (workbox) {
           maxAgeSeconds: 30 * 24 * 60 * 60,
         }),
       ],
-    })
+    }),
+    {
+      ignoreURLParametersMatching: [/^_rsc$/],
+    }
   );
 
   workbox.routing.registerRoute(
