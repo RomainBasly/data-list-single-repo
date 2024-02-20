@@ -18,10 +18,6 @@ if (workbox) {
           maxAgeSeconds: 30 * 24 * 60 * 60,
         }),
       ],
-      // Ignore all query parameters when matching URLs for this route
-      matchOptions: {
-        ignoreSearch: true,
-      },
     })
   );
 
