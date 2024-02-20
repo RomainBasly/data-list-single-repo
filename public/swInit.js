@@ -4,10 +4,10 @@ importScripts(
 
 if (workbox) {
   workbox.precaching.precacheAndRoute([
-    { url: "/", revision: "18" },
-    { url: "/home", revision: "18" },
-    { url: "/app/lists/create-list", revision: "18" },
-    { url: "/app/profile", revision: "18" },
+    { url: "/", revision: "19" },
+    { url: "/home", revision: "19" },
+    { url: "/lists/create-list", revision: "19" },
+    { url: "/profile", revision: "19" },
   ]);
 
   workbox.routing.registerRoute(
