@@ -4,25 +4,12 @@ importScripts(
 
 if (workbox) {
   workbox.precaching.precacheAndRoute([
-    { url: "/", revision: "17" },
-    // Add other assets here
+    { url: "/", revision: "18" },
+    { url: "/home", revision: "18" },
+    { url: "/app/lists/create-list", revision: "18" },
+    { url: "/app/profile", revision: "18" },
   ]);
 
-  workbox.routing.registerRoute(
-    // Match JavaScript files hosted on a CDN
-    new RegExp(
-      "https://storage.googleapis.com/workbox-cdn/releases/.*/.*\\.js"
-    ),
-    new workbox.strategies.StaleWhileRevalidate({
-      cacheName: "google-workbox",
-      plugins: [
-        new workbox.expiration.ExpirationPlugin({
-          maxEntries: 20, // Limit the number of entries in the cache
-          maxAgeSeconds: 30 * 24 * 60 * 60, // Cache for 30 days
-        }),
-      ],
-    })
-  );
   workbox.routing.registerRoute(
     ({ url, request }) => request.mode === "navigate",
     new workbox.strategies.CacheFirst({
