@@ -2,7 +2,7 @@ importScripts(
   "https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-sw.js"
 );
 
-workbox.precaching.precacheAndRoute(self.__WB_MANIFEST || []);
+workbox.precaching.precacheAndRoute([{"revision":"332720a866c529e65f12ae8ce16ae578","url":"manifest.json"}] || []);
 
 // if (workbox) {
 //   workbox.precaching.precacheAndRoute([{ url: "/", revision: "23" }]);
