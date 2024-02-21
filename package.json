@@ -37,7 +37,8 @@
     "eslint-config-prettier": "^9.1.0",
     "eslint-plugin-react": "^7.33.2",
     "typescript": "^5.2.2",
-    "webpack": "^5.90.2"
+    "webpack": "^5.90.2",
+    "workbox-cli": "^7.0.0"
   },
   "babel": {
     "presets": [
