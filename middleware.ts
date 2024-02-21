@@ -3,6 +3,8 @@ import JwtService from "@/Services/jwtService";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+// TODO : use jose.verify to check the validity of the accessToken inside the middleware and see if everything still works
+
 const privatePages = [
   "/",
   "/home",
@@ -44,8 +46,14 @@ export default async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/home", request.url));
     } else if (refreshToken && !isLoggedIn) {
       // let the transition page make the call and retrive new accessToken
+      console.log(
+        "je passe par là refreshToken && !isLoggedIn",
+        accessToken &&
+          !JwtService.getInstance().isTokenExpired(decodedAccessToken)
+      );
       return NextResponse.redirect(new URL("/transition", request.url));
     } else {
+      console.log("je passe par ici dans le else", refreshToken, isLoggedIn);
       return NextResponse.redirect(new URL("/login", request.url));
     }
   }
@@ -61,6 +69,9 @@ export default async function middleware(request: NextRequest) {
     }
 
     if (!isLoggedIn && privatePages.includes(url.pathname)) {
+      console.log(
+        "je passe ici !isLoggedIn && privatePages.includes(url.pathname)"
+      );
       return NextResponse.redirect(new URL("/transition", request.url));
     }
 
@@ -70,6 +81,12 @@ export default async function middleware(request: NextRequest) {
 
     // Redirect to login page if no accessToken or refreshToken found
     if (!accessToken && !refreshToken && !isLogPage) {
+      console.log(
+        "je passe par ici !accessToken && !refreshToken && !isLogPage",
+        accessToken,
+        refreshToken,
+        isLogPage
+      );
       return NextResponse.redirect(new URL("/login", request.url));
     }
   }

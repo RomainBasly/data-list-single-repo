@@ -3,29 +3,31 @@ importScripts(
 );
 workbox.precaching.precacheAndRoute([{"revision":"332720a866c529e65f12ae8ce16ae578","url":"manifest.json"}] || []);
 workbox.precaching.precacheAndRoute([
-  { url: "/offline", revision: 29 },
-  { url: "/", revision: 29 },
+  { url: "/offline", revision: 31 },
+  { url: "/", revision: 31 },
+  { url: "/home", revision: 31 },
+  { url: "/lists/create-list", revision: 31 },
 ]);
 
 // if (workbox) {
-workbox.routing.registerRoute(
-  ({ url, request }) => request.mode === "navigate",
-  new workbox.strategies.NetworkFirst({
-    cacheName: "pages-cache",
-    plugins: [
-      new workbox.cacheableResponse.CacheableResponsePlugin({
-        statuses: [0, 200],
-      }),
-      new workbox.expiration.ExpirationPlugin({
-        maxEntries: 50,
-        maxAgeSeconds: 30 * 24 * 60 * 60,
-      }),
-    ],
-  })
-  // {
-  //   ignoreURLParametersMatching: [/^_rsc$/],
-  // }
-);
+// workbox.routing.registerRoute(
+//   ({ url, request }) => request.mode === "navigate",
+//   new workbox.strategies.NetworkFirst({
+//     cacheName: "pages-cache",
+//     plugins: [
+//       new workbox.cacheableResponse.CacheableResponsePlugin({
+//         statuses: [0, 200],
+//       }),
+//       new workbox.expiration.ExpirationPlugin({
+//         maxEntries: 50,
+//         maxAgeSeconds: 30 * 24 * 60 * 60,
+//       }),
+//     ],
+//   })
+// {
+//   ignoreURLParametersMatching: [/^_rsc$/],
+// }
+// );
 workbox.routing.registerRoute(
   ({ request }) => request.destination === "font",
   new workbox.strategies.CacheFirst({

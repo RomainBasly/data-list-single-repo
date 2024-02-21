@@ -7,6 +7,7 @@ import Cookies from 'js-cookie'
 import { useRouter } from 'next/navigation'
 import { AuthorizationApi } from '@/api/Back/AuthorizationApi'
 import StorageService from '@/Services/CookieService'
+import JwtService from '@/Services/jwtService'
 
 export default function Transition() {
   const router = useRouter()
@@ -24,6 +25,13 @@ export default function Transition() {
   useEffect(() => {
     ;(async () => {
       const refreshToken = Cookies.get('refreshToken')
+      const accessToken = Cookies.get('accessToken')
+      console.log('accessToken', accessToken)
+
+      if (accessToken) {
+        console.log('I verified the accessToken')
+        router.push('/home')
+      }
 
       if (refreshToken) {
         try {
