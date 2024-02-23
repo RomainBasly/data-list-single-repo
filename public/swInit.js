@@ -5,7 +5,7 @@ workbox.precaching.precacheAndRoute(self.__WB_MANIFEST || []);
 
 workbox.routing.registerRoute(
   ({ url, request }) => request.mode === "navigate",
-  new workbox.strategies.CacheFirst({
+  new workbox.strategies.NetworkFirst({
     cacheName: "pages-cache",
     plugins: [
       new workbox.cacheableResponse.CacheableResponsePlugin({
@@ -86,17 +86,6 @@ workbox.routing.setCatchHandler(({ event }) => {
 
 // Use self instead of window for service workers
 self.addEventListener("install", (event) => {
-  const urlsToCache = [
-    "/home",
-    "/lists/create-list",
-    "/profile",
-    // Include other assets URLs here if needed
-  ];
-  const precacheManifest = self.__WB_MANIFEST.concat(
-    urlsToCache.map((url) => ({ url, revision: null }))
-  );
-  workbox.precaching.precacheAndRoute(precacheManifest);
-
   self.skipWaiting();
   console.log("Service Worker installing.");
 });
@@ -127,12 +116,12 @@ self.addEventListener("fetch", (event) => {
       });
     })
   );
-  // if (event.request.mode === "navigate" && url.pathname === "/") {
-  //   event.respondWith(
-  //     Response.redirect(new URL("/home", event.request.url).href)
-  //   );
-  //   return;
-  // }
+  if (event.request.mode === "navigate" && url.pathname === "/") {
+    event.respondWith(
+      Response.redirect(new URL("/home", event.request.url).href)
+    );
+    return;
+  }
 
   console.log("fetching", event.request.url);
 });

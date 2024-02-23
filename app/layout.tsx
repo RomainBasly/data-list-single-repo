@@ -62,7 +62,7 @@ export default function RootLayout({
     <html lang="fr">
       <body className={inter.className}>{children}</body>
       <Script strategy="afterInteractive" nonce={nonce ?? 'nothing'} />
-      {/* <ServiceWorkerInitiator /> */}
+      <ServiceWorkerInitiator />
     </html>
   )
 }
