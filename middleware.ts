@@ -70,7 +70,8 @@ export default async function middleware(request: NextRequest) {
 
     if (!isLoggedIn && privatePages.includes(url.pathname)) {
       console.log(
-        "je passe ici !isLoggedIn && privatePages.includes(url.pathname)"
+        "je passe ici !isLoggedIn && privatePages.includes(url.pathname)",
+        accessToken
       );
       return NextResponse.redirect(new URL("/transition", request.url));
     }
