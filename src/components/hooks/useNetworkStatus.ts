@@ -1,15 +1,41 @@
 "use client";
 import { useState, useEffect } from "react";
 
+interface FetchOptions extends RequestInit {
+  timeout?: number;
+}
+
+const fetchWithTimeout = async (
+  resource: RequestInfo | URL,
+  options: FetchOptions = {}
+) => {
+  const { timeout = 5000 } = options; // Set a default timeout of 5 seconds
+
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const response = await fetch(resource, {
+      ...options,
+      signal: controller.signal,
+    });
+    clearTimeout(id);
+    return response;
+  } catch (error) {
+    clearTimeout(id);
+    throw error;
+  }
+};
+
 export const useNetworkStatus = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   const checkOnlineStatus = async () => {
     // Use a URL that you expect to be always available and responds quickly
-    const onlineCheckUrl = "/images/logos/logo-128x128.png"; // Using favicon as it's typically small and always present
+    const onlineCheckUrl = "/images/leightWeightImage.png"; // Using favicon as it's typically small and always present
     try {
       // Attempt to fetch with cache bypass to ensure live status
-      const response = await fetch(onlineCheckUrl, {
+      const response = await fetchWithTimeout(onlineCheckUrl, {
         method: "HEAD",
         cache: "no-cache",
       });
