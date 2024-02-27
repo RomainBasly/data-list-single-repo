@@ -1,35 +1,3 @@
-// "use client";
-// import { useState, useEffect } from "react";
-
-// export const useNetworkStatus = () => {
-//   const [isOnline, setIsOnline] = useState(navigator.onLine);
-
-//   const checkOnlineStatus = async () => {
-//     try {
-//       const onlineCheckUrl = "/images/logos/logo-128x128.png"; // Use a small, cacheable image
-//       const response = await fetch(onlineCheckUrl, { method: "HEAD" });
-//       setIsOnline(response.ok);
-//     } catch (error) {
-//       setIsOnline(false);
-//     }
-//   };
-
-//   useEffect(() => {
-//     // Periodically check the online status
-//     const intervalId = setInterval(checkOnlineStatus, 10000); // Every 10 seconds
-
-//     window.addEventListener("online", () => setIsOnline(true));
-//     window.addEventListener("offline", () => setIsOnline(false));
-
-//     return () => {
-//       clearInterval(intervalId);
-//       window.removeEventListener("online", () => setIsOnline(true));
-//       window.removeEventListener("offline", () => setIsOnline(false));
-//     };
-//   }, []);
-
-//   return isOnline;
-// };
 "use client";
 import { useState, useEffect } from "react";
 
@@ -37,47 +5,56 @@ export const useNetworkStatus = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
   const checkOnlineStatus = async () => {
-    if (!navigator.onLine) {
-      setIsOnline(false);
-      return; // If navigator.onLine is false, no need to check further
-    }
-    // Attempt to fetch a small resource. Adjust the URL to a suitable endpoint on your server or a small image
+    // Use a URL that you expect to be always available and responds quickly
+    const onlineCheckUrl = "/images/logos/logo-128x128.png"; // Using favicon as it's typically small and always present
     try {
-      const onlineCheckUrl = "/images/logos/logo-128x128.png"; // Use a small, cacheable image
+      // Attempt to fetch with cache bypass to ensure live status
       const response = await fetch(onlineCheckUrl, {
         method: "HEAD",
         cache: "no-cache",
       });
       setIsOnline(response.ok);
     } catch (error) {
+      // If fetch fails, network might be down
       setIsOnline(false);
     }
   };
 
   useEffect(() => {
-    let intervalId: string | number | NodeJS.Timeout | undefined;
+    // Set an interval for periodic network status checks
+    const intervalId = setInterval(checkOnlineStatus, 5000); // Check every 10 seconds
 
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        clearInterval(intervalId); // Reduce checks when the page is not visible
-      } else {
-        clearInterval(intervalId); // Clear existing interval to avoid duplicates
-        intervalId = setInterval(checkOnlineStatus, 10000); // Adjust to 10 seconds or another suitable value
+    // Perform an immediate check on mount
+    checkOnlineStatus();
+
+    // Cleanup on unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
+  useEffect(() => {
+    // Handler for receiving messages
+    const handleServiceWorkerMessage = (event: {
+      data: {
+        isOnline: boolean | ((prevState: boolean) => boolean) | undefined;
+      };
+    }) => {
+      if (event.data.isOnline !== undefined) {
+        setIsOnline(event.data.isOnline);
       }
     };
 
-    // Initial check and set up interval
-    checkOnlineStatus();
-    intervalId = setInterval(checkOnlineStatus, 5000); // Every 10 seconds
+    // Add event listener for messages from service worker
+    navigator.serviceWorker.addEventListener(
+      "message",
+      handleServiceWorkerMessage
+    );
 
-    // Adjust check frequency based on page visibility to save resources
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    // Clean up
-    return () => {
-      clearInterval(intervalId);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
+    // Cleanup
+    return () =>
+      navigator.serviceWorker.removeEventListener(
+        "message",
+        handleServiceWorkerMessage
+      );
   }, []);
 
   return isOnline;

@@ -7,6 +7,10 @@ import { useNetworkStatus } from '@/components/hooks/useNetworkStatus'
 export default function NetworkStatusNotifier() {
   const isOnline = useNetworkStatus()
 
+  useEffect(() => {
+    console.log('isOnline', isOnline)
+  }, [isOnline])
+
   return (
     <div className={classes['root']}>
       <div

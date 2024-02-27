@@ -166,7 +166,7 @@ self.addEventListener("fetch", (event) => {
         return cachedResponse;
       }
       return fetch(event.request).catch(() => {
-        event.waitUntil(sendMessage({ checkOnline: true }));
+        event.waitUntil(sendMessageToClient({ isOnline: false }));
         return caches.match("/offline").then((response) => {
           if (response) {
             return response;
