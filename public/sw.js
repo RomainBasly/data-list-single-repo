@@ -124,13 +124,13 @@ workbox.routing.setCatchHandler(({ event }) => {
 
 // Use self instead of window for service workers
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches
-      .open(workbox.core.cacheNames.precache) // Use workbox's precache cache name for consistency
-      .then((cache) => {
-        return cache.addAll(urlsToCache);
-      })
-  );
+  // event.waitUntil(
+  //   caches
+  //     .open(workbox.core.cacheNames.precache) // Use workbox's precache cache name for consistency
+  //     .then((cache) => {
+  //       return cache.addAll(urlsToCache);
+  //     })
+  // );
   self.skipWaiting();
   console.log("Service Worker installing.");
 });
