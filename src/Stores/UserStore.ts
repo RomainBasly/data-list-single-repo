@@ -5,6 +5,7 @@ export default class UserStore {
   private static instance: UserStore;
   private email: string | null = null;
   public accessToken: string | null = null;
+  public isOnline: boolean | null = null;
 
   private constructor() {}
 
@@ -15,8 +16,12 @@ export default class UserStore {
     return UserStore.instance;
   }
 
+  public setIsOnlineVariable(params: boolean): void {
+    this.isOnline = params;
+  }
+
   public isConnected(): boolean {
-        // Do I need to set it here and fetch the localSTorage instead
+    // TODO: Do I need to set it here and fetch the localSTorage instead
     return Boolean(this.accessToken);
   }
 
@@ -32,5 +37,9 @@ export default class UserStore {
       this.email = storedEmail;
     }
     return this.email;
+  }
+
+  public getIsOnlineVariable(): boolean | null {
+    return this.isOnline;
   }
 }

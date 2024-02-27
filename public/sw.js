@@ -3,9 +3,32 @@ importScripts(
 );
 workbox.precaching.precacheAndRoute([{"revision":"a5281aa1504c5d6bcd7ba1097870376a","url":"fallback-ba59bcac333a1e0f.js"},{"revision":"332720a866c529e65f12ae8ce16ae578","url":"manifest.json"}] || []);
 
+const urlsToCache = [
+  "/",
+  "/home",
+  "/lists/create-list",
+  "/offline",
+  "/images/logos/logo-96x96.png",
+];
+
+const ignoreUrlParametersMatchingPlugin = {
+  // This hook is called whenever Workbox is about to use a URL as a cache key.
+  cacheKeyWillBeUsed: async ({ request, mode }) => {
+    // The URL we might modify to create a custom cache key.
+    const url = new URL(request.url);
+
+    // Example: Remove specific search parameters like '_rsc'.
+    // You can extend this logic to ignore other parameters or modify the URL as needed.
+    url.searchParams.delete("_rsc");
+
+    // Return the modified URL as a string to be used as the cache key.
+    return url.toString();
+  },
+};
+
 workbox.routing.registerRoute(
   ({ url, request }) => request.mode === "navigate",
-  new workbox.strategies.NetworkFirst({
+  new workbox.strategies.StaleWhileRevalidate({
     cacheName: "pages-cache",
     plugins: [
       new workbox.cacheableResponse.CacheableResponsePlugin({
@@ -16,7 +39,22 @@ workbox.routing.registerRoute(
         maxAgeSeconds: 30 * 24 * 60 * 60,
       }),
     ],
-    ignoreURLParametersMatching: [/^_rsc$/],
+    ignoreUrlParametersMatchingPlugin,
+  })
+);
+workbox.routing.registerRoute(
+  ({ url, request }) => request.mode === "navigate",
+  new workbox.strategies.StaleWhileRevalidate({
+    cacheName: "pages-cache-rsc",
+    plugins: [
+      new workbox.cacheableResponse.CacheableResponsePlugin({
+        statuses: [0, 200],
+      }),
+      new workbox.expiration.ExpirationPlugin({
+        maxEntries: 50,
+        maxAgeSeconds: 30 * 24 * 60 * 60,
+      }),
+    ],
   })
 );
 workbox.routing.registerRoute(
@@ -86,6 +124,13 @@ workbox.routing.setCatchHandler(({ event }) => {
 
 // Use self instead of window for service workers
 self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches
+      .open(workbox.core.cacheNames.precache) // Use workbox's precache cache name for consistency
+      .then((cache) => {
+        return cache.addAll(urlsToCache);
+      })
+  );
   self.skipWaiting();
   console.log("Service Worker installing.");
 });
@@ -95,6 +140,25 @@ self.addEventListener("activate", (event) => {
   event.waitUntil(clients.claim());
 });
 
+// self.addEventListener("message", (event) => {
+//   let data = event.data;
+//   console.log("SW received", data);
+
+//   if ("checkOnline" in data) {
+//     let url = "/images/logos/logo-128x128.png";
+//     console.log("I passed here in the checkOnline condition");
+//     event.waitUntil(
+//       fetch(url, { method: "HEAD" }).then((response) => {
+//         if (response.ok) {
+//           sendMessageToClient({ isOnline: true });
+//         } else {
+//           return sendMessage({ isOnline: false });
+//         }
+//       })
+//     );
+//   }
+// });
+
 self.addEventListener("fetch", (event) => {
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
@@ -102,13 +166,11 @@ self.addEventListener("fetch", (event) => {
         return cachedResponse;
       }
       return fetch(event.request).catch(() => {
-        // Handle network errors by returning the offline page from the cache
+        event.waitUntil(sendMessage({ checkOnline: true }));
         return caches.match("/offline").then((response) => {
-          // Ensure a response is always returned
           if (response) {
             return response;
           }
-          // As a last resort, return a generic fallback (this should be a Response object)
           return new Response("You are offline", {
             headers: { "Content-Type": "text/plain" },
           });
@@ -125,3 +187,11 @@ self.addEventListener("fetch", (event) => {
 
   console.log("fetching", event.request.url);
 });
+
+const sendMessage = async (message) => {
+  self.clients.matchAll().then((clients) => {
+    clients.forEach((client) => {
+      client.postMessage(message);
+    });
+  });
+};
