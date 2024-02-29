@@ -28,11 +28,13 @@ const fetchWithTimeout = async (
 };
 
 export const useNetworkStatus = () => {
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isOnline, setIsOnline] = useState(
+    typeof navigator !== "undefined" ? navigator.onLine : false
+  );
 
   const checkOnlineStatus = async () => {
     // Use a URL that you expect to be always available and responds quickly
-    const onlineCheckUrl = "/images/leightWeightImage.png"; // Using favicon as it's typically small and always present
+    const onlineCheckUrl = "/images/leightWeightImage.png";
     try {
       // Attempt to fetch with cache bypass to ensure live status
       const response = await fetchWithTimeout(onlineCheckUrl, {
@@ -48,7 +50,7 @@ export const useNetworkStatus = () => {
 
   useEffect(() => {
     // Set an interval for periodic network status checks
-    const intervalId = setInterval(checkOnlineStatus, 5000); // Check every 10 seconds
+    const intervalId = setInterval(checkOnlineStatus, 5000);
 
     // Perform an immediate check on mount
     checkOnlineStatus();

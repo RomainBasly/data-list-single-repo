@@ -1,9 +1,10 @@
 .root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 300px;
   height: 25px;
   border-radius: 4px;
-  display: flex;
-  align-items: center;
   gap: 10px;
 
   svg {
@@ -13,7 +14,6 @@
 
   .text {
     color: black;
-    width: 100%;
     font-size: 10px;
   }
 

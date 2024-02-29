@@ -4,7 +4,11 @@ import classes from './classes.module.scss'
 import classnames from 'classnames'
 import { useNetworkStatus } from '@/components/hooks/useNetworkStatus'
 
-export default function NetworkStatusNotifier() {
+type IProps = {
+  className: string
+}
+
+export default function NetworkStatusNotifier(props: IProps) {
   const isOnline = useNetworkStatus()
 
   useEffect(() => {
@@ -12,7 +16,7 @@ export default function NetworkStatusNotifier() {
   }, [isOnline])
 
   return (
-    <div className={classes['root']}>
+    <div className={classnames(classes['root'], props.className, {})}>
       <div
         className={classnames(classes['status'], {
           [classes['disconnected']]: isOnline === false || null,
@@ -20,8 +24,8 @@ export default function NetworkStatusNotifier() {
       ></div>
       {
         <p className={classes['text']}>
-          {isOnline === false || null
-            ? "Déconnecté d''internet"
+          {isOnline === false || null 
+            ? "Déconnecté d'internet"
             : 'Connecté à internet'}
         </p>
       }

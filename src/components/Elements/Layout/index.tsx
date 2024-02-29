@@ -2,6 +2,7 @@ import { headers } from 'next/headers'
 import Header from '../Headers/TopHeader'
 import SideMenu from '../SideMenu'
 import NetworkStatusNotifier from '@/components/Materials/NetworkStatusNotifier'
+import classes from './classes.module.scss'
 
 export type ILayoutProps = {
   children: React.ReactNode
@@ -19,11 +20,11 @@ export default function Layout({ children, pageType }: ILayoutProps) {
       <meta name="x-nonce" content={nonce ?? 'default-nonce'} />
 
       {pageType !== 'login' && pageType !== 'register' && (
-        <>
-          <Header />
+        <div className={classes['root']}>
+          <Header className={classes['header']} />
           <SideMenu />
-          <NetworkStatusNotifier />
-        </>
+          <NetworkStatusNotifier className={classes['footer']} />
+        </div>
       )}
 
       {children}

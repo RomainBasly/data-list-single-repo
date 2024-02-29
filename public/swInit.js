@@ -160,13 +160,21 @@ self.addEventListener("activate", (event) => {
 // });
 
 self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url);
+  if (url.pathname === "/images/leightWeightImage.png") {
+    // Attempt to fetch from network, fall back to offline handling if network fails
+    event.respondWith(
+      fetch(event.request).catch(() => caches.match("/offline"))
+    );
+    return;
+  }
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
         return cachedResponse;
       }
       return fetch(event.request).catch(() => {
-        event.waitUntil(sendMessageToClient({ isOnline: false }));
+        event.waitUntil(sendMessage({ isOnline: false }));
         return caches.match("/offline").then((response) => {
           if (response) {
             return response;

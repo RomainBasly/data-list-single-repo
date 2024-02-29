@@ -10,8 +10,13 @@ import { Bars3Icon } from '@heroicons/react/24/solid'
 import { HomeIcon, PencilIcon, XCircleIcon } from '@heroicons/react/24/outline'
 import UserMenuStatus, { EOpeningState } from '@/Stores/UserMenuStatus'
 import { useRouter } from 'next/navigation'
+import classnames from 'classnames'
 
-export default function Header() {
+type IProps = {
+  className: string
+}
+
+export default function Header(props: IProps) {
   const router = useRouter()
   const [userMenuState, setUserMenuState] = React.useState<EOpeningState>(
     UserMenuStatus.getInstance().status,
@@ -39,7 +44,7 @@ export default function Header() {
   }
 
   return (
-    <div className={classes['root']}>
+    <div className={classnames(classes['root'], props.className)}>
       <Logo
         src={String(logo.src)}
         alt={'Logo'}
