@@ -1,7 +1,7 @@
 import { headers } from 'next/headers'
 import Header from '../Headers/TopHeader'
 import SideMenu from '../SideMenu'
-// import NetworkStatusNotifier from '@/components/Materials/NetworkStatusNotifier'
+
 import dynamic from 'next/dynamic'
 import classes from './classes.module.scss'
 
