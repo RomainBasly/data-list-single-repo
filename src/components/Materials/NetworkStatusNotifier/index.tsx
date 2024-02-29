@@ -15,6 +15,10 @@ export default function NetworkStatusNotifier(props: IProps) {
     console.log('isOnline', isOnline)
   }, [isOnline])
 
+  // if (isOnline) {
+  //   return <div>we are online</div>
+  // }
+  // return <div>we are offline</div>
   return (
     <div className={classnames(classes['root'], props.className, {})}>
       <div
@@ -24,7 +28,7 @@ export default function NetworkStatusNotifier(props: IProps) {
       ></div>
       {
         <p className={classes['text']}>
-          {isOnline === false || null 
+          {isOnline === false || null
             ? "Déconnecté d'internet"
             : 'Connecté à internet'}
         </p>

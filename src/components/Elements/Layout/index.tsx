@@ -1,7 +1,8 @@
 import { headers } from 'next/headers'
 import Header from '../Headers/TopHeader'
 import SideMenu from '../SideMenu'
-import NetworkStatusNotifier from '@/components/Materials/NetworkStatusNotifier'
+// import NetworkStatusNotifier from '@/components/Materials/NetworkStatusNotifier'
+import dynamic from 'next/dynamic'
 import classes from './classes.module.scss'
 
 export type ILayoutProps = {
@@ -10,6 +11,11 @@ export type ILayoutProps = {
 }
 
 export default function Layout({ children, pageType }: ILayoutProps) {
+  const NetworkStatusNotifierWithNoSSR = dynamic(
+    () => import('@/components/Materials/NetworkStatusNotifier'),
+    { ssr: false }, // This disables server-side rendering for the component
+  )
+
   const nonce = headers().get('x-nonce')
   return (
     <>
@@ -23,7 +29,7 @@ export default function Layout({ children, pageType }: ILayoutProps) {
         <div className={classes['root']}>
           <Header className={classes['header']} />
           <SideMenu />
-          <NetworkStatusNotifier className={classes['footer']} />
+          <NetworkStatusNotifierWithNoSSR className={classes['footer']} />
         </div>
       )}
 
