@@ -5,20 +5,12 @@ import classnames from 'classnames'
 import { useNetworkStatus } from '@/components/hooks/useNetworkStatus'
 
 type IProps = {
-  className: string
+  className?: string
 }
 
 export default function NetworkStatusNotifier(props: IProps) {
   const isOnline = useNetworkStatus()
 
-  useEffect(() => {
-    console.log('isOnline', isOnline)
-  }, [isOnline])
-
-  // if (isOnline) {
-  //   return <div>we are online</div>
-  // }
-  // return <div>we are offline</div>
   return (
     <div className={classnames(classes['root'], props.className, {})}>
       <div
@@ -29,7 +21,7 @@ export default function NetworkStatusNotifier(props: IProps) {
       {
         <p className={classes['text']}>
           {isOnline === false || null
-            ? "Déconnecté d'internet"
+            ? 'Connexion internet perdue'
             : 'Connecté à internet'}
         </p>
       }

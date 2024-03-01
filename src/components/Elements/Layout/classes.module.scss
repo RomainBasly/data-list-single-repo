@@ -1,14 +1,22 @@
 .root {
   display: flex;
   flex-direction: column;
+}
 
-  .footer {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: auto;
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-  }
+.content {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+.internet-notifier {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  background-color: #efefef;
+  position: sticky;
+  bottom: 0;
+  height: 40px;
+  color: white;
 }

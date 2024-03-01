@@ -29,11 +29,14 @@ export default function Layout({ children, pageType }: ILayoutProps) {
         <div className={classes['root']}>
           <Header className={classes['header']} />
           <SideMenu />
-          <NetworkStatusNotifierWithNoSSR className={classes['footer']} />
         </div>
       )}
-
-      {children}
+      <div className={classes['content']}>
+        {children}
+        <NetworkStatusNotifierWithNoSSR
+          className={classes['internet-notifier']}
+        />
+      </div>
     </>
   )
 }
