@@ -6,8 +6,9 @@
   height: 25px;
   border-radius: 4px;
   gap: 10px;
-  position: sticky;
+  position: fixed;
   bottom: 0;
+  background-color: #efefef;
 
   svg {
     max-width: 30px;
