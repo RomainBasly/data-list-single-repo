@@ -16,7 +16,7 @@ export default function RegistrationForm() {
   const [errors, setErrors] = useState<{ [key: string]: string }>()
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  async function sendForm(e: { preventDefault: () => void }) {
+  async function registrationForm(e: { preventDefault: () => void }) {
     e.preventDefault()
     const lowerCaseEmail = email.toLowerCase()
     const sanitizedEmail = sanitize(lowerCaseEmail)
@@ -33,8 +33,10 @@ export default function RegistrationForm() {
         body,
       )
       if (response) {
+        console.log(response)
         setIsLoading(!isLoading)
         UserStore.getInstance().setEmail(email)
+        // UserStore.getInstance().setId(response.id)
         router.push('/register/verify-code')
       }
     } catch (error) {
@@ -62,7 +64,7 @@ export default function RegistrationForm() {
       </div>
       <div className={classes['button-container']}>
         <Button
-          onClick={sendForm}
+          onClick={registrationForm}
           text={"S'enregistrer"}
           isLoading={isLoading}
           className={classes['connexion-button']}
