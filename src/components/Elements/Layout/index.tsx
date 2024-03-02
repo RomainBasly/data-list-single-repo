@@ -31,7 +31,7 @@ export default function Layout({ children, pageType }: ILayoutProps) {
           <SideMenu />
         </div>
       )}
-      <div className={classes['content']}>
+      <div className={classes['layout-content']}>
         {children}
         <NetworkStatusNotifierWithNoSSR
           className={classes['internet-notifier']}
