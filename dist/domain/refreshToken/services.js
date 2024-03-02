@@ -37,9 +37,9 @@ let RefreshTokenService = class RefreshTokenService {
         if (!accessTokenSecret) {
             throw new errors_1.accessTokenError(errors_1.ErrorMessages.ACCESSTOKEN_ERROR);
         }
-        const { email } = foundUser;
+        const { user_id, email } = foundUser;
         const accessToken = this.tokenService.generateAccessToken({
-            userInfo: { email, roles: foundUser.roles },
+            userInfo: { id: user_id, roles: foundUser.roles },
         });
         if (!accessToken) {
             throw new errors_1.FailToGenerateTokens(errors_1.ErrorMessages.FAIL_TO_GENERATE_TOKENS);

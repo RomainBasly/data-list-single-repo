@@ -15,7 +15,7 @@ export default class AppEmailValidation {
       if (error instanceof yup.ValidationError) {
         throw new ValidationError(ErrorMessages.VALIDATION_ERROR, error.message);
       }
-      throw new Error('Email validating the email');
+      throw new Error('Error validating the email (appEmailValidation)');
     }
   }
 

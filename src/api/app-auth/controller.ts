@@ -6,6 +6,7 @@ import { cookieHandler } from '../../common/helpers';
 import { UserAlreadyExistsError } from '../../domain/common/errors';
 
 interface UserInfo {
+  id: number;
   userName: string;
   email: string;
   roles: {};
@@ -19,13 +20,13 @@ export class AppAuthController {
   constructor(@inject(UserService) private readonly userService: UserService) {}
 
   async register(req: Request<{}, {}, UserInfo>, res: Response, next: NextFunction): Promise<void> {
-    const { userName, email, password } = req.body;
+    const { id, userName, email, password } = req.body;
     if (!email || !password || !userName) {
       res.status(400).json('userName, email and password are required');
       return;
     }
     try {
-      await this.userService.registerUser(userName, email, password);
+      await this.userService.registerUser(id, userName, email, password);
       res.status(201).json({ message: 'new user created' });
     } catch (error) {
       if (error instanceof UserAlreadyExistsError) {

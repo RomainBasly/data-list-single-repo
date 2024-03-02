@@ -25,10 +25,10 @@ let UserService = class UserService {
         this.passwordService = passwordService;
         this.tokenService = tokenService;
     }
-    async registerUser(userName, email, password) {
+    async registerUser(user_id, userName, email, password) {
         try {
             const hashedPassword = await this.passwordService.hashPassword(password);
-            const user = { userName, email, roles: { [api_1.Roles.USER]: true }, password: hashedPassword };
+            const user = { user_id, userName, email, roles: { [api_1.Roles.USER]: true }, password: hashedPassword };
             await this.userRepository.addPassword(user);
         }
         catch (error) {
@@ -49,7 +49,7 @@ let UserService = class UserService {
             }
             const roles = this.addUserRole(user);
             const accessToken = this.tokenService.generateAccessToken({
-                userInfo: { email, roles },
+                userInfo: { id: user.user_id, roles },
             });
             const refreshToken = this.tokenService.generateRefreshToken({ email });
             if (!refreshToken || !accessToken) {

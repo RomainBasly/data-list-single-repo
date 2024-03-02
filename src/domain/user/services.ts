@@ -20,10 +20,10 @@ export class UserService {
     @inject(TokenService) private readonly tokenService: TokenService
   ) {}
 
-  async registerUser(userName: string, email: string, password: string) {
+  async registerUser(user_id: number, userName: string, email: string, password: string) {
     try {
       const hashedPassword = await this.passwordService.hashPassword(password);
-      const user = { userName, email, roles: { [Roles.USER]: true }, password: hashedPassword };
+      const user = { user_id, userName, email, roles: { [Roles.USER]: true }, password: hashedPassword };
       await this.userRepository.addPassword(user);
     } catch (error) {
       console.error('something went wrong in the userservice', error);
@@ -45,7 +45,7 @@ export class UserService {
       }
       const roles = this.addUserRole(user);
       const accessToken = this.tokenService.generateAccessToken({
-        userInfo: { email, roles },
+        userInfo: { id: user.user_id, roles },
       });
       const refreshToken = this.tokenService.generateRefreshToken({ email });
       if (!refreshToken || !accessToken) {

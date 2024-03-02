@@ -6,7 +6,7 @@ import { AppRefreshTokenRepository } from '../../infrastructure/database/reposit
 
 export interface JwtPayloadAccessToken {
   userInfo: {
-    email: string;
+    id: number;
     roles: RoleAssignments;
   };
 }

@@ -28,47 +28,38 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CreateListValidatorService = void 0;
 const tsyringe_1 = require("tsyringe");
 const yup = __importStar(require("yup"));
 const errors_1 = require("../common/errors");
-let AppEmailValidation = class AppEmailValidation {
-    async validateEmail(input) {
+let CreateListValidatorService = class CreateListValidatorService {
+    constructor() { }
+    async preCheck(inputs) {
         const schema = yup.object().shape({
-            email: yup.string().email('Email format invalid').required('Email is required'),
+            name: yup.string().required(),
+            accessLevel: yup.string().required(),
+            creatorEmail: yup.string().required(),
+            emails: yup.array().of(yup.string().required()),
+            description: yup.string().optional(),
+            cyphered: yup.string().optional(),
         });
         try {
-            const emailObject = { email: input };
-            return await schema.validate(emailObject);
+            return await schema.validate(inputs);
         }
         catch (error) {
             if (error instanceof yup.ValidationError) {
                 throw new errors_1.ValidationError(errors_1.ErrorMessages.VALIDATION_ERROR, error.message);
             }
-            throw new Error('Error validating the email (appEmailValidation)');
-        }
-    }
-    async validateCode(input) {
-        const schema = yup.object().shape({
-            code: yup
-                .string()
-                .trim()
-                .length(6, 'Code must be exactly 6 digits')
-                .matches(/^\d{6}$/, 'code furnished not numbers')
-                .required('code is required'),
-        });
-        try {
-            const codeObject = { code: input };
-            return await schema.validate(codeObject);
-        }
-        catch (error) {
-            if (error instanceof yup.ValidationError)
-                throw new errors_1.ValidationError(errors_1.ErrorMessages.VALIDATION_ERROR, error.message);
-            throw new Error('Email validating the code');
+            throw new Error('Error validating the list schema during precheck');
         }
     }
 };
-AppEmailValidation = __decorate([
-    (0, tsyringe_1.injectable)()
-], AppEmailValidation);
-exports.default = AppEmailValidation;
+exports.CreateListValidatorService = CreateListValidatorService;
+exports.CreateListValidatorService = CreateListValidatorService = __decorate([
+    (0, tsyringe_1.injectable)(),
+    __metadata("design:paramtypes", [])
+], CreateListValidatorService);

@@ -28,13 +28,13 @@ let AppAuthController = class AppAuthController {
         this.userService = userService;
     }
     async register(req, res, next) {
-        const { userName, email, password } = req.body;
+        const { id, userName, email, password } = req.body;
         if (!email || !password || !userName) {
             res.status(400).json('userName, email and password are required');
             return;
         }
         try {
-            await this.userService.registerUser(userName, email, password);
+            await this.userService.registerUser(id, userName, email, password);
             res.status(201).json({ message: 'new user created' });
         }
         catch (error) {

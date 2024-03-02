@@ -22,7 +22,9 @@ const verifyUserAccessToken = (req, res, next) => {
     try {
         const authHeader = req.headers['authorization'];
         if (!authHeader)
-            return res.sendStatus(401);
+            return res
+                .status(401)
+                .json({ message: 'No accessToken provided. Please include an accessToken to your request' });
         const token = authHeader.split(' ')[1];
         if (!accessTokenSecret)
             throw new Error('no accessToken accessible in middleware (verifyToken)');
@@ -31,7 +33,7 @@ const verifyUserAccessToken = (req, res, next) => {
             if (err) {
                 throw err;
             }
-            req.email = decodedToken.userInfo.email;
+            req.id = decodedToken.userInfo.id;
             req.roles = decodedToken.userInfo.roles;
             next();
         });

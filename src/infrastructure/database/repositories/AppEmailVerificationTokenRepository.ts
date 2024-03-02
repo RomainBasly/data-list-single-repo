@@ -30,7 +30,7 @@ export class AppEmailVerificationTokenRepository {
     const { data, error } = await supabase.rpc('get_email_verification_data_from_DB', {
       email_address,
     });
-
+    // TODO : set a better error handler than this one too general
     if (error) throw new Error('oh oh');
     return data;
   }

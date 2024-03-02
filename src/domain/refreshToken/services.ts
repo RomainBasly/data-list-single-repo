@@ -38,9 +38,9 @@ export class RefreshTokenService implements IRefreshTokenService {
     if (!accessTokenSecret) {
       throw new accessTokenError(ErrorMessages.ACCESSTOKEN_ERROR);
     }
-    const { email } = foundUser;
+    const { user_id, email } = foundUser;
     const accessToken = this.tokenService.generateAccessToken({
-      userInfo: { email, roles: foundUser.roles },
+      userInfo: { id: user_id, roles: foundUser.roles },
     });
     if (!accessToken) {
       throw new FailToGenerateTokens(ErrorMessages.FAIL_TO_GENERATE_TOKENS);

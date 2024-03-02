@@ -8,7 +8,7 @@ const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const envApiKey = process.env.BACKEND_API_KEY;
 
 interface IRequest extends Request {
-  email?: string;
+  id?: number;
   roles?: RoleAssignments;
 }
 
@@ -26,7 +26,10 @@ export const verifyRequestApiKey = (req: IRequest, res: Response, next: NextFunc
 export const verifyUserAccessToken = (req: IRequest, res: Response, next: NextFunction) => {
   try {
     const authHeader = req.headers['authorization'];
-    if (!authHeader) return res.sendStatus(401);
+    if (!authHeader)
+      return res
+        .status(401)
+        .json({ message: 'No accessToken provided. Please include an accessToken to your request' });
     const token = authHeader.split(' ')[1];
     if (!accessTokenSecret) throw new Error('no accessToken accessible in middleware (verifyToken)');
 
@@ -35,7 +38,7 @@ export const verifyUserAccessToken = (req: IRequest, res: Response, next: NextFu
       if (err) {
         throw err;
       }
-      req.email = decodedToken.userInfo.email;
+      req.id = decodedToken.userInfo.id;
       req.roles = decodedToken.userInfo.roles;
       next();
     });

@@ -33,6 +33,7 @@ let AppEmailVerificationTokenRepository = class AppEmailVerificationTokenReposit
         const { data, error } = await supabaseClient_1.default.rpc('get_email_verification_data_from_DB', {
             email_address,
         });
+        // TODO : set a better error handler than this one too general
         if (error)
             throw new Error('oh oh');
         return data;
