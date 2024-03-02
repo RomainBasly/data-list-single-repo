@@ -14,6 +14,9 @@ publicRoutes
     appAuthController.register(req, res, next);
 })
     .post('/api/auth/login', (req, res, next) => appAuthController.login(req, res, next))
+    .get('/api/refresh-token', (req, res, next) => {
+    appRefreshTokenController.handleRefreshToken(req, res, next);
+})
     .get('/api/auth/logout', (req, res) => {
     appAuthController.logoutUser(req, res);
 })
@@ -22,5 +25,6 @@ publicRoutes
 })
     .post('/api/register/check-verification-code', (req, res, next) => {
     appEmailVerification.verifyCode(req, res, next);
-});
+})
+    .post('/api/lists/create-list', (req, res, next) => { });
 exports.default = publicRoutes;

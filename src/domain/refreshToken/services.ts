@@ -20,7 +20,6 @@ export class RefreshTokenService implements IRefreshTokenService {
   ) {}
 
   public async getUserByRefreshToken(token: string): Promise<User | null> {
-    console.log('token inside the get User', token);
     const foundUser = await this.userRepository.getUserByRefreshToken(token);
     if (!foundUser) throw new NoPreexistingRefreshToken(ErrorMessages.NO_EXISTING_REFRESH_TOKEN);
     return foundUser;

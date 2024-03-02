@@ -26,6 +26,7 @@ publicRoutes
   })
   .post('/api/register/check-verification-code', (req, res, next) => {
     appEmailVerification.verifyCode(req, res, next);
-  });
+  })
+  .post('/api/lists/create-list', (req, res, next) => {});
 
 export default publicRoutes;

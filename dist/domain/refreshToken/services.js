@@ -24,7 +24,6 @@ let RefreshTokenService = class RefreshTokenService {
         this.tokenService = tokenService;
     }
     async getUserByRefreshToken(token) {
-        console.log('token inside the get User', token);
         const foundUser = await this.userRepository.getUserByRefreshToken(token);
         if (!foundUser)
             throw new errors_1.NoPreexistingRefreshToken(errors_1.ErrorMessages.NO_EXISTING_REFRESH_TOKEN);
