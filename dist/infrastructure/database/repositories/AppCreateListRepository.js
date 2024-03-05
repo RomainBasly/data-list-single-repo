@@ -8,11 +8,20 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppCreateListRepository = void 0;
 const tsyringe_1 = require("tsyringe");
+const supabaseClient_1 = __importDefault(require("../../../config/database/supabaseClient"));
 let AppCreateListRepository = class AppCreateListRepository {
     constructor() { }
+    async createList(inputsAppList) {
+        const { data, error } = await supabaseClient_1.default.from('app-lists').insert(inputsAppList).select();
+        return data;
+    }
+    async createJoinedList() { }
 };
 exports.AppCreateListRepository = AppCreateListRepository;
 exports.AppCreateListRepository = AppCreateListRepository = __decorate([

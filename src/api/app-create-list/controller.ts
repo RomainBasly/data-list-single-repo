@@ -11,18 +11,23 @@ export class AppCreateListController {
   ) {}
 
   public async createList(req: Request, res: Response, next: NextFunction) {
-    const authHeader = req.headers['authorization'];
-    console.log('authHeader', authHeader);
-    const { name, accessLevel, creatorEmail, description, emails, cyphered } = req.body;
-    const validatedInputs = await this.createListValidatorService.preCheck({
-      name,
-      accessLevel,
-      description,
-      creatorEmail,
-      emails,
-      cyphered,
-    });
-    await this.createListService.createList(validatedInputs);
-    res.status(201).json({ message: 'new list created' });
+    try {
+      const authHeader = req.headers['authorization'];
+      console.log('authHeader', authHeader);
+      const { name, accessLevel, creatorEmail, description, emails, cyphered } = req.body;
+      const validatedInputs = await this.createListValidatorService.preCheck({
+        name,
+        accessLevel,
+        description,
+        creatorEmail,
+        emails,
+        cyphered,
+      });
+      console.log('validatedInputs', validatedInputs);
+      await this.createListService.createList(validatedInputs);
+      res.status(201).json({ message: 'new list created' });
+    } catch (error) {
+      next(error);
+    }
   }
 }

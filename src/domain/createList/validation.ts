@@ -14,7 +14,7 @@ export class CreateListValidatorService {
       creatorEmail: yup.string().required(),
       emails: yup.array().of(yup.string().required()),
       description: yup.string().optional(),
-      cyphered: yup.string().optional(),
+      cyphered: yup.boolean().optional(),
     });
 
     try {
