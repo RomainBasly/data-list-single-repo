@@ -14,16 +14,15 @@ export class AppCreateListController {
     try {
       const authHeader = req.headers['authorization'];
       console.log('authHeader', authHeader);
-      const { name, accessLevel, creatorEmail, description, emails, cyphered } = req.body;
+      const { name, accessLevel, creatorId, description, emails, cyphered } = req.body;
       const validatedInputs = await this.createListValidatorService.preCheck({
         name,
         accessLevel,
         description,
-        creatorEmail,
+        creatorId,
         emails,
         cyphered,
       });
-      console.log('validatedInputs', validatedInputs);
       await this.createListService.createList(validatedInputs);
       res.status(201).json({ message: 'new list created' });
     } catch (error) {

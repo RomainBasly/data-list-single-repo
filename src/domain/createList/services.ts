@@ -23,23 +23,24 @@ export class CreateListService {
         description: inputs.description,
         cyphered: false,
       };
-      //const dataListCreation = await this.appCreateListRepository.createList(createListInput);
-      const verifiedCreatorEmailObject = await this.appEmailValidation.validateEmail(inputs.creatorEmail);
-      const verifiedCreatorEmail = verifiedCreatorEmailObject.email;
 
       if (inputs.emails) {
-        let emailsAddress: string[] = [verifiedCreatorEmailObject.email];
+        let emailsAddress: string[] = [];
         await Promise.all(
           inputs.emails.map(async (email) => {
             const verifiedEmailObject = await this.appEmailValidation.validateEmail(email);
             emailsAddress.push(verifiedEmailObject.email);
           })
+          // ajout des emails dans app-list-invitations
           // passage de l'envoi des emails + ajout dans la BDD
         );
         console.log(emailsAddress);
       } else {
-        const emails = { ...verifiedCreatorEmailObject };
-        console.log('emails out of map', emails);
+        // ajout du créateur dans les bénéficiaires
+        const dataListCreation = await this.appCreateListRepository.createList(createListInput);
+        if (dataListCreation && dataListCreation.id) {
+          const data = await this.appCreateListRepository.addListBeneficiary(dataListCreation.id, inputs.creatorId);
+        }
       }
     } catch (error) {
       console.log('error', error);

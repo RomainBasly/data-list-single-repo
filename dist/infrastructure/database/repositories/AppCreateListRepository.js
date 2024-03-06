@@ -19,9 +19,24 @@ let AppCreateListRepository = class AppCreateListRepository {
     constructor() { }
     async createList(inputsAppList) {
         const { data, error } = await supabaseClient_1.default.from('app-lists').insert(inputsAppList).select();
-        return data;
+        if (error) {
+            throw new Error('Problem creating the list');
+        }
+        return data && data.length > 0 ? data[0] : null;
     }
     async createJoinedList() { }
+    async addListBeneficiary(listId, creatorId) {
+        try {
+            const { data, error } = await supabaseClient_1.default
+                .from('app-list-beneficiaries')
+                .insert([{ 'user-id': creatorId, 'app-list-id': listId }])
+                .select();
+            return data;
+        }
+        catch (error) {
+            throw new Error('error');
+        }
+    }
 };
 exports.AppCreateListRepository = AppCreateListRepository;
 exports.AppCreateListRepository = AppCreateListRepository = __decorate([

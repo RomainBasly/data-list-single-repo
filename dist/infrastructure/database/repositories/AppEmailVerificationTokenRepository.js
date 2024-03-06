@@ -35,7 +35,7 @@ let AppEmailVerificationTokenRepository = class AppEmailVerificationTokenReposit
         });
         // TODO : set a better error handler than this one too general
         if (error)
-            throw new Error('oh oh');
+            throw new Error('problem inside the getEmailVerificationRecord');
         return data;
     }
     async updateIsEmailVerified(email) {

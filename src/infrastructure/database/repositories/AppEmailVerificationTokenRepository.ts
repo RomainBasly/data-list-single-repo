@@ -31,7 +31,7 @@ export class AppEmailVerificationTokenRepository {
       email_address,
     });
     // TODO : set a better error handler than this one too general
-    if (error) throw new Error('oh oh');
+    if (error) throw new Error('problem inside the getEmailVerificationRecord');
     return data;
   }
 
