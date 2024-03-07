@@ -28,10 +28,22 @@ let NodeMailerService = class NodeMailerService {
         this.logoUrlPath = (_a = process.env.LOGO_URL_PATH) !== null && _a !== void 0 ? _a : '';
         this.transporter = nodemailer_1.default.createTransport(Object.assign({}, email_1.mailtrapConfig));
     }
-    async sendEmail(email) {
+    async generateHtml(code, logoUrlPath, isWelcomeEmail) {
+        try {
+            const emailTemplate = isWelcomeEmail ? 'emailTemplateWelcome.ejs' : 'emailTemplateListInvitation.js';
+            return await ejs_1.default.renderFile(path_1.default.join(__dirname, emailTemplate), {
+                code,
+                logoUrlPath,
+            });
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+    async sendVerifyCodeEmail(email) {
         const code = await this.generateAndPublishCode(email);
         try {
-            await this.transporter.sendMail(Object.assign(Object.assign({}, email_1.emailConfig), { to: email, html: await this.generateHtml(code, this.logoUrlPath) }));
+            await this.transporter.sendMail(Object.assign(Object.assign({}, email_1.emailConfig), { subject: email_1.EMAILSUBJECT.WELCOME, to: email, html: await this.generateHtml(code, this.logoUrlPath, true) }));
         }
         catch (error) {
             console.error(error);
@@ -47,17 +59,6 @@ let NodeMailerService = class NodeMailerService {
         const formattedDate = expiryDate.toISOString();
         await this.appEmailVerificationTokenRepository.registerToDB(email, verificationCode, formattedDate);
         return verificationCode;
-    }
-    async generateHtml(code, logoUrlPath) {
-        try {
-            return await ejs_1.default.renderFile(path_1.default.join(__dirname, 'emailTemplate.ejs'), {
-                code,
-                logoUrlPath,
-            });
-        }
-        catch (error) {
-            console.error(error);
-        }
     }
 };
 NodeMailerService = __decorate([

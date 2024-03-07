@@ -30,11 +30,11 @@ let AppEmailVerificationController = class AppEmailVerificationController {
         const { email } = req.body;
         try {
             const verifiedEmailObject = await this.appEmailValidation.validateEmail(email);
-            await this.nodeMailerService.sendEmail(verifiedEmailObject.email);
+            await this.nodeMailerService.sendVerifyCodeEmail(verifiedEmailObject.email);
             res.status(200).json({ message: 'Email sent successfully' });
         }
         catch (error) {
-            console.log('error get in the controller', error);
+            console.log('error get in the controller sendVerifEmail', error);
             next(error);
         }
     }

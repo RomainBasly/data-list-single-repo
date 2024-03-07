@@ -27,3 +27,10 @@ export type SupabaseReturnedList = {
   description?: string;
   cyphered?: boolean;
 };
+
+export type ReturnedInvitedUsers = {
+  email: string;
+  list_id: UUID;
+  is_already_active_user: boolean;
+  is_already_invited: boolean;
+};

@@ -1,13 +1,14 @@
 import { injectable, inject } from 'tsyringe';
-import { EmailValidationResult, List } from './types';
+import { EmailValidationResult, List, ReturnedInvitedUsers } from './types';
 import AppEmailValidation from '../emailVerification/validation';
-import { AppCreateListRepository } from '../../infrastructure/database/repositories/AppCreateListRepository';
+import { AppListRepository } from '../../infrastructure/database/repositories/AppListRepository';
+import { UUID } from 'crypto';
 
 @injectable()
 export class CreateListService {
   public constructor(
     private readonly appEmailValidation: AppEmailValidation,
-    @inject(AppCreateListRepository) private readonly appCreateListRepository: AppCreateListRepository
+    @inject(AppListRepository) private readonly appListRepository: AppListRepository
   ) {}
 
   public async createList(inputs: List) {
@@ -24,27 +25,50 @@ export class CreateListService {
         cyphered: false,
       };
 
-      if (inputs.emails) {
-        let emailsAddress: string[] = [];
-        await Promise.all(
-          inputs.emails.map(async (email) => {
-            const verifiedEmailObject = await this.appEmailValidation.validateEmail(email);
-            emailsAddress.push(verifiedEmailObject.email);
-          })
-          // ajout des emails dans app-list-invitations
-          // passage de l'envoi des emails + ajout dans la BDD
-        );
-        console.log(emailsAddress);
-      } else {
-        // ajout du créateur dans les bénéficiaires
-        const dataListCreation = await this.appCreateListRepository.createList(createListInput);
-        if (dataListCreation && dataListCreation.id) {
-          const data = await this.appCreateListRepository.addListBeneficiary(dataListCreation.id, inputs.creatorId);
-        }
+      const { emails } = inputs;
+      const dataListCreation = await this.appListRepository.createList(createListInput);
+      if (dataListCreation && dataListCreation.id) {
+        await this.appListRepository.addUserToListAsBeneficiary(dataListCreation.id, inputs.creatorId);
       }
+
+      const validatedEmailAddresses = await this.validateEmails(emails);
+      if (validatedEmailAddresses.length > 0) {
+        await this.addPeopleToListInvitations(validatedEmailAddresses, dataListCreation.id);
+      }
+      // ajout des emails dans app-list-invitations
+      // passage de l'envoi des emails + ajout dans la BDD
     } catch (error) {
       console.log('error', error);
       throw error;
     }
+  }
+
+  private async validateEmails(emails: string[] | undefined) {
+    let emailsAddress: string[] = [];
+    if (emails) {
+      await Promise.all(
+        emails.map(async (email) => {
+          const verifiedEmailObject = await this.appEmailValidation.validateEmail(email);
+          emailsAddress.push(verifiedEmailObject.email);
+        })
+      );
+    }
+    return emailsAddress.length > 0 ? emailsAddress : [];
+  }
+
+  private async addPeopleToListInvitations(invitedEmailAddresses: string[], listId: UUID): Promise<void> {
+    await this.appListRepository.inviteUsersToList(invitedEmailAddresses, listId);
+    const getPeopleToInvite = await this.appListRepository.getPeopleToInviteByListId(listId);
+    await this.invitePeople(getPeopleToInvite);
+  }
+
+  private async invitePeople(invitedUsers: ReturnedInvitedUsers[]) {
+    invitedUsers.map((user) => {
+      if (user.is_already_active_user) {
+        // case 1 : notifications sent to the users of the app
+      } else {
+        // case 2 : send an email to those not registered in the app
+      }
+    });
   }
 }

@@ -24,7 +24,7 @@ let AppListRepository = class AppListRepository {
         }
         return data && data.length > 0 ? data[0] : null;
     }
-    async createListInvitations(invitedEmailAddresses, listId) {
+    async inviteUsersToList(invitedEmailAddresses, listId) {
         const email_list = invitedEmailAddresses.join(',');
         try {
             const { data, error } = await supabaseClient_1.default.rpc('add_people_to_list_invitations', {
@@ -40,16 +40,31 @@ let AppListRepository = class AppListRepository {
             throw new Error('Problem adding elements inside the list invitation, in the catch');
         }
     }
-    async addSingleListBeneficiary(listId, creatorId) {
+    async addUserToListAsBeneficiary(listId, userId) {
         try {
             const { data, error } = await supabaseClient_1.default
                 .from('app-list-beneficiaries')
-                .insert([{ 'user-id': creatorId, 'app-list-id': listId }])
+                .insert([{ 'user-id': userId, 'app-list-id': listId }])
                 .select();
             return data;
         }
         catch (error) {
-            throw new Error('error');
+            throw new Error('error adding single list beneficiary');
+        }
+    }
+    async getPeopleToInviteByListId(listId) {
+        try {
+            const { data, error } = await supabaseClient_1.default
+                .from('app-list-invitations')
+                .select('email, list_id, is_already_active_user, is_already_invited')
+                .eq('list_id', listId)
+                .eq('is_already_invited', false);
+            if (error)
+                throw new Error('error getting people invited in the list');
+            return data;
+        }
+        catch (error) {
+            throw new Error('error getting people invited (catch)');
         }
     }
 };

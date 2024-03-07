@@ -1,6 +1,5 @@
 export const emailConfig = {
   from: process.env.EMAIL_SENDER,
-  subject: 'Simplists - Vérification de votre email',
 };
 
 export const mailtrapConfig = {
@@ -11,3 +10,8 @@ export const mailtrapConfig = {
     pass: process.env.MAILTRAP_PASSWORD,
   },
 };
+
+export enum EMAILSUBJECT {
+  WELCOME = 'Simplists - Vérification de votre email',
+  LISTINVITATION = 'Simplists - Vous avez été invité(e) à une liste',
+}

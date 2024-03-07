@@ -18,11 +18,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CreateListService = void 0;
 const tsyringe_1 = require("tsyringe");
 const validation_1 = __importDefault(require("../emailVerification/validation"));
-const AppCreateListRepository_1 = require("../../infrastructure/database/repositories/AppCreateListRepository");
+const AppListRepository_1 = require("../../infrastructure/database/repositories/AppListRepository");
 let CreateListService = class CreateListService {
-    constructor(appEmailValidation, appCreateListRepository) {
+    constructor(appEmailValidation, appListRepository) {
         this.appEmailValidation = appEmailValidation;
-        this.appCreateListRepository = appCreateListRepository;
+        this.appListRepository = appListRepository;
     }
     async createList(inputs) {
         try {
@@ -37,35 +37,53 @@ let CreateListService = class CreateListService {
                 description: inputs.description,
                 cyphered: false,
             };
-            if (inputs.emails) {
-                let emailsAddress = [];
-                await Promise.all(inputs.emails.map(async (email) => {
-                    const verifiedEmailObject = await this.appEmailValidation.validateEmail(email);
-                    emailsAddress.push(verifiedEmailObject.email);
-                })
-                // ajout des emails dans app-list-invitations
-                // passage de l'envoi des emails + ajout dans la BDD
-                );
-                console.log(emailsAddress);
+            const { emails } = inputs;
+            const dataListCreation = await this.appListRepository.createList(createListInput);
+            if (dataListCreation && dataListCreation.id) {
+                await this.appListRepository.addUserToListAsBeneficiary(dataListCreation.id, inputs.creatorId);
             }
-            else {
-                // ajout du créateur dans les bénéficiaires
-                const dataListCreation = await this.appCreateListRepository.createList(createListInput);
-                if (dataListCreation && dataListCreation.id) {
-                    const data = await this.appCreateListRepository.addListBeneficiary(dataListCreation.id, inputs.creatorId);
-                }
+            const validatedEmailAddresses = await this.validateEmails(emails);
+            if (validatedEmailAddresses.length > 0) {
+                await this.addPeopleToListInvitations(validatedEmailAddresses, dataListCreation.id);
             }
+            // ajout des emails dans app-list-invitations
+            // passage de l'envoi des emails + ajout dans la BDD
         }
         catch (error) {
             console.log('error', error);
             throw error;
         }
     }
+    async validateEmails(emails) {
+        let emailsAddress = [];
+        if (emails) {
+            await Promise.all(emails.map(async (email) => {
+                const verifiedEmailObject = await this.appEmailValidation.validateEmail(email);
+                emailsAddress.push(verifiedEmailObject.email);
+            }));
+        }
+        return emailsAddress.length > 0 ? emailsAddress : [];
+    }
+    async addPeopleToListInvitations(invitedEmailAddresses, listId) {
+        await this.appListRepository.inviteUsersToList(invitedEmailAddresses, listId);
+        const getPeopleToInvite = await this.appListRepository.getPeopleToInviteByListId(listId);
+        await this.invitePeople(getPeopleToInvite);
+    }
+    async invitePeople(invitedUsers) {
+        invitedUsers.map((user) => {
+            if (user.is_already_active_user) {
+                // case 1 : notifications sent to the users of the app
+            }
+            else {
+                // case 2 : send an email to those not registered in the app
+            }
+        });
+    }
 };
 exports.CreateListService = CreateListService;
 exports.CreateListService = CreateListService = __decorate([
     (0, tsyringe_1.injectable)(),
-    __param(1, (0, tsyringe_1.inject)(AppCreateListRepository_1.AppCreateListRepository)),
+    __param(1, (0, tsyringe_1.inject)(AppListRepository_1.AppListRepository)),
     __metadata("design:paramtypes", [validation_1.default,
-        AppCreateListRepository_1.AppCreateListRepository])
+        AppListRepository_1.AppListRepository])
 ], CreateListService);
