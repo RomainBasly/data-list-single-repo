@@ -19,9 +19,9 @@ export default class NodeMailerService {
     ...mailtrapConfig,
   });
 
-  private async generateHtml(code: string, logoUrlPath: string, isWelcomeEmail: boolean) {
+  private async generateWelcomeHtml(code: string, logoUrlPath: string, isWelcomeEmail: boolean) {
     try {
-      const emailTemplate = isWelcomeEmail ? 'emailTemplateWelcome.ejs' : 'emailTemplateListInvitation.js';
+      const emailTemplate = 'emailTemplateWelcome.ejs';
       return await ejs.renderFile(path.join(__dirname, emailTemplate), {
         code,
         logoUrlPath,
@@ -38,7 +38,7 @@ export default class NodeMailerService {
         ...emailConfig,
         subject: EMAILSUBJECT.WELCOME,
         to: email,
-        html: await this.generateHtml(code, this.logoUrlPath, true),
+        html: await this.generateWelcomeHtml(code, this.logoUrlPath, true),
       });
     } catch (error) {
       console.error(error);
@@ -57,5 +57,29 @@ export default class NodeMailerService {
 
     await this.appEmailVerificationTokenRepository.registerToDB(email, verificationCode, formattedDate);
     return verificationCode;
+  }
+
+  private async sendInvitationToListHtml(email: string) {
+    try {
+      await this.transporter.sendMail({
+        ...emailConfig,
+        subject: EMAILSUBJECT.WELCOME,
+        to: email,
+        html: await this.generateInvitationHtml(this.logoUrlPath, false),
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  private async generateInvitationHtml(logoUrlPath: string, isWelcomeEmail: boolean) {
+    try {
+      const emailTemplate = 'emailTemplateInvitation.ejs';
+      return await ejs.renderFile(path.join(__dirname, emailTemplate), {
+        logoUrlPath,
+      });
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
