@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import classes from './classes.module.scss'
 import { LandingHeader } from '@/components/Elements/Headers/LandingHeader'
 import Layout from '@/components/Elements/Layout'
