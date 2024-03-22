@@ -18,6 +18,7 @@ require("./api/app-users/controllers");
 const errors_1 = require("./domain/common/errors");
 const common_2 = require("./middlewares/common");
 const containerConfig_1 = require("./config/tsyringe/containerConfig");
+const services_1 = require("./domain/webSockets/services");
 (0, containerConfig_1.initContainers)();
 const app = (0, express_1.default)();
 const port = 8000;
@@ -30,8 +31,9 @@ app.use((0, cookie_parser_1.default)());
 app.use(auth_middleware_1.verifyRequestApiKey);
 // Todo implement a rateLimit for a specific route
 app.use(publicRoutes_1.default);
-app.use('protected', auth_middleware_1.verifyUserAccessToken, protectedRoutes_1.default);
+app.use('/protected', auth_middleware_1.verifyUserAccessToken, protectedRoutes_1.default);
 app.use(errors_1.errorHandler);
+new services_1.WebSocketClientService('http://localhost:3001');
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
