@@ -1,8 +1,8 @@
-import { useState } from 'react'
 import classes from './classes.module.scss'
 import { LandingHeader } from '@/components/Elements/Headers/LandingHeader'
 import Layout from '@/components/Elements/Layout'
 import FAQ from '@/components/Materials/FAQ'
+import SocketConnector from '@/components/Materials/SocketConnector'
 
 export default function FAQPage() {
   return (
@@ -16,6 +16,7 @@ export default function FAQPage() {
           <FAQ />
         </div>
       </div>
+      <SocketConnector />
     </Layout>
   )
 }

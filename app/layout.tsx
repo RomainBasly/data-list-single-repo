@@ -5,6 +5,7 @@ import React from 'react'
 import Script from 'next/script'
 import { headers } from 'next/headers'
 import ServiceWorkerInitiator from '@/components/Elements/ServiceWorkerInitiator'
+import { SocketProvider } from '@/components/providers/socket-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -60,7 +61,9 @@ export default function RootLayout({
   const nonce = headers().get('x-nonce')
   return (
     <html lang="fr">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <SocketProvider>{children}</SocketProvider>
+      </body>
       <Script strategy="afterInteractive" nonce={nonce ?? 'nothing'} />
       <ServiceWorkerInitiator />
     </html>

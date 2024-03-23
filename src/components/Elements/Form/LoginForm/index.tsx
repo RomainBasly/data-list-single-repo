@@ -8,6 +8,7 @@ import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
 import StorageService from '@/Services/CookieService'
 import Button from '@/components/Materials/Button'
+import UserStore from '@/Stores/UserStore'
 
 export type IBody = {
   email: string

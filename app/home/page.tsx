@@ -5,6 +5,7 @@ import Layout from '@/components/Elements/Layout'
 import Button from '@/components/Materials/Button'
 import { FolderPlusIcon } from '@heroicons/react/24/solid'
 import Link from 'next/link'
+import SocketConnector from '@/components/Materials/SocketConnector'
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
         <div className={classes['title-container']}>
           <h2 className={classes['title']}>Mes listes</h2>
         </div>
+        <SocketConnector />
         <div className={classes['redirection-button-container']}>
           <Link href="/lists/create-list">
             <Button
