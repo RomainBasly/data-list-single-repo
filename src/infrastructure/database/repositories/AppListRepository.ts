@@ -48,7 +48,7 @@ export class AppListRepository {
     try {
       const { data, error } = await supabase
         .from('app-list-invitations')
-        .select('email, list_id, is_already_active_user, is_already_invited')
+        .select('email, list_id, is_already_active_user, is_already_invited, user_id')
         .eq('list_id', listId)
         .eq('is_already_invited', false);
       if (error) throw new Error('error getting people invited in the list');

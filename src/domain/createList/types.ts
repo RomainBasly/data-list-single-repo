@@ -33,4 +33,5 @@ export type ReturnedInvitedUsers = {
   list_id: UUID;
   is_already_active_user: boolean;
   is_already_invited: boolean;
+  user_id: UUID | null;
 };

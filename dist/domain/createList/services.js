@@ -19,10 +19,12 @@ exports.CreateListService = void 0;
 const tsyringe_1 = require("tsyringe");
 const validation_1 = __importDefault(require("../emailVerification/validation"));
 const AppListRepository_1 = require("../../infrastructure/database/repositories/AppListRepository");
+const services_1 = require("../webSockets/services");
 let CreateListService = class CreateListService {
-    constructor(appEmailValidation, appListRepository) {
+    constructor(appEmailValidation, appListRepository, webSocketService) {
         this.appEmailValidation = appEmailValidation;
         this.appListRepository = appListRepository;
+        this.webSocketService = webSocketService;
     }
     async createList(inputs) {
         try {
@@ -54,6 +56,21 @@ let CreateListService = class CreateListService {
             throw error;
         }
     }
+    async addPeopleToListInvitations(invitedEmailAddresses, listId) {
+        await this.appListRepository.inviteUsersToList(invitedEmailAddresses, listId);
+        const getPeopleToInvite = await this.appListRepository.getPeopleToInviteByListId(listId);
+        await this.invitePeople(getPeopleToInvite, listId);
+    }
+    async invitePeople(invitedUsers, listId) {
+        invitedUsers.map((user) => {
+            if (user.is_already_active_user) {
+                this.webSocketService.emit('list-invitation', { userId: user.user_id, listId });
+            }
+            else {
+                // case 2 : send an email to those not registered in the app
+            }
+        });
+    }
     async validateEmails(emails) {
         let emailsAddress = [];
         if (emails) {
@@ -64,26 +81,13 @@ let CreateListService = class CreateListService {
         }
         return emailsAddress.length > 0 ? emailsAddress : [];
     }
-    async addPeopleToListInvitations(invitedEmailAddresses, listId) {
-        await this.appListRepository.inviteUsersToList(invitedEmailAddresses, listId);
-        const getPeopleToInvite = await this.appListRepository.getPeopleToInviteByListId(listId);
-        await this.invitePeople(getPeopleToInvite);
-    }
-    async invitePeople(invitedUsers) {
-        invitedUsers.map((user) => {
-            if (user.is_already_active_user) {
-                // case 1 : notifications sent to the users of the app
-            }
-            else {
-                // case 2 : send an email to those not registered in the app
-            }
-        });
-    }
 };
 exports.CreateListService = CreateListService;
 exports.CreateListService = CreateListService = __decorate([
     (0, tsyringe_1.injectable)(),
     __param(1, (0, tsyringe_1.inject)(AppListRepository_1.AppListRepository)),
+    __param(2, (0, tsyringe_1.inject)(services_1.WebSocketClientService)),
     __metadata("design:paramtypes", [validation_1.default,
-        AppListRepository_1.AppListRepository])
+        AppListRepository_1.AppListRepository,
+        services_1.WebSocketClientService])
 ], CreateListService);

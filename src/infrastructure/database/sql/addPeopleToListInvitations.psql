@@ -5,12 +5,13 @@ BEGIN
     WITH email_data(email) AS (
         SELECT unnest(string_to_array(emails_text, ','))
     )
-    INSERT INTO public."app-list-invitations" (email, list_id, is_already_active_user, is_already_invited)
+    INSERT INTO public."app-list-invitations" (email, list_id, is_already_active_user, is_already_invited, user_id)
     SELECT
         ed.email,
         list_id,
-        CASE WHEN au.email IS NOT NULL THEN TRUE ELSE FALSE END,
-        FALSE
+        CASE WHEN au.email IS NOT NULL THEN TRUE ELSE FALSE END AS is_already_active_user,
+        FALSE AS is_already_invited,
+        au.user_id -- Corrected to use the actual column name for user identifier in `app-users`
     FROM
         email_data ed
         LEFT JOIN public."app-users" au ON ed.email = au.email;

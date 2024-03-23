@@ -4,6 +4,7 @@ import { AppAuthController } from '../../api/app-auth/controller';
 import { AppRefreshTokenController } from '../../api/app-refresh-token/controller';
 import { AppEmailVerificationController } from '../../api/app-email-verification/controller';
 import { AppCreateListController } from '../../api/app-create-list/controller';
+import { WebSocketClientService } from '../../domain/webSockets/services';
 
 export function initContainers() {
   container.register(AppUserController, AppUserController);
@@ -11,4 +12,5 @@ export function initContainers() {
   container.register(AppRefreshTokenController, AppRefreshTokenController);
   container.register(AppEmailVerificationController, AppEmailVerificationController);
   container.register(AppCreateListController, AppCreateListController);
+  container.register(WebSocketClientService, WebSocketClientService);
 }

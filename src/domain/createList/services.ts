@@ -3,12 +3,14 @@ import { EmailValidationResult, List, ReturnedInvitedUsers } from './types';
 import AppEmailValidation from '../emailVerification/validation';
 import { AppListRepository } from '../../infrastructure/database/repositories/AppListRepository';
 import { UUID } from 'crypto';
+import { WebSocketClientService } from '../webSockets/services';
 
 @injectable()
 export class CreateListService {
   public constructor(
     private readonly appEmailValidation: AppEmailValidation,
-    @inject(AppListRepository) private readonly appListRepository: AppListRepository
+    @inject(AppListRepository) private readonly appListRepository: AppListRepository,
+    @inject(WebSocketClientService) private readonly webSocketService: WebSocketClientService
   ) {}
 
   public async createList(inputs: List) {
@@ -42,6 +44,21 @@ export class CreateListService {
       throw error;
     }
   }
+  private async addPeopleToListInvitations(invitedEmailAddresses: string[], listId: UUID): Promise<void> {
+    await this.appListRepository.inviteUsersToList(invitedEmailAddresses, listId);
+    const getPeopleToInvite = await this.appListRepository.getPeopleToInviteByListId(listId);
+    await this.invitePeople(getPeopleToInvite, listId);
+  }
+
+  private async invitePeople(invitedUsers: ReturnedInvitedUsers[], listId: UUID) {
+    invitedUsers.map((user) => {
+      if (user.is_already_active_user) {
+        this.webSocketService.emit('list-invitation', { userId: user.user_id, listId });
+      } else {
+        // case 2 : send an email to those not registered in the app
+      }
+    });
+  }
 
   private async validateEmails(emails: string[] | undefined) {
     let emailsAddress: string[] = [];
@@ -54,21 +71,5 @@ export class CreateListService {
       );
     }
     return emailsAddress.length > 0 ? emailsAddress : [];
-  }
-
-  private async addPeopleToListInvitations(invitedEmailAddresses: string[], listId: UUID): Promise<void> {
-    await this.appListRepository.inviteUsersToList(invitedEmailAddresses, listId);
-    const getPeopleToInvite = await this.appListRepository.getPeopleToInviteByListId(listId);
-    await this.invitePeople(getPeopleToInvite);
-  }
-
-  private async invitePeople(invitedUsers: ReturnedInvitedUsers[]) {
-    invitedUsers.map((user) => {
-      if (user.is_already_active_user) {
-        // case 1 : notifications sent to the users of the app
-      } else {
-        // case 2 : send an email to those not registered in the app
-      }
-    });
   }
 }

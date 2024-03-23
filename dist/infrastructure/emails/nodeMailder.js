@@ -28,9 +28,9 @@ let NodeMailerService = class NodeMailerService {
         this.logoUrlPath = (_a = process.env.LOGO_URL_PATH) !== null && _a !== void 0 ? _a : '';
         this.transporter = nodemailer_1.default.createTransport(Object.assign({}, email_1.mailtrapConfig));
     }
-    async generateHtml(code, logoUrlPath, isWelcomeEmail) {
+    async generateWelcomeHtml(code, logoUrlPath, isWelcomeEmail) {
         try {
-            const emailTemplate = isWelcomeEmail ? 'emailTemplateWelcome.ejs' : 'emailTemplateListInvitation.js';
+            const emailTemplate = 'emailTemplateWelcome.ejs';
             return await ejs_1.default.renderFile(path_1.default.join(__dirname, emailTemplate), {
                 code,
                 logoUrlPath,
@@ -43,7 +43,7 @@ let NodeMailerService = class NodeMailerService {
     async sendVerifyCodeEmail(email) {
         const code = await this.generateAndPublishCode(email);
         try {
-            await this.transporter.sendMail(Object.assign(Object.assign({}, email_1.emailConfig), { subject: email_1.EMAILSUBJECT.WELCOME, to: email, html: await this.generateHtml(code, this.logoUrlPath, true) }));
+            await this.transporter.sendMail(Object.assign(Object.assign({}, email_1.emailConfig), { subject: email_1.EMAILSUBJECT.WELCOME, to: email, html: await this.generateWelcomeHtml(code, this.logoUrlPath, true) }));
         }
         catch (error) {
             console.error(error);
@@ -59,6 +59,25 @@ let NodeMailerService = class NodeMailerService {
         const formattedDate = expiryDate.toISOString();
         await this.appEmailVerificationTokenRepository.registerToDB(email, verificationCode, formattedDate);
         return verificationCode;
+    }
+    async sendInvitationToListHtml(email) {
+        try {
+            await this.transporter.sendMail(Object.assign(Object.assign({}, email_1.emailConfig), { subject: email_1.EMAILSUBJECT.WELCOME, to: email, html: await this.generateInvitationHtml(this.logoUrlPath, false) }));
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+    async generateInvitationHtml(logoUrlPath, isWelcomeEmail) {
+        try {
+            const emailTemplate = 'emailTemplateInvitation.ejs';
+            return await ejs_1.default.renderFile(path_1.default.join(__dirname, emailTemplate), {
+                logoUrlPath,
+            });
+        }
+        catch (error) {
+            console.error(error);
+        }
     }
 };
 NodeMailerService = __decorate([
