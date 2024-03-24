@@ -10,8 +10,6 @@ export const config = {
 };
 
 const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
-  console.log("I passed in the ioHandler");
-  //   console.log("2", res.socket.server.io);
   if (!res.socket.server.io) {
     const path = "/";
     const httpServer: NetServer = res.socket.server as any;
@@ -29,7 +27,6 @@ const ioHandler = (req: NextApiRequest, res: NextApiResponseServerIo) => {
       //   addTailingSlash: false,
       // }
     );
-    console.log(res.socket.server);
     res.socket.server.io = io;
   }
   res.end();

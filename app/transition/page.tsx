@@ -26,10 +26,8 @@ export default function Transition() {
     ;(async () => {
       const refreshToken = Cookies.get('refreshToken')
       const accessToken = Cookies.get('accessToken')
-      console.log('accessToken', accessToken)
 
       if (accessToken) {
-        console.log('I verified the accessToken')
         router.push('/home')
       }
 

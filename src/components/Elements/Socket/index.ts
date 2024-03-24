@@ -1,8 +1,5 @@
-// socket.js
-import UserStore from "@/Stores/UserStore";
 import { DefaultEventsMap } from "@socket.io/component-emitter";
 import assert from "assert";
-import { randomBytes } from "crypto";
 import { Socket, io } from "socket.io-client";
 
 let socket: Socket<DefaultEventsMap, DefaultEventsMap>;
@@ -16,7 +13,7 @@ export const getSocket = () => {
     socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
     // Setup your event listeners here
     socket.on("connect", () => {
-      console.log("Connected from the socket server");
+      console.log("Connected to the socket Server")
     });
 
     socket.on("disconnect", () => {
@@ -26,7 +23,6 @@ export const getSocket = () => {
     socket.on("connect_error", (error) => {
       console.error("Connection error:", error);
     });
-
   }
   return socket;
 };

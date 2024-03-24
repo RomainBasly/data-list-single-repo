@@ -6,10 +6,20 @@ import { getSocket } from '../Elements/Socket'
 
 type SocketContextType = {
   isConnected: boolean
+  listAttributes: {
+    listId: number | null
+    listName?: string
+    author?: string
+  }
 }
 
 const SocketContext = createContext<SocketContextType>({
   isConnected: false,
+  listAttributes: {
+    listId: null,
+    listName: '',
+    author: '',
+  },
 })
 
 export const useSocket = () => {
@@ -18,10 +28,14 @@ export const useSocket = () => {
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [isConnected, setIsConnected] = useState(false)
+  const [listAttributes, setListAttributes] = useState<{
+    listId: number | null
+    listName?: string
+    author?: string
+  }>({ listId: null, listName: '', author: '' })
 
   useEffect(() => {
     const socket = getSocket()
-    console.log('socket', socket)
 
     const handleConnect = () => {
       setIsConnected(true)
@@ -31,19 +45,31 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       setIsConnected(false)
     }
 
-    const assignId = (data: { id: string }) => {
-      console.log('receivedData', data.id)
-      localStorage.setItem('SocketConnectorId', data.id)
+    const assignId = (data: { socketConnectionId: string }) => {
+      localStorage.setItem('socketConnectionId', data.socketConnectionId)
+      const userId = localStorage.getItem('userId')
+      socket.emit('register-user-id', {
+        socketConnectionId: localStorage.getItem('socketConnectionId'),
+        userId,
+      })
     }
-    const deleteId = () => localStorage.removeItem('SocketConnectorId')
+    const deleteId = () => localStorage.removeItem('socketConnectionId')
 
     socket.on('connect', handleConnect)
     socket.on('assign-id', assignId)
     socket.on('disconnect', handleDisconnect)
 
-    socket.on('list-invitation', (data) => {
-      console.log('List invitation received: ', data)
-    })
+    socket.on(
+      'list-invitation-socket',
+      (data: { listId: number; listName?: string; author?: string }) => {
+      console.log("data", data)
+        setListAttributes({
+          listId: data.listId,
+          listName: data.listName,
+          author: data.author,
+        })
+      },
+    )
 
     return () => {
       socket.off('connect', handleConnect)
@@ -51,7 +77,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [])
   return (
-    <SocketContext.Provider value={{ isConnected }}>
+    <SocketContext.Provider value={{ isConnected, listAttributes }}>
       {children}
     </SocketContext.Provider>
   )

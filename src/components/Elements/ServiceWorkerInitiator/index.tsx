@@ -48,7 +48,7 @@ export default function ServiceWorkerInitiator() {
         // Attempt to reconnect
         if (socket.connected) {
           socket.disconnect()
-          localStorage.removeItem('SocketConnectorId')
+          localStorage.removeItem('socketConnectionId')
         }
         socket.connect()
       }
@@ -57,10 +57,7 @@ export default function ServiceWorkerInitiator() {
     // Event listener for when the tab becomes visible again
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        console.log('Tab is now active')
-
         if (navigator.onLine) {
-          console.log('je passe dans la navigator.online')
           checkAndReconnectSocket()
         }
       }
