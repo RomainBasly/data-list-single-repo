@@ -64,7 +64,12 @@ let CreateListService = class CreateListService {
     async invitePeople(invitedUsers, listId) {
         invitedUsers.map((user) => {
             if (user.is_already_active_user) {
-                this.webSocketService.emit('list-invitation', { userId: user.user_id, listId });
+                try {
+                    this.webSocketService.emit('list-invitation-backend', { userId: user.user_id, listId });
+                }
+                catch (error) {
+                    throw new Error(`message: ${error}`);
+                }
             }
             else {
                 // case 2 : send an email to those not registered in the app

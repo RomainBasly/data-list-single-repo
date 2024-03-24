@@ -56,7 +56,7 @@ let UserService = class UserService {
                 throw new errors_1.FailToGenerateTokens(errors_1.ErrorMessages.FAIL_TO_GENERATE_TOKENS);
             }
             await this.userRepository.updateRefreshToken(refreshToken, email);
-            return { accessToken, refreshToken };
+            return { accessToken, refreshToken, id: user.user_id };
         }
         catch (error) {
             console.error('something went wrong in the service', error);

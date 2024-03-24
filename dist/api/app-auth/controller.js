@@ -50,11 +50,11 @@ let AppAuthController = class AppAuthController {
     async login(req, res, next) {
         try {
             const { email, password } = req.body;
-            const { accessToken, refreshToken } = await this.userService.login(email, password);
+            const { accessToken, refreshToken, id } = await this.userService.login(email, password);
             (0, assert_1.default)(refreshToken, 'problem with refreshToken inside controller');
             (0, assert_1.default)(accessToken, 'problem with accesstoken inside controller');
             (0, helpers_1.cookieHandler)(req, res, refreshToken);
-            res.json({ accessToken, refreshToken });
+            res.json({ accessToken, refreshToken, id });
         }
         catch (error) {
             next(error);

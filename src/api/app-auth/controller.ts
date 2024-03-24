@@ -41,12 +41,12 @@ export class AppAuthController {
   async login(req: Request<{}, {}, UserInfo>, res: Response, next: NextFunction): Promise<void> {
     try {
       const { email, password } = req.body;
-      const { accessToken, refreshToken } = await this.userService.login(email, password);
+      const { accessToken, refreshToken, id } = await this.userService.login(email, password);
 
       assert(refreshToken, 'problem with refreshToken inside controller');
       assert(accessToken, 'problem with accesstoken inside controller');
       cookieHandler(req, res, refreshToken);
-      res.json({ accessToken, refreshToken });
+      res.json({ accessToken, refreshToken, id });
     } catch (error) {
       next(error);
     }
