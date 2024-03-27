@@ -13,10 +13,15 @@ export const getSocket = () => {
     socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
     // Setup your event listeners here
     socket.on("connect", () => {
-      console.log("Connected to the socket Server")
+      const userId = localStorage.getItem("userId");
+      if (userId) {
+        socket.emit("register-user-id", { userId });
+      }
+      console.log("Connected to the socket Server");
     });
 
     socket.on("disconnect", () => {
+      deleteId();
       console.log("Disconnected from the socket server");
     });
 
@@ -26,3 +31,5 @@ export const getSocket = () => {
   }
   return socket;
 };
+
+const deleteId = () => localStorage.removeItem("socketConnectionId");

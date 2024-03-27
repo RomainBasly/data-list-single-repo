@@ -10,6 +10,7 @@ type SocketContextType = {
     listId: number | null
     listName?: string
     author?: string
+    description?: string
   }
 }
 
@@ -19,6 +20,7 @@ const SocketContext = createContext<SocketContextType>({
     listId: null,
     listName: '',
     author: '',
+    description: '',
   },
 })
 
@@ -32,18 +34,11 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     listId: number | null
     listName?: string
     author?: string
-  }>({ listId: null, listName: '', author: '' })
+    description?: string
+  }>({ listId: null, listName: '', author: '', description: '' })
 
   useEffect(() => {
     const socket = getSocket()
-
-    const handleConnect = () => {
-      setIsConnected(true)
-    }
-    const handleDisconnect = () => {
-      deleteId()
-      setIsConnected(false)
-    }
 
     const assignId = (data: { socketConnectionId: string }) => {
       localStorage.setItem('socketConnectionId', data.socketConnectionId)
@@ -53,28 +48,26 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
         userId,
       })
     }
-    const deleteId = () => localStorage.removeItem('socketConnectionId')
 
-    socket.on('connect', handleConnect)
     socket.on('assign-id', assignId)
-    socket.on('disconnect', handleDisconnect)
 
     socket.on(
       'list-invitation-socket',
-      (data: { listId: number; listName?: string; author?: string }) => {
-      console.log("data", data)
+      (data: {
+        listId: number
+        listName?: string
+        author?: string
+        description?: string
+      }) => {
+        console.log('data', data)
         setListAttributes({
           listId: data.listId,
           listName: data.listName,
           author: data.author,
+          description: data.description,
         })
       },
     )
-
-    return () => {
-      socket.off('connect', handleConnect)
-      socket.off('disconnect', handleDisconnect)
-    }
   }, [])
   return (
     <SocketContext.Provider value={{ isConnected, listAttributes }}>

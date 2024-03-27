@@ -35,9 +35,9 @@ export default function Layout({ children, pageType }: ILayoutProps) {
 
       <div className={classes['layout-content']}>
         {children}
-        {/* <NetworkStatusNotifierWithNoSSR
+        <NetworkStatusNotifierWithNoSSR
           className={classes['internet-notifier']}
-        /> */}
+        />
       </div>
     </>
   )

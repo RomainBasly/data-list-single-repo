@@ -70,7 +70,7 @@ export default function ServiceWorkerInitiator() {
         // Set a timeout for the test
         const timeout = setTimeout(() => {
           reject(new Error('Response timeout'))
-        }, 60000) // 5 seconds timeout
+        }, 60000) // 60 seconds timeout
 
         socket.once('pong', () => {
           clearTimeout(timeout)
