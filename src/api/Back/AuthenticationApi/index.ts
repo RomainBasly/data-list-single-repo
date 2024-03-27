@@ -16,6 +16,7 @@ export type IRegister = {
 export interface ILoginResponse {
   accessToken?: string;
   refreshToken?: string;
+  id: number;
   error?: string;
   message?: string;
 }

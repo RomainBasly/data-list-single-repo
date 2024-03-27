@@ -4,6 +4,7 @@ import SideMenu from '../SideMenu'
 
 import dynamic from 'next/dynamic'
 import classes from './classes.module.scss'
+import { SocketProvider } from '@/components/providers/socket-provider'
 
 export type ILayoutProps = {
   children: React.ReactNode
@@ -31,6 +32,7 @@ export default function Layout({ children, pageType }: ILayoutProps) {
           <SideMenu />
         </div>
       )}
+
       <div className={classes['layout-content']}>
         {children}
         <NetworkStatusNotifierWithNoSSR

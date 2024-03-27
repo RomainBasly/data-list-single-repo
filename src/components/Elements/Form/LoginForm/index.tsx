@@ -8,6 +8,8 @@ import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
 import StorageService from '@/Services/CookieService'
 import Button from '@/components/Materials/Button'
+import UserStore from '@/Stores/UserStore'
+import { getSocket } from '../../Socket'
 
 export type IBody = {
   email: string
@@ -45,6 +47,17 @@ export function LoginForm() {
           response.refreshToken,
           false,
         )
+      console.log('response', response)
+      response.id && localStorage.setItem('userId', response.id.toString())
+      try {
+        const socket = getSocket()
+        socket.emit('register-user-id', {
+          socketConnectionId: localStorage.getItem('socketConnectionId'),
+          userId: response.id,
+        })
+      } catch (error) {
+        console.error(error)
+      }
       setIsLoading(!isLoading)
       router.push('/')
     } catch (error) {
