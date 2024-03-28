@@ -60,7 +60,8 @@ export class SocketService {
 
       socket.on("list-invitation-backend", (data: any) => {
         const { userId, listId } = data;
-        console.log("I pass here");
+        console.log("data", data);
+        console.log("this.userSocketMap", this.userSocketMap.entries());
 
         let targetSocketId: string | undefined;
 
@@ -84,14 +85,17 @@ export class SocketService {
       socket.on("register-user-id", (data) => {
         const { userId, socketConnectionId } = data;
 
-        if (this.userSocketMap.has(socketConnectionId)) {
-          const existingEntry = this.userSocketMap.get(socketConnectionId);
-          if (existingEntry) {
-            this.userSocketMap.set(socketConnectionId, {
-              ...existingEntry,
-              userId,
-            });
+        Array.from(this.userSocketMap.entries()).forEach(([key, value]) => {
+          if (value.userId === userId) {
+            this.userSocketMap.delete(key); // Remove old entry
           }
+        });
+
+        if (this.userSocketMap.has(socketConnectionId)) {
+          this.userSocketMap.set(socketConnectionId, {
+            socketConnectionId: socket.id,
+            userId,
+          });
         }
       });
     });
