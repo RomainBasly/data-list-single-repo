@@ -20,6 +20,7 @@ export class AuthorizationApi extends BaseApiService {
     return this.instance;
   }
 
+  // todo : check if this is really a get method with a refresh-token as param
   public async getNewAccessToken(
     refreshToken: string
   ): Promise<{ accessToken: string }> {
