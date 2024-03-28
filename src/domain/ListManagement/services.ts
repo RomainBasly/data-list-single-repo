@@ -1,16 +1,17 @@
 import { injectable, inject } from 'tsyringe';
-import { EmailValidationResult, List, ReturnedInvitedUsers } from './types';
+import { List } from './types';
 import AppEmailValidation from '../emailVerification/validation';
-import { AppListRepository } from '../../infrastructure/database/repositories/AppListRepository';
-import { UUID } from 'crypto';
-import { WebSocketClientService } from '../webSockets/services';
+import { AppListManagementRepository } from '../../infrastructure/database/repositories/AppListManagementRepository';
+import UserInvitationsService from '../user/Invitations/services';
+import { AppUserInvitationsRepository } from '../../infrastructure/database/repositories/AppUserInvitationsRepository';
 
 @injectable()
-export class CreateListService {
+export class ListManagementService {
   public constructor(
     private readonly appEmailValidation: AppEmailValidation,
-    @inject(AppListRepository) private readonly appListRepository: AppListRepository,
-    @inject(WebSocketClientService) private readonly webSocketService: WebSocketClientService
+    @inject(AppListManagementRepository) private readonly appListRepository: AppListManagementRepository,
+    @inject(UserInvitationsService) private readonly userInvitationsService: UserInvitationsService,
+    @inject(AppUserInvitationsRepository) private readonly appUserInvitationsRepository: AppUserInvitationsRepository
   ) {}
 
   public async createList(inputs: List) {
@@ -30,12 +31,12 @@ export class CreateListService {
       const { emails } = inputs;
       const dataListCreation = await this.appListRepository.createList(createListInput);
       if (dataListCreation && dataListCreation.id) {
-        await this.appListRepository.addUserToListAsBeneficiary(dataListCreation.id, inputs.creatorId);
+        await this.appUserInvitationsRepository.addUserToListAsBeneficiary(dataListCreation.id, inputs.creatorId);
       }
 
       const validatedEmailAddresses = await this.validateEmails(emails);
       if (validatedEmailAddresses.length > 0) {
-        await this.addPeopleToListInvitations(validatedEmailAddresses, dataListCreation.id);
+        await this.userInvitationsService.addPeopleToListInvitations(validatedEmailAddresses, dataListCreation.id);
       }
       // ajout des emails dans app-list-invitations
       // passage de l'envoi des emails + ajout dans la BDD
@@ -43,25 +44,6 @@ export class CreateListService {
       console.log('error', error);
       throw error;
     }
-  }
-  private async addPeopleToListInvitations(invitedEmailAddresses: string[], listId: UUID): Promise<void> {
-    await this.appListRepository.inviteUsersToList(invitedEmailAddresses, listId);
-    const getPeopleToInvite = await this.appListRepository.getPeopleToInviteByListId(listId);
-    await this.invitePeople(getPeopleToInvite, listId);
-  }
-
-  private async invitePeople(invitedUsers: ReturnedInvitedUsers[], listId: UUID) {
-    invitedUsers.map((user) => {
-      if (user.is_already_active_user) {
-        try {
-          this.webSocketService.emit('list-invitation-backend', { userId: user.user_id, listId });
-        } catch (error) {
-          throw new Error(`message: ${error}`);
-        }
-      } else {
-        // case 2 : send an email to those not registered in the app
-      }
-    });
   }
 
   private async validateEmails(emails: string[] | undefined) {

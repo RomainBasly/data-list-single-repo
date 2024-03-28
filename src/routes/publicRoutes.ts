@@ -3,14 +3,12 @@ import { AppAuthController } from '../api/app-auth/controller';
 import { container } from 'tsyringe';
 import { AppRefreshTokenController } from '../api/app-refresh-token/controller';
 import { AppEmailVerificationController } from '../api/app-email-verification/controller';
-import { AppCreateListController } from '../api/app-create-list/controller';
 
 const publicRoutes = Router();
 
 const appAuthController = container.resolve(AppAuthController);
 const appRefreshTokenController = container.resolve(AppRefreshTokenController);
 const appEmailVerification = container.resolve(AppEmailVerificationController);
-const appCreateListController = container.resolve(AppCreateListController);
 
 publicRoutes
   .post('/api/auth/register', (req, res, next) => {
@@ -28,9 +26,6 @@ publicRoutes
   })
   .post('/api/register/check-verification-code', (req, res, next) => {
     appEmailVerification.verifyCode(req, res, next);
-  })
-  .post('/api/lists/create-list', (req, res, next) => {
-    appCreateListController.createList(req, res, next);
   });
 
 export default publicRoutes;

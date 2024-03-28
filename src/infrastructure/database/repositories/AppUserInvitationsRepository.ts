@@ -1,20 +1,11 @@
 import { injectable } from 'tsyringe';
 import supabase from '../../../config/database/supabaseClient';
-import { IInputAppList, ReturnedInvitedUsers, SupabaseReturnedList } from '../../../domain/createList/types';
 import { UUID } from 'crypto';
+import { ReturnedInvitedUsers } from '../../../domain/ListManagement/types';
 
 @injectable()
-export class AppListRepository {
+export class AppUserInvitationsRepository {
   public constructor() {}
-
-  public async createList(inputsAppList: IInputAppList): Promise<SupabaseReturnedList> {
-    const { data, error } = await supabase.from('app-lists').insert(inputsAppList).select();
-
-    if (error) {
-      throw new Error('Problem creating the list');
-    }
-    return data && data.length > 0 ? data[0] : null;
-  }
 
   public async inviteUsersToList(invitedEmailAddresses: string[], listId: UUID) {
     const email_list = invitedEmailAddresses.join(',');

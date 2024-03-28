@@ -25,12 +25,11 @@ export const verifyRequestApiKey = (req: IRequest, res: Response, next: NextFunc
 
 export const verifyUserAccessToken = (req: IRequest, res: Response, next: NextFunction) => {
   try {
-    const authHeader = req.headers['authorization'];
-    if (!authHeader)
+    const token = req.headers['authorization'];
+    if (!token)
       return res
         .status(401)
         .json({ message: 'No accessToken provided. Please include an accessToken to your request' });
-    const token = authHeader.split(' ')[1];
     if (!accessTokenSecret) throw new Error('no accessToken accessible in middleware (verifyToken)');
 
     const decodedToken = jwt.verify(token, accessTokenSecret) as JwtPayloadAccessToken;

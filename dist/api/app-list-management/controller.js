@@ -12,19 +12,17 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppCreateListController = void 0;
+exports.ListManagementController = void 0;
 const tsyringe_1 = require("tsyringe");
-const services_1 = require("../../domain/createList/services");
-const validation_1 = require("../../domain/createList/validation");
-let AppCreateListController = class AppCreateListController {
-    constructor(createListService, createListValidatorService) {
-        this.createListService = createListService;
+const services_1 = require("../../domain/ListManagement/services");
+const validation_1 = require("../../domain/ListManagement/validation");
+let ListManagementController = class ListManagementController {
+    constructor(listManagementService, createListValidatorService) {
+        this.listManagementService = listManagementService;
         this.createListValidatorService = createListValidatorService;
     }
     async createList(req, res, next) {
         try {
-            const authHeader = req.headers['authorization'];
-            console.log('authHeader', authHeader);
             const { name, accessLevel, creatorId, description, emails, cyphered } = req.body;
             const validatedInputs = await this.createListValidatorService.preCheck({
                 name,
@@ -34,7 +32,7 @@ let AppCreateListController = class AppCreateListController {
                 emails,
                 cyphered,
             });
-            await this.createListService.createList(validatedInputs);
+            await this.listManagementService.createList(validatedInputs);
             res.status(201).json({ message: 'new list created' });
         }
         catch (error) {
@@ -42,11 +40,11 @@ let AppCreateListController = class AppCreateListController {
         }
     }
 };
-exports.AppCreateListController = AppCreateListController;
-exports.AppCreateListController = AppCreateListController = __decorate([
+exports.ListManagementController = ListManagementController;
+exports.ListManagementController = ListManagementController = __decorate([
     (0, tsyringe_1.injectable)(),
-    __param(0, (0, tsyringe_1.inject)(services_1.CreateListService)),
+    __param(0, (0, tsyringe_1.inject)(services_1.ListManagementService)),
     __param(1, (0, tsyringe_1.inject)(validation_1.CreateListValidatorService)),
-    __metadata("design:paramtypes", [services_1.CreateListService,
+    __metadata("design:paramtypes", [services_1.ListManagementService,
         validation_1.CreateListValidatorService])
-], AppCreateListController);
+], ListManagementController);

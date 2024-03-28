@@ -42,10 +42,11 @@ let CreateListValidatorService = class CreateListValidatorService {
         const schema = yup.object().shape({
             name: yup.string().required(),
             accessLevel: yup.string().required(),
-            creatorId: yup.number().required(),
+            creatorEmail: yup.string(),
             emails: yup.array().of(yup.string().required()),
             description: yup.string().optional(),
             cyphered: yup.boolean().optional(),
+            creatorId: yup.number().required(),
         });
         try {
             return await schema.validate(inputs);

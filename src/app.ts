@@ -34,7 +34,7 @@ app.use(verifyRequestApiKey);
 // Todo implement a rateLimit for a specific route
 app.use(publicRouter);
 
-app.use('/protected', verifyUserAccessToken, protectedRouter);
+app.use(verifyUserAccessToken, protectedRouter);
 
 app.use(errorHandler);
 

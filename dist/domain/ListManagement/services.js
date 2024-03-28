@@ -15,16 +15,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateListService = void 0;
+exports.ListManagementService = void 0;
 const tsyringe_1 = require("tsyringe");
 const validation_1 = __importDefault(require("../emailVerification/validation"));
-const AppListRepository_1 = require("../../infrastructure/database/repositories/AppListRepository");
-const services_1 = require("../webSockets/services");
-let CreateListService = class CreateListService {
-    constructor(appEmailValidation, appListRepository, webSocketService) {
+const AppListManagementRepository_1 = require("../../infrastructure/database/repositories/AppListManagementRepository");
+const services_1 = __importDefault(require("../user/Invitations/services"));
+const AppUserInvitationsRepository_1 = require("../../infrastructure/database/repositories/AppUserInvitationsRepository");
+let ListManagementService = class ListManagementService {
+    constructor(appEmailValidation, appListRepository, userInvitationsService, appUserInvitationsRepository) {
         this.appEmailValidation = appEmailValidation;
         this.appListRepository = appListRepository;
-        this.webSocketService = webSocketService;
+        this.userInvitationsService = userInvitationsService;
+        this.appUserInvitationsRepository = appUserInvitationsRepository;
     }
     async createList(inputs) {
         try {
@@ -42,11 +44,11 @@ let CreateListService = class CreateListService {
             const { emails } = inputs;
             const dataListCreation = await this.appListRepository.createList(createListInput);
             if (dataListCreation && dataListCreation.id) {
-                await this.appListRepository.addUserToListAsBeneficiary(dataListCreation.id, inputs.creatorId);
+                await this.appUserInvitationsRepository.addUserToListAsBeneficiary(dataListCreation.id, inputs.creatorId);
             }
             const validatedEmailAddresses = await this.validateEmails(emails);
             if (validatedEmailAddresses.length > 0) {
-                await this.addPeopleToListInvitations(validatedEmailAddresses, dataListCreation.id);
+                await this.userInvitationsService.addPeopleToListInvitations(validatedEmailAddresses, dataListCreation.id);
             }
             // ajout des emails dans app-list-invitations
             // passage de l'envoi des emails + ajout dans la BDD
@@ -55,26 +57,6 @@ let CreateListService = class CreateListService {
             console.log('error', error);
             throw error;
         }
-    }
-    async addPeopleToListInvitations(invitedEmailAddresses, listId) {
-        await this.appListRepository.inviteUsersToList(invitedEmailAddresses, listId);
-        const getPeopleToInvite = await this.appListRepository.getPeopleToInviteByListId(listId);
-        await this.invitePeople(getPeopleToInvite, listId);
-    }
-    async invitePeople(invitedUsers, listId) {
-        invitedUsers.map((user) => {
-            if (user.is_already_active_user) {
-                try {
-                    this.webSocketService.emit('list-invitation-backend', { userId: user.user_id, listId });
-                }
-                catch (error) {
-                    throw new Error(`message: ${error}`);
-                }
-            }
-            else {
-                // case 2 : send an email to those not registered in the app
-            }
-        });
     }
     async validateEmails(emails) {
         let emailsAddress = [];
@@ -87,12 +69,14 @@ let CreateListService = class CreateListService {
         return emailsAddress.length > 0 ? emailsAddress : [];
     }
 };
-exports.CreateListService = CreateListService;
-exports.CreateListService = CreateListService = __decorate([
+exports.ListManagementService = ListManagementService;
+exports.ListManagementService = ListManagementService = __decorate([
     (0, tsyringe_1.injectable)(),
-    __param(1, (0, tsyringe_1.inject)(AppListRepository_1.AppListRepository)),
-    __param(2, (0, tsyringe_1.inject)(services_1.WebSocketClientService)),
+    __param(1, (0, tsyringe_1.inject)(AppListManagementRepository_1.AppListManagementRepository)),
+    __param(2, (0, tsyringe_1.inject)(services_1.default)),
+    __param(3, (0, tsyringe_1.inject)(AppUserInvitationsRepository_1.AppUserInvitationsRepository)),
     __metadata("design:paramtypes", [validation_1.default,
-        AppListRepository_1.AppListRepository,
-        services_1.WebSocketClientService])
-], CreateListService);
+        AppListManagementRepository_1.AppListManagementRepository,
+        services_1.default,
+        AppUserInvitationsRepository_1.AppUserInvitationsRepository])
+], ListManagementService);

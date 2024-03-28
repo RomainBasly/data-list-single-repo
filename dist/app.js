@@ -30,7 +30,7 @@ app.use((0, cookie_parser_1.default)());
 app.use(auth_middleware_1.verifyRequestApiKey);
 // Todo implement a rateLimit for a specific route
 app.use(publicRoutes_1.default);
-app.use('/protected', auth_middleware_1.verifyUserAccessToken, protectedRoutes_1.default);
+app.use(auth_middleware_1.verifyUserAccessToken, protectedRoutes_1.default);
 app.use(errors_1.errorHandler);
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

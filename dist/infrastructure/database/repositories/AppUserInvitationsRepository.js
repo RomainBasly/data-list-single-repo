@@ -12,18 +12,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppListRepository = void 0;
+exports.AppUserInvitationsRepository = void 0;
 const tsyringe_1 = require("tsyringe");
 const supabaseClient_1 = __importDefault(require("../../../config/database/supabaseClient"));
-let AppListRepository = class AppListRepository {
+let AppUserInvitationsRepository = class AppUserInvitationsRepository {
     constructor() { }
-    async createList(inputsAppList) {
-        const { data, error } = await supabaseClient_1.default.from('app-lists').insert(inputsAppList).select();
-        if (error) {
-            throw new Error('Problem creating the list');
-        }
-        return data && data.length > 0 ? data[0] : null;
-    }
     async inviteUsersToList(invitedEmailAddresses, listId) {
         const email_list = invitedEmailAddresses.join(',');
         try {
@@ -68,8 +61,8 @@ let AppListRepository = class AppListRepository {
         }
     }
 };
-exports.AppListRepository = AppListRepository;
-exports.AppListRepository = AppListRepository = __decorate([
+exports.AppUserInvitationsRepository = AppUserInvitationsRepository;
+exports.AppUserInvitationsRepository = AppUserInvitationsRepository = __decorate([
     (0, tsyringe_1.injectable)(),
     __metadata("design:paramtypes", [])
-], AppListRepository);
+], AppUserInvitationsRepository);

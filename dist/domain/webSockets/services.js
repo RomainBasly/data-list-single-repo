@@ -14,24 +14,64 @@ const socket_io_client_1 = require("socket.io-client");
 const tsyringe_1 = require("tsyringe");
 let WebSocketClientService = class WebSocketClientService {
     constructor() {
+        this.instance = null;
+        this.maxRetry = 3;
+        this.retryInterval = 10000;
+        this.retryCount = 0;
         this.url = process.env.SOCKET_URL || '';
-        this.socket = (0, socket_io_client_1.io)(this.url);
-        this.socket.on('connect', () => {
+        this.connect();
+    }
+    connect() {
+        this.instance = (0, socket_io_client_1.io)(this.url);
+        this.instance.on('connect', () => {
             console.log('connect to the Websocket Server');
+            this.initializeListeners();
         });
-        this.initializeListeners();
+    }
+    ensureConnection() {
+        if (!this.instance) {
+            this.instance = (0, socket_io_client_1.io)(this.url);
+            this.instance.on('connect', () => {
+                console.log('connect to the Websocket Server');
+                this.initializeListeners();
+            });
+            this.instance.on('connect_error', (error) => {
+                console.log('WebSocket Connection Error:', error);
+                if (this.instance) {
+                    this.instance.disconnect();
+                }
+                this.retryConnection();
+            });
+            this.instance.on('disconnect', () => {
+                console.log('disconnect');
+                this.instance.disconnect();
+            });
+        }
+    }
+    retryConnection() {
+        if (this.retryCount < this.maxRetry) {
+            setTimeout(() => {
+                console.log(`Attempting to reconnect... Attempt ${this.retryCount + 1}`);
+                this.retryCount++;
+                this.connect();
+            }, this.retryInterval);
+        }
     }
     emit(eventName, data) {
-        this.socket.emit(eventName, data);
+        this.ensureConnection();
+        if (this.instance) {
+            this.instance.emit(eventName, data);
+        }
+        else {
+            console.log('WebSocket not connected');
+        }
     }
     initializeListeners() {
-        this.socket.on('disconnect', () => {
-            console.log('disconnect');
-            this.socket.disconnect();
-        });
-        this.socket.on('From Api', (data) => {
-            console.log('received data', data);
-        });
+        if (this.instance) {
+            this.instance.on('From Api', (data) => {
+                console.log('received data', data);
+            });
+        }
     }
 };
 exports.WebSocketClientService = WebSocketClientService;
