@@ -12,6 +12,7 @@ export type ApiResponse<T> = {
 export default abstract class BaseApiService {
   protected readonly backEndUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   protected readonly apiKey = process.env.NEXT_PUBLIC_API_KEY;
+  // protected readonly accessToken =
 
   protected constructor() {}
 
@@ -21,13 +22,17 @@ export default abstract class BaseApiService {
 
   protected async getRequest<T>(
     url: URL,
-    contentType?: ContentType, refreshToken?: string
+    contentType?: ContentType,
+    refreshToken?: string
   ): Promise<T> {
     const response = await this.sendRequest(
       async () =>
         await fetch(url, {
           method: "GET",
-          headers: this.buildHeaders(contentType ?? ContentType.JSON, refreshToken),
+          headers: this.buildHeaders(
+            contentType ?? ContentType.JSON,
+            refreshToken
+          ),
           credentials: "include",
         })
     );
@@ -92,15 +97,23 @@ export default abstract class BaseApiService {
     return responseContent;
   }
 
-  protected buildHeaders(contentType: ContentType, refreshToken?: string) {
+  protected buildHeaders(
+    contentType: ContentType,
+    refreshToken?: string,
+    accessToken?: string
+  ) {
     const headers = new Headers();
     assert(this.apiKey, "APIkey missing");
     if (contentType === ContentType.JSON) {
       headers.set("Content-Type", contentType);
       headers.set("X-API-KEY", this.apiKey);
+
+      if (accessToken) {
+        headers.set("authorization", accessToken);
+      }
     }
     if (refreshToken) {
-      headers.set("Authorization", `Bearer ${refreshToken}`)
+      headers.set("Authorization", `Bearer ${refreshToken}`);
     }
     return headers;
   }

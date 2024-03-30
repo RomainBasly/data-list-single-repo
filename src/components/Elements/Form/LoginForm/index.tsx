@@ -10,6 +10,7 @@ import StorageService from '@/Services/CookieService'
 import Button from '@/components/Materials/Button'
 import UserStore from '@/Stores/UserStore'
 import { getSocket } from '../../Socket'
+import UserStoreServer from '@/Stores/UserStoreServer'
 
 export type IBody = {
   email: string
@@ -47,8 +48,16 @@ export function LoginForm() {
           response.refreshToken,
           false,
         )
-      console.log('response', response)
-      response.id && localStorage.setItem('userId', response.id.toString())
+      response.id &&
+        StorageService.getInstance().setCookies(
+          'userId',
+          String(response.id),
+          false,
+        )
+
+      response.id &&
+        UserStoreServer.getInstance().setUserId(String(response.id))
+
       try {
         const socket = getSocket()
         socket.emit('register-user-id', {
