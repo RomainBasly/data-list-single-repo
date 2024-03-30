@@ -7,12 +7,13 @@ import { ReturnedInvitedUsers } from '../../../domain/ListManagement/types';
 export class AppUserInvitationsRepository {
   public constructor() {}
 
-  public async inviteUsersToList(invitedEmailAddresses: string[], listId: UUID) {
+  public async inviteUsersToList(invitedEmailAddresses: string[], listId: UUID, creatorId: number) {
     const email_list = invitedEmailAddresses.join(',');
     try {
       const { data, error } = await supabase.rpc('add_people_to_list_invitations', {
         emails_text: email_list,
         list_id: listId,
+        creator_id: creatorId,
       });
       if (error) {
         throw new Error('Problem adding elements inside the list invitation');
@@ -47,5 +48,10 @@ export class AppUserInvitationsRepository {
     } catch (error) {
       throw new Error('error getting people invited (catch)');
     }
+  }
+
+  public async getListInvitationPerUser(userId: string) {
+    let { data, error } = await supabase.from('app-list-invitations').select('*').eq('user_id', userId).eq('status', 1);
+    return data;
   }
 }

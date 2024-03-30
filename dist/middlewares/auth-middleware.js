@@ -19,8 +19,10 @@ const verifyRequestApiKey = (req, res, next) => {
 };
 exports.verifyRequestApiKey = verifyRequestApiKey;
 const verifyUserAccessToken = (req, res, next) => {
+    var _a;
     try {
-        const token = req.headers['authorization'];
+        const token = (_a = req.headers['authorization']) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
+        console.log('token', token);
         if (!token)
             return res
                 .status(401)

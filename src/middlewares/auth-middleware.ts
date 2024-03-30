@@ -25,7 +25,8 @@ export const verifyRequestApiKey = (req: IRequest, res: Response, next: NextFunc
 
 export const verifyUserAccessToken = (req: IRequest, res: Response, next: NextFunction) => {
   try {
-    const token = req.headers['authorization'];
+    const token = req.headers['authorization']?.split(' ')[1];
+    console.log('token', token);
     if (!token)
       return res
         .status(401)

@@ -17,12 +17,13 @@ const tsyringe_1 = require("tsyringe");
 const supabaseClient_1 = __importDefault(require("../../../config/database/supabaseClient"));
 let AppUserInvitationsRepository = class AppUserInvitationsRepository {
     constructor() { }
-    async inviteUsersToList(invitedEmailAddresses, listId) {
+    async inviteUsersToList(invitedEmailAddresses, listId, creatorId) {
         const email_list = invitedEmailAddresses.join(',');
         try {
             const { data, error } = await supabaseClient_1.default.rpc('add_people_to_list_invitations', {
                 emails_text: email_list,
                 list_id: listId,
+                creator_id: creatorId,
             });
             if (error) {
                 throw new Error('Problem adding elements inside the list invitation');
@@ -59,6 +60,10 @@ let AppUserInvitationsRepository = class AppUserInvitationsRepository {
         catch (error) {
             throw new Error('error getting people invited (catch)');
         }
+    }
+    async getListInvitationPerUser(userId) {
+        let { data, error } = await supabaseClient_1.default.from('app-list-invitations').select('*').eq('user_id', userId).eq('status', 1);
+        return data;
     }
 };
 exports.AppUserInvitationsRepository = AppUserInvitationsRepository;

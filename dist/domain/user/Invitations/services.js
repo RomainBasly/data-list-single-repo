@@ -20,15 +20,19 @@ let UserInvitationsService = class UserInvitationsService {
         this.webSocketService = webSocketService;
         this.appUserInvitationsRepository = appUserInvitationsRepository;
     }
-    async addPeopleToListInvitations(invitedEmailAddresses, listId) {
-        await this.appUserInvitationsRepository.inviteUsersToList(invitedEmailAddresses, listId);
+    async addPeopleToListInvitations(invitedEmailAddresses, listId, creatorId) {
+        await this.appUserInvitationsRepository.inviteUsersToList(invitedEmailAddresses, listId, creatorId);
         const getPeopleToInvite = await this.appUserInvitationsRepository.getPeopleToInviteByListId(listId);
         await this.invitePeople(getPeopleToInvite, listId);
     }
-    async fetchUserInvitations(userId) {
+    async fetchUserPendingInvitations(userId) {
         try {
+            const data = await this.appUserInvitationsRepository.getListInvitationPerUser(userId);
+            return data;
         }
-        catch (error) { }
+        catch (error) {
+            throw error;
+        }
     }
     async invitePeople(invitedUsers, listId) {
         invitedUsers.map((user) => {
@@ -41,7 +45,7 @@ let UserInvitationsService = class UserInvitationsService {
                 }
             }
             else {
-                // case 2 : send an email to those not registered in the app
+                // Todo : case 2 : send an email to those not registered in the app
             }
         });
     }

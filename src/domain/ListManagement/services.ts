@@ -36,7 +36,11 @@ export class ListManagementService {
 
       const validatedEmailAddresses = await this.validateEmails(emails);
       if (validatedEmailAddresses.length > 0) {
-        await this.userInvitationsService.addPeopleToListInvitations(validatedEmailAddresses, dataListCreation.id);
+        await this.userInvitationsService.addPeopleToListInvitations(
+          validatedEmailAddresses,
+          dataListCreation.id,
+          inputs.creatorId
+        );
       }
       // ajout des emails dans app-list-invitations
       // passage de l'envoi des emails + ajout dans la BDD

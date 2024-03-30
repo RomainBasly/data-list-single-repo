@@ -11,15 +11,23 @@ export default class UserInvitationsService {
     @inject(AppUserInvitationsRepository) private readonly appUserInvitationsRepository: AppUserInvitationsRepository
   ) {}
 
-  public async addPeopleToListInvitations(invitedEmailAddresses: string[], listId: UUID): Promise<void> {
-    await this.appUserInvitationsRepository.inviteUsersToList(invitedEmailAddresses, listId);
+  public async addPeopleToListInvitations(
+    invitedEmailAddresses: string[],
+    listId: UUID,
+    creatorId: number
+  ): Promise<void> {
+    await this.appUserInvitationsRepository.inviteUsersToList(invitedEmailAddresses, listId, creatorId);
     const getPeopleToInvite = await this.appUserInvitationsRepository.getPeopleToInviteByListId(listId);
     await this.invitePeople(getPeopleToInvite, listId);
   }
 
-  public async fetchUserInvitations(userId: string) {
+  public async fetchUserPendingInvitations(userId: string) {
     try {
-    } catch (error) {}
+      const data = await this.appUserInvitationsRepository.getListInvitationPerUser(userId);
+      return data;
+    } catch (error) {
+      throw error;
+    }
   }
   private async invitePeople(invitedUsers: ReturnedInvitedUsers[], listId: UUID) {
     invitedUsers.map((user) => {
@@ -30,7 +38,7 @@ export default class UserInvitationsService {
           throw new Error(`message: ${error}`);
         }
       } else {
-        // case 2 : send an email to those not registered in the app
+        // Todo : case 2 : send an email to those not registered in the app
       }
     });
   }

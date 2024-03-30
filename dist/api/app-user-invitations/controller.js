@@ -18,6 +18,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppUserInvitationsController = void 0;
 const tsyringe_1 = require("tsyringe");
 const services_1 = __importDefault(require("../../domain/user/Invitations/services"));
+const errors_1 = require("../../domain/common/errors");
 let AppUserInvitationsController = class AppUserInvitationsController {
     constructor(userInvitationsService) {
         this.userInvitationsService = userInvitationsService;
@@ -25,10 +26,13 @@ let AppUserInvitationsController = class AppUserInvitationsController {
     async getUserInvitations(req, res, next) {
         try {
             const { userId } = req.params;
-            if (!userId) {
-                res.status(403).json({ message: 'wooooops forbidden' });
+            const id = String(req.id);
+            if (!userId || userId !== id) {
+                throw new errors_1.ForbiddenError(errors_1.ErrorMessages.FORBIDDEN_ERROR);
             }
-            await this.userInvitationsService.fetchUserInvitations(userId);
+            const data = await this.userInvitationsService.fetchUserPendingInvitations(userId);
+            console.log('data controller', data);
+            res.json(data);
         }
         catch (error) {
             next(error);
