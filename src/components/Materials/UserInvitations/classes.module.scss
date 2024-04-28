@@ -1,0 +1,31 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+  margin-top: 20px;
+
+  .no-invitation {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border: 1px solid #f08080;
+    border-radius: 8px;
+    padding: 25px;
+    gap: 8px;
+    background-color: rgba(255, 218, 185, 0.7);
+
+    .svg {
+      display: flex;
+      align-items: center;
+      width: 20px;
+    }
+
+    .text-content {
+      font-size: 12px;
+      font-style: italic;
+      font-family: "Merriweather", sans-serif;
+      color: #353535;
+    }
+  }
+}

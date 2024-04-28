@@ -33,10 +33,8 @@ export default function RegistrationForm() {
         body,
       )
       if (response) {
-        console.log(response)
         setIsLoading(!isLoading)
         UserStore.getInstance().setEmail(email)
-        // UserStore.getInstance().setId(response.id)
         router.push('/register/verify-code')
       }
     } catch (error) {

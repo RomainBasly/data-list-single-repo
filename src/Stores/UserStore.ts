@@ -34,7 +34,6 @@ export default class UserStore {
   public setId(id: string): void {
     this.id = id;
     localStorage.setItem("id", id);
-    
   }
 
   public getEmail(): string {

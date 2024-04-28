@@ -28,7 +28,7 @@ export default class StorageService {
       "; path=/; secure;sameSite=Lax";
   }
 
-  public getAccessToken(name: string): string | null {
+  public getToken(name: string): string | null {
     if (!localStorage.getItem(name)) {
       return null;
     }

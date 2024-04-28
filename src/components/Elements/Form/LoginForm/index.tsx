@@ -8,9 +8,7 @@ import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
 import StorageService from '@/Services/CookieService'
 import Button from '@/components/Materials/Button'
-import UserStore from '@/Stores/UserStore'
 import { getSocket } from '../../Socket'
-import UserStoreServer from '@/Stores/UserStoreServer'
 
 export type IBody = {
   email: string
@@ -48,21 +46,11 @@ export function LoginForm() {
           response.refreshToken,
           false,
         )
-      response.id &&
-        StorageService.getInstance().setCookies(
-          'userId',
-          String(response.id),
-          false,
-        )
-
-      response.id &&
-        UserStoreServer.getInstance().setUserId(String(response.id))
-
       try {
         const socket = getSocket()
         socket.emit('register-user-id', {
-          socketConnectionId: localStorage.getItem('socketConnectionId'),
-          userId: response.id,
+          socketId: localStorage.getItem('socketId'),
+          accessTokenJWT: response.accessToken,
         })
       } catch (error) {
         console.error(error)

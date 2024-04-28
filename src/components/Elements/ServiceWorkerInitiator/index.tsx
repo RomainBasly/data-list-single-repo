@@ -48,7 +48,7 @@ export default function ServiceWorkerInitiator() {
         // Attempt to reconnect
         if (socket.connected) {
           socket.disconnect()
-          localStorage.removeItem('socketConnectionId')
+          localStorage.removeItem('socketId')
         }
         socket.connect()
       }

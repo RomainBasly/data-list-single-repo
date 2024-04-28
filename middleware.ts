@@ -32,7 +32,7 @@ export default async function middleware(request: NextRequest) {
   const isRootPage = url.pathname === "/";
 
   const isLoggedIn =
-    accessToken && !JwtService.getInstance().isTokenExpired(decodedAccessToken);
+    accessToken && !JwtService.getInstance().isTokenExpired(accessToken);
   const response = NextResponse.next();
   response.headers.set("x-nonce", nonce);
   response.headers.set(
@@ -82,4 +82,7 @@ export default async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: ["/", "/login", "/register", "/home", "/lists/create-list"],
+  api: {
+    bodyParser: true,
+  },
 };

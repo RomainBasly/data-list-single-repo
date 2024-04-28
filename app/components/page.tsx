@@ -6,11 +6,6 @@ export default function Components() {
   return (
     <div className={classes['root']}>
       <h1>Components</h1>
-      <InvitationCard
-        creatorName="Rodrigo"
-        listName="Courses"
-        description="Vive le pâté en croûte"
-      />
     </div>
   )
 }

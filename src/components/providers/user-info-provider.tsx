@@ -1,6 +1,10 @@
 'use client'
 
+import JwtService from '@/Services/jwtService'
+import { jwtDecrypt } from 'jose'
+import Cookies from 'js-cookie'
 import { createContext, useContext, useEffect, useState } from 'react'
+import { JWTPayload } from '../../../types'
 
 const UserInfoContext = createContext<any>({
   userId: null,
@@ -20,9 +24,18 @@ export const UserInfoProvider = ({
   }>({ userId: null })
 
   useEffect(() => {
-    const userId = localStorage.getItem('userId')
-    if (userId) {
-      setUserAttributes({ userId })
+    const accessTokenCookie = Cookies.get('accessToken')
+    if (accessTokenCookie) {
+      const decoded = JwtService.getInstance().decodeJwt(accessTokenCookie)
+      if (decoded) {
+        const decodedAccessToken = (decoded as unknown) as JWTPayload
+        const userId = decodedAccessToken.userInfo.id
+        if (userId) {
+          setUserAttributes({ userId: userId.toString() })
+        }
+      } else {
+        console.error('failed to decode JWT at some point in UserInfoProvider')
+      }
     }
   }, [])
 

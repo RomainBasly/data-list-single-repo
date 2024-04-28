@@ -1,11 +1,12 @@
 import { DefaultEventsMap } from "@socket.io/component-emitter";
 import assert from "assert";
+import Cookies from "js-cookie";
 import { Socket, io } from "socket.io-client";
 
 let socket: Socket<DefaultEventsMap, DefaultEventsMap>;
 
 export const getSocket = () => {
-  if (!socket) {
+  if (!socket && typeof window !== "undefined") {
     assert(
       process.env.NEXT_PUBLIC_SOCKET_URL,
       "error getting the socket url from env"
@@ -13,9 +14,10 @@ export const getSocket = () => {
     socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
     // Setup your event listeners here
     socket.on("connect", () => {
-      const userId = localStorage.getItem("userId");
-      if (userId) {
-        socket.emit("register-user-id", { userId });
+      const accessTokenJWT = Cookies.get("accessToken");
+      const socketId = localStorage.getItem("socketId");
+      if (accessTokenJWT) {
+        socket.emit("register-user-id", { socketId, accessTokenJWT });
       }
       console.log("Connected to the socket Server");
     });
@@ -32,4 +34,4 @@ export const getSocket = () => {
   return socket;
 };
 
-const deleteId = () => localStorage.removeItem("socketConnectionId");
+const deleteId = () => localStorage.removeItem("socketId");

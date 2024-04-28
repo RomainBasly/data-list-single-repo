@@ -1,5 +1,3 @@
-import assert from "assert";
-
 export default class UserStoreServer {
   private static instance: UserStoreServer;
   private userId: string | null = null;

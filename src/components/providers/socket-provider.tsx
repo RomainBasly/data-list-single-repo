@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { getSocket } from '../Elements/Socket'
+import Cookies from 'js-cookie'
 
 type SocketContextType = {
   isConnected: boolean
@@ -39,35 +40,32 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const socket = getSocket()
 
-    const assignId = (data: { socketConnectionId: string }) => {
-      localStorage.setItem('socketConnectionId', data.socketConnectionId)
-      const userId = localStorage.getItem('userId')
+    socket.on('connect', () => {
+      console.log('Connected to socket server')
+      setIsConnected(true) // Update state to indicate the socket is connected
+    })
+
+    // Listen for when the connection to the server is disconnected
+    socket.on('disconnect', () => {
+      console.log('Disconnected from socket server')
+      setIsConnected(false) // Update state to indicate the socket is disconnected
+    })
+
+    const assignId = (data: { socketId: string }) => {
+      localStorage.setItem('socketId', data.socketId)
+      const accessTokenJWT = Cookies.get('accessToken')
       socket.emit('register-user-id', {
-        socketConnectionId: localStorage.getItem('socketConnectionId'),
-        userId,
+        socketId: localStorage.getItem('socketId'),
+        accessTokenJWT,
       })
     }
 
-    socket.on('assign-id', assignId)
+    socket.on('assign-socket-id', assignId)
 
-    socket.on(
-      'list-invitation-socket',
-      (data: {
-        listId: number
-        listName?: string
-        author?: string
-        description?: string
-      }) => {
-        console.log('data', data)
-        setListAttributes({
-          listId: data.listId,
-          listName: data.listName,
-          author: data.author,
-          description: data.description,
-        })
-      },
-    )
+    
   }, [])
+
+
   return (
     <SocketContext.Provider value={{ isConnected, listAttributes }}>
       {children}

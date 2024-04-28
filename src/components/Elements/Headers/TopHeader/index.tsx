@@ -6,11 +6,20 @@ import Logo from '@/components/Materials/Logo'
 
 import logo from '/public/images/logos/logo-big-screen.png'
 import logoSmall from '/public/images/logos/logo-256x256.png'
-import { Bars3Icon } from '@heroicons/react/24/solid'
+import {
+  ArrowRightOnRectangleIcon,
+  Bars3Icon,
+  FlagIcon,
+  FolderPlusIcon,
+  UserCircleIcon,
+} from '@heroicons/react/24/solid'
 import { HomeIcon, PencilIcon, XCircleIcon } from '@heroicons/react/24/outline'
 import UserMenuStatus, { EOpeningState } from '@/Stores/UserMenuStatus'
 import { useRouter } from 'next/navigation'
 import classnames from 'classnames'
+import AuthenticationApi from '@/api/Back/AuthenticationApi'
+import Cookies from 'js-cookie'
+import { useUserInfo } from '@/components/providers/user-info-provider'
 
 type IProps = {
   className: string
@@ -18,6 +27,7 @@ type IProps = {
 
 export default function Header(props: IProps) {
   const router = useRouter()
+  const { userAttributes } = useUserInfo()
   const [userMenuState, setUserMenuState] = React.useState<EOpeningState>(
     UserMenuStatus.getInstance().status,
   )
@@ -39,8 +49,23 @@ export default function Header(props: IProps) {
     UserMenuStatus.getInstance().toggle()
   }
 
-  function navigateToHome() {
-    router.push('/home')
+  function navigate(url: string) {
+    router.push(url)
+  }
+
+  async function disconnectUser() {
+    try {
+      const userId = userAttributes.userId
+      const response = await AuthenticationApi.getInstance().disconnect(userId)
+      if (response.status === 'ok') {
+        Cookies.remove('accessToken')
+        Cookies.remove('refreshToken')
+        Cookies.remove('userId')
+        router.push(response.redirectUrl)
+      }
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -49,28 +74,39 @@ export default function Header(props: IProps) {
         src={String(logo.src)}
         alt={'Logo'}
         className={classes['logo-big-screen']}
-        onclick={navigateToHome}
+        onclick={() => navigate('/home')}
         width={1018}
         height={374}
       />
       <div className={classes['big-screen-nav-links']}>
         <NavLink
-          svg={<HomeIcon />}
+          svg={<FlagIcon />}
           className={classes['nav-link']}
-          text={'Home'}
-          alt={'Home Icon'}
+          text={'Mes invitations'}
+          alt={'Icône vers la page des invitations'}
+          onClick={() => navigate('/invitations')}
         />
         <NavLink
-          svg={<PencilIcon />}
+          svg={<FolderPlusIcon />}
+          url={'/lists/create-list'}
           className={classes['nav-link']}
           text={'Créer une liste'}
-          alt={'Add a list Icon'}
+          alt={'Icône créer une liste'}
+          onClick={() => navigate('/lists/create-list')}
         />
         <NavLink
-          svg={<XCircleIcon />}
+          svg={<UserCircleIcon />}
           className={classes['nav-link']}
-          text={'Effacer une liste'}
-          alt={'Add a list Icon'}
+          text={'Profil'}
+          alt={'Icône vers la page profil'}
+          onClick={() => navigate('/profile')}
+        />
+        <NavLink
+          svg={<ArrowRightOnRectangleIcon />}
+          className={classes['nav-link']}
+          text={'Se déconnecter'}
+          alt={'Icône se déconnecter'}
+          onClick={(e) => disconnectUser()}
         />
       </div>
       <div className={classes['mobile']}>
@@ -78,7 +114,7 @@ export default function Header(props: IProps) {
           src={String(logoSmall.src)}
           alt={'Logo'}
           className={classes['logo-mobile']}
-          onclick={navigateToHome}
+          onclick={() => navigate('/home')}
           width={50}
           height={50}
         />

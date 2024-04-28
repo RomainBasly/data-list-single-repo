@@ -5,6 +5,10 @@ import { BackendError } from "@/Services/errorHandlingService";
 export type IValidation = {};
 export type IGetAccessTokenParams = {};
 
+export type IGetNewAccessToken = {
+  Cookie: {refreshToken: string}
+}
+
 export class AuthorizationApi extends BaseApiService {
   private readonly baseURL = this.backEndUrl;
   private static instance: AuthorizationApi | null = null;
@@ -22,13 +26,15 @@ export class AuthorizationApi extends BaseApiService {
 
   // todo : check if this is really a get method with a refresh-token as param
   public async getNewAccessToken(
-    refreshToken: string
+    params: IGetNewAccessToken
   ): Promise<{ accessToken: string }> {
     assert(this.baseURL, "url is missing in refreshToken Method");
     const url = new URL(this.baseURL.concat("/refresh-token"));
 
     try {
-      return await this.getRequest(url, ContentType.JSON, refreshToken);
+
+      // TO do : add the refreshToken to generate a new AccessToken
+      return await this.getRequest(url, ContentType.JSON, {Cookie: params.Cookie.refreshToken});
     } catch (error) {
       console.log(error);
       throw error;

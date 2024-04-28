@@ -1,6 +1,7 @@
 .root {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
+  align-items: center;
   height: 80%;
   min-height: 450px;
   width: 70%;
@@ -12,6 +13,7 @@
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.15);
   transition: transform 300ms ease-in-out, opacity 300ms,
     width 300ms ease-in-out, box-shadow 300ms ease-in-out;
+  z-index: 2;
 
   @media screen and (max-width: 350px) {
     width: 100%;
@@ -23,11 +25,21 @@
     right: 30px;
     cursor: pointer;
     height: 50px;
+    color: #2a5293;
   }
   .nav-link-container {
-    height: 200px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: space-around;
+    height: 100%;
+    max-height: 400px;
+    gap: 30px;
+    padding: 20px 20px;
+
     .nav-link {
       display: flex;
+      justify-content: center;
       height: 100px;
     }
   }

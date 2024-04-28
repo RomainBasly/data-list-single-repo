@@ -34,14 +34,9 @@
 import { useSocket } from '@/components/providers/socket-provider'
 
 export default function SocketConnector() {
-  const { listAttributes } = useSocket()
+  const { isConnected, listAttributes } = useSocket()
   if (!listAttributes) {
     return <div>Error</div>
   }
-  return (
-    <div>
-      `{listAttributes.listId} Tu as été invité(e) par {listAttributes.author} à la liste{' '}
-      {listAttributes.listName}`
-    </div>
-  )
+  return <div>`You are {isConnected ? 'connected' : 'disconnected'}`</div>
 }
