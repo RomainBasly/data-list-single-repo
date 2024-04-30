@@ -21,12 +21,13 @@ export class ListManagementService {
       /// check if the emails are valid
       /// Vérifier que la personne est ou n'est pas dans la BDD
       // étape 2 : envoyer un email pour faire connaitre l'application
-      const { emails, description, name } = inputs;
+      const { emails, description, name, thematic } = inputs;
       const createListInputForListCreation = {
         listName: inputs.name,
         access_level: inputs.accessLevel,
         description: inputs.description,
         cyphered: false,
+        thematic: inputs.thematic,
       };
 
       const dataListCreation = await this.appListRepository.createList(createListInputForListCreation);
@@ -43,6 +44,7 @@ export class ListManagementService {
           creatorEmail,
           creatorUserName,
           name,
+          thematic,
           description
         );
       }

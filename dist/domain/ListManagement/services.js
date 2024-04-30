@@ -35,12 +35,13 @@ let ListManagementService = class ListManagementService {
             /// check if the emails are valid
             /// Vérifier que la personne est ou n'est pas dans la BDD
             // étape 2 : envoyer un email pour faire connaitre l'application
-            const { emails, description, name } = inputs;
+            const { emails, description, name, thematic } = inputs;
             const createListInputForListCreation = {
                 listName: inputs.name,
                 access_level: inputs.accessLevel,
                 description: inputs.description,
                 cyphered: false,
+                thematic: inputs.thematic,
             };
             const dataListCreation = await this.appListRepository.createList(createListInputForListCreation);
             if (dataListCreation && dataListCreation.id) {
@@ -48,7 +49,7 @@ let ListManagementService = class ListManagementService {
             }
             const validatedEmailAddresses = await this.validateEmails(emails);
             if (validatedEmailAddresses.length > 0) {
-                await this.userInvitationsService.addPeopleToListInvitations(validatedEmailAddresses, dataListCreation.id, inputs.creatorId, creatorEmail, creatorUserName, name, description);
+                await this.userInvitationsService.addPeopleToListInvitations(validatedEmailAddresses, dataListCreation.id, inputs.creatorId, creatorEmail, creatorUserName, name, thematic, description);
             }
             // ajout des emails dans app-list-invitations
             // passage de l'envoi des emails + ajout dans la BDD

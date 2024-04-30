@@ -16,7 +16,6 @@ exports.AppRefreshTokenController = void 0;
 const tsyringe_1 = require("tsyringe");
 const services_1 = require("../../domain/jwtToken/services");
 const services_2 = require("../../domain/refreshToken/services");
-//import { cookieHandler } from '../../common/helpers';
 const AppUserRepository_1 = require("../../infrastructure/database/repositories/AppUserRepository");
 const errors_1 = require("../../domain/common/errors");
 const helpers_1 = require("../../common/helpers");
@@ -42,10 +41,8 @@ let AppRefreshTokenController = class AppRefreshTokenController {
             throw new Error('no refreshTokenSecret in middleware');
         if (!accessTokenSecret)
             throw new Error('no accessTokenSecret in middleware');
-        console.log('refreshToken', refreshToken);
         try {
             const foundUser = await this.refreshTokenService.getUserByRefreshToken(refreshToken);
-            console.log('founduser', foundUser);
             if (!foundUser)
                 return res.status(401).json({ error: errors_1.ErrorMessages.UNAUTHORIZED });
             const { newAccessToken } = await this.refreshTokenService.handleTokenRefresh(refreshToken, refreshTokenSecret, accessTokenSecret, foundUser);

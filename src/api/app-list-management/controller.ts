@@ -14,10 +14,11 @@ export class ListManagementController {
 
   public async createList(req: Request, res: Response, next: NextFunction) {
     try {
-      const { name: listName, accessLevel, creatorId, description, emails, cyphered } = req.body;
+      const { name: listName, accessLevel, description, emails, cyphered, thematic } = req.body;
       const { userInfo } = getFromJWTToken(req, 'accessToken') as UserInfo;
       const creatorUserName = userInfo.userName;
       const creatorEmail = userInfo.email;
+      const creatorId = userInfo.id;
       const validatedInputs = await this.createListValidatorService.preCheck({
         name: listName,
         accessLevel,
@@ -27,6 +28,7 @@ export class ListManagementController {
         creatorUserName,
         emails,
         cyphered,
+        thematic,
       });
       await this.listManagementService.createList(validatedInputs, creatorUserName, creatorEmail);
       res.status(201).json({ message: 'new list created' });

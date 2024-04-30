@@ -9,6 +9,7 @@ export type List = {
   emails?: string[];
   description?: string;
   cyphered?: boolean;
+  thematic: string;
 };
 export type IInputAppList = {
   listName: string;

@@ -18,11 +18,20 @@ export default class UserInvitationsService {
     creatorEmail: string,
     creatorUserName: string,
     listName: string,
+    thematic: string,
     listDescription?: string
   ): Promise<void> {
     await this.appUserInvitationsRepository.inviteUsersToList(invitedEmailAddresses, listId, creatorId);
     const getPeopleToInvite = await this.appUserInvitationsRepository.getPeopleToInviteByListId(listId);
-    await this.invitePeople(getPeopleToInvite, listId, creatorEmail, creatorUserName, listName, listDescription);
+    await this.invitePeople(
+      getPeopleToInvite,
+      listId,
+      creatorEmail,
+      creatorUserName,
+      listName,
+      thematic,
+      listDescription
+    );
   }
 
   public async fetchUserInvitations(userId: string, status: number) {
@@ -39,6 +48,7 @@ export default class UserInvitationsService {
     creatorEmail: string,
     creatorUserName: string,
     listName: string,
+    thematic: string,
     listDescription?: string
   ) {
     invitedUsers.map((invitation) => {
@@ -53,6 +63,7 @@ export default class UserInvitationsService {
             creatorEmail,
             creatorUserName,
             listName,
+            thematic,
             listDescription,
           });
 

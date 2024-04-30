@@ -17,6 +17,7 @@ export class CreateListValidatorService {
       description: yup.string().optional(),
       cyphered: yup.boolean().optional(),
       creatorId: yup.number().required(),
+      thematic: yup.string().required(),
     });
 
     try {

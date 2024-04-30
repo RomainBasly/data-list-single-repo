@@ -48,6 +48,7 @@ let CreateListValidatorService = class CreateListValidatorService {
             description: yup.string().optional(),
             cyphered: yup.boolean().optional(),
             creatorId: yup.number().required(),
+            thematic: yup.string().required(),
         });
         try {
             return await schema.validate(inputs);

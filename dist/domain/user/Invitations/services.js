@@ -20,10 +20,10 @@ let UserInvitationsService = class UserInvitationsService {
         this.webSocketService = webSocketService;
         this.appUserInvitationsRepository = appUserInvitationsRepository;
     }
-    async addPeopleToListInvitations(invitedEmailAddresses, listId, creatorId, creatorEmail, creatorUserName, listName, listDescription) {
+    async addPeopleToListInvitations(invitedEmailAddresses, listId, creatorId, creatorEmail, creatorUserName, listName, thematic, listDescription) {
         await this.appUserInvitationsRepository.inviteUsersToList(invitedEmailAddresses, listId, creatorId);
         const getPeopleToInvite = await this.appUserInvitationsRepository.getPeopleToInviteByListId(listId);
-        await this.invitePeople(getPeopleToInvite, listId, creatorEmail, creatorUserName, listName, listDescription);
+        await this.invitePeople(getPeopleToInvite, listId, creatorEmail, creatorUserName, listName, thematic, listDescription);
     }
     async fetchUserInvitations(userId, status) {
         try {
@@ -34,7 +34,7 @@ let UserInvitationsService = class UserInvitationsService {
             throw error;
         }
     }
-    async invitePeople(invitedUsers, listId, creatorEmail, creatorUserName, listName, listDescription) {
+    async invitePeople(invitedUsers, listId, creatorEmail, creatorUserName, listName, thematic, listDescription) {
         invitedUsers.map((invitation) => {
             if (invitation.is_already_active_user) {
                 try {
@@ -47,6 +47,7 @@ let UserInvitationsService = class UserInvitationsService {
                         creatorEmail,
                         creatorUserName,
                         listName,
+                        thematic,
                         listDescription,
                     });
                     // type IInvitation = {
