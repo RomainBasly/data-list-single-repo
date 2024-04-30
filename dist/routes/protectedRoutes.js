@@ -7,7 +7,9 @@ const api_1 = require("../common/types/api");
 const auth_middleware_1 = require("../middlewares/auth-middleware");
 const controller_1 = require("../api/app-list-management/controller");
 const controller_2 = require("../api/app-user-invitations/controller");
+const controller_3 = require("../api/app-auth/controller");
 const appUserController = tsyringe_1.container.resolve(controllers_1.AppUserController);
+const appAuthController = tsyringe_1.container.resolve(controller_3.AppAuthController);
 const appListController = tsyringe_1.container.resolve(controller_1.ListManagementController);
 const appUserInvitationsController = tsyringe_1.container.resolve(controller_2.AppUserInvitationsController);
 const protectedRoutes = (0, express_1.Router)();
@@ -16,7 +18,10 @@ protectedRoutes
     .post('/api/lists/create-list', (req, res, next) => {
     appListController.createList(req, res, next);
 })
-    .get('/api/lists/get-user-invitations/:userId', (req, res, next) => {
+    .get('/api/lists/get-user-invitations/:status', (req, res, next) => {
     appUserInvitationsController.getUserInvitations(req, res, next);
+})
+    .post('/api/lists/handle-list-invitation-status/:invitationId', (req, res, next) => {
+    appUserInvitationsController.handleListInvitationStatus(req, res, next);
 });
 exports.default = protectedRoutes;

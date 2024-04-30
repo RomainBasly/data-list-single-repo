@@ -3,8 +3,11 @@ import { Request, Response, NextFunction } from 'express';
 import { allowedOrigins } from '../config/common';
 import { RoleAssignments, Roles } from '../common/types/api';
 import { JwtPayloadAccessToken } from '../domain/jwtToken/services';
+import { ErrorMessages, ForbiddenError } from '../domain/common/errors';
+import { retrieveTokenFromCookie } from '../common/helpers';
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 const envApiKey = process.env.BACKEND_API_KEY;
 
 interface IRequest extends Request {
@@ -25,21 +28,48 @@ export const verifyRequestApiKey = (req: IRequest, res: Response, next: NextFunc
 
 export const verifyUserAccessToken = (req: IRequest, res: Response, next: NextFunction) => {
   try {
-    const token = req.headers['authorization']?.split(' ')[1];
-    console.log('token', token);
-    if (!token)
-      return res
-        .status(401)
-        .json({ message: 'No accessToken provided. Please include an accessToken to your request' });
+    const cookieHeader = req.headers.cookie;
+    if (!cookieHeader) {
+      throw new ForbiddenError(ErrorMessages.FORBIDDEN_ERROR);
+    }
+    const accessTokenCookie = retrieveTokenFromCookie(cookieHeader, 'accessToken');
+    if (!accessTokenCookie) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
     if (!accessTokenSecret) throw new Error('no accessToken accessible in middleware (verifyToken)');
 
-    const decodedToken = jwt.verify(token, accessTokenSecret) as JwtPayloadAccessToken;
-    jwt.verify(token, accessTokenSecret, (err, decoded) => {
+    const accessToken = accessTokenCookie.split('=')[1];
+
+    const decodedToken = jwt.verify(accessToken, accessTokenSecret) as JwtPayloadAccessToken;
+    jwt.verify(accessToken, accessTokenSecret, (err, decoded) => {
       if (err) {
         throw err;
       }
       req.id = decodedToken.userInfo.id;
       req.roles = decodedToken.userInfo.roles;
+      next();
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verifyRefreshToken = (req: IRequest, res: Response, next: NextFunction) => {
+  try {
+    const cookieHeader = req.headers.cookie;
+    if (!cookieHeader) throw new Error('no refreshToken accessible in middleware (verifyToken)');
+    const refreshTokenCookie = retrieveTokenFromCookie(cookieHeader, 'refreshToken');
+    if (!refreshTokenCookie) {
+      return res.status(401).json({ message: 'Unauthorized' });
+    }
+    if (!refreshTokenSecret) throw new Error('no refreshToken accessible in middleware (verifyToken)');
+
+    const refreshToken = refreshTokenCookie.split('=')[1];
+
+    jwt.verify(refreshToken, refreshTokenSecret, (err) => {
+      if (err) {
+        throw err;
+      }
       next();
     });
   } catch (error) {

@@ -30,3 +30,25 @@ export function generateRandomNumber(): number {
   const result = parseInt(array.join(''));
   return result;
 }
+
+export function getFromJWTToken(req: Request, tokenType: string) {
+  const cookieHeader = req.headers.cookie;
+  if (!cookieHeader) {
+    throw new Error('no cookieHeader');
+  }
+  const tokenCookie = retrieveTokenFromCookie(cookieHeader, tokenType);
+  if (!tokenCookie) throw new Error('no token accessible the method');
+
+  const token = tokenCookie.split('=')[1];
+  const decoded = jwt.decode(token);
+
+  return decoded;
+}
+
+export function retrieveTokenFromCookie(cookieHeader: string, tokenType: string) {
+  try {
+    return cookieHeader?.split(';').find((row) => row.trim().startsWith(`${tokenType}=`));
+  } catch (error) {
+    throw new Error('Error retrieving info from cookie Header');
+  }
+}

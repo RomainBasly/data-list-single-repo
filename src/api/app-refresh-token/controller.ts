@@ -5,6 +5,7 @@ import { RefreshTokenService } from '../../domain/refreshToken/services';
 //import { cookieHandler } from '../../common/helpers';
 import { AppUserRepository } from '../../infrastructure/database/repositories/AppUserRepository';
 import { ErrorMessages } from '../../domain/common/errors';
+import { retrieveTokenFromCookie } from '../../common/helpers';
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
@@ -16,18 +17,27 @@ export class AppRefreshTokenController {
     @inject(TokenService) private readonly tokenService: TokenService,
     @inject(AppUserRepository) private readonly userRepository: AppUserRepository
   ) {}
-  async handleRefreshToken(req: Request, res: Response, next: NextFunction) {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) return res.status(401).json({ error: 'Here is a problem of being Unauthorized' });
-    const token = authHeader.split(' ')[1];
+  async generateNewAccessToken(req: Request, res: Response, next: NextFunction) {
+    const cookieHeader = req.headers.cookie;
+
+    if (!cookieHeader) {
+      return res.status(401).json({ message: 'Unauthorized 1' });
+    }
+    const cookieRefreshToken = retrieveTokenFromCookie(cookieHeader, 'refreshToken');
+    if (!cookieRefreshToken) {
+      return res.status(401).json({ message: 'Unauthorized 2' });
+    }
+    const refreshToken = cookieRefreshToken.split('=')[1];
+
     if (!refreshTokenSecret) throw new Error('no refreshTokenSecret in middleware');
     if (!accessTokenSecret) throw new Error('no accessTokenSecret in middleware');
-
+    console.log('refreshToken', refreshToken);
     try {
-      const foundUser = await this.refreshTokenService.getUserByRefreshToken(token);
+      const foundUser = await this.refreshTokenService.getUserByRefreshToken(refreshToken);
+      console.log('founduser', foundUser);
       if (!foundUser) return res.status(401).json({ error: ErrorMessages.UNAUTHORIZED });
       const { newAccessToken } = await this.refreshTokenService.handleTokenRefresh(
-        token,
+        refreshToken,
         refreshTokenSecret,
         accessTokenSecret,
         foundUser

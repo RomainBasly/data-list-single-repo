@@ -15,15 +15,15 @@ publicRoutes
 })
     .post('/api/auth/login', (req, res, next) => appAuthController.login(req, res, next))
     .get('/api/refresh-token', (req, res, next) => {
-    appRefreshTokenController.handleRefreshToken(req, res, next);
-})
-    .get('/api/auth/logout', (req, res) => {
-    appAuthController.logoutUser(req, res);
+    appRefreshTokenController.generateNewAccessToken(req, res, next);
 })
     .post('/api/register/email-verification', (req, res, next) => {
     appEmailVerification.sendVerificationEmail(req, res, next);
 })
     .post('/api/register/check-verification-code', (req, res, next) => {
     appEmailVerification.verifyCode(req, res, next);
+})
+    .post('/api/auth/logoutUser', (req, res, next) => {
+    appAuthController.logoutUser(req, res, next);
 });
 exports.default = publicRoutes;

@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response } from 'express';
 
 export interface RequestWithBody extends Request {
   body: { [key: string]: string | undefined };
@@ -8,10 +8,21 @@ export interface ResponseWithBody extends Response {
 }
 
 export enum Roles {
-  ADMIN = "Admin",
-  USER = "User",
+  ADMIN = 'Admin',
+  USER = 'User',
 }
 
 export type RoleAssignments = {
   [key in Roles]?: boolean;
 };
+
+export interface UserInfo {
+  userInfo: {
+    id: number;
+    roles: {
+      User: boolean;
+    };
+    email: string;
+    userName: string;
+  };
+}

@@ -20,25 +20,59 @@ let UserInvitationsService = class UserInvitationsService {
         this.webSocketService = webSocketService;
         this.appUserInvitationsRepository = appUserInvitationsRepository;
     }
-    async addPeopleToListInvitations(invitedEmailAddresses, listId, creatorId) {
+    async addPeopleToListInvitations(invitedEmailAddresses, listId, creatorId, creatorEmail, creatorUserName, listName, listDescription) {
         await this.appUserInvitationsRepository.inviteUsersToList(invitedEmailAddresses, listId, creatorId);
         const getPeopleToInvite = await this.appUserInvitationsRepository.getPeopleToInviteByListId(listId);
-        await this.invitePeople(getPeopleToInvite, listId);
+        await this.invitePeople(getPeopleToInvite, listId, creatorEmail, creatorUserName, listName, listDescription);
     }
-    async fetchUserPendingInvitations(userId) {
+    async fetchUserInvitations(userId, status) {
         try {
-            const data = await this.appUserInvitationsRepository.getListInvitationPerUser(userId);
+            const data = await this.appUserInvitationsRepository.getListInvitationPerUser(userId, status);
             return data;
         }
         catch (error) {
             throw error;
         }
     }
-    async invitePeople(invitedUsers, listId) {
-        invitedUsers.map((user) => {
-            if (user.is_already_active_user) {
+    async invitePeople(invitedUsers, listId, creatorEmail, creatorUserName, listName, listDescription) {
+        invitedUsers.map((invitation) => {
+            if (invitation.is_already_active_user) {
                 try {
-                    this.webSocketService.emit('list-invitation-backend', { userId: user.user_id, listId });
+                    //userId : userId to invite
+                    this.webSocketService.emit('list-invitation-backend', {
+                        id: invitation.id,
+                        userId: invitation.user_id,
+                        status: 1,
+                        listId,
+                        creatorEmail,
+                        creatorUserName,
+                        listName,
+                        listDescription,
+                    });
+                    // type IInvitation = {
+                    //   id: string
+                    //   list_id: string
+                    //   user_id: number
+                    //   status: number
+                    //   'app-lists': {
+                    //     listName: string
+                    //     description: string
+                    //   }
+                    //   'app-users': {
+                    //     email: string
+                    //     userName: string
+                    //   }
+                    // }
+                    // this.webSocketService.emit('list-invitation-backend', {
+                    //   id: invitation.id,
+                    //   user_id: invitation.user_id,
+                    //   list_id: listId,
+                    //   status: 1,
+                    //   creatorEmail,
+                    //   creatorUserName,
+                    //   listName,
+                    //   listDescription,
+                    // });
                 }
                 catch (error) {
                     throw new Error(`message: ${error}`);
@@ -48,6 +82,15 @@ let UserInvitationsService = class UserInvitationsService {
                 // Todo : case 2 : send an email to those not registered in the app
             }
         });
+    }
+    async changeInvitationStatus(invitationId, userId, listId, status) {
+        try {
+            const response = await this.appUserInvitationsRepository.changeInvitationStatus(invitationId, userId, listId, status);
+            return response;
+        }
+        catch (error) {
+            throw error;
+        }
     }
 };
 UserInvitationsService = __decorate([

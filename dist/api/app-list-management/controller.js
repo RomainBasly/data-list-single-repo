@@ -16,6 +16,7 @@ exports.ListManagementController = void 0;
 const tsyringe_1 = require("tsyringe");
 const services_1 = require("../../domain/ListManagement/services");
 const validation_1 = require("../../domain/ListManagement/validation");
+const helpers_1 = require("../../common/helpers");
 let ListManagementController = class ListManagementController {
     constructor(listManagementService, createListValidatorService) {
         this.listManagementService = listManagementService;
@@ -23,16 +24,21 @@ let ListManagementController = class ListManagementController {
     }
     async createList(req, res, next) {
         try {
-            const { name, accessLevel, creatorId, description, emails, cyphered } = req.body;
+            const { name: listName, accessLevel, creatorId, description, emails, cyphered } = req.body;
+            const { userInfo } = (0, helpers_1.getFromJWTToken)(req, 'accessToken');
+            const creatorUserName = userInfo.userName;
+            const creatorEmail = userInfo.email;
             const validatedInputs = await this.createListValidatorService.preCheck({
-                name,
+                name: listName,
                 accessLevel,
                 description,
                 creatorId,
+                creatorEmail,
+                creatorUserName,
                 emails,
                 cyphered,
             });
-            await this.listManagementService.createList(validatedInputs);
+            await this.listManagementService.createList(validatedInputs, creatorUserName, creatorEmail);
             res.status(201).json({ message: 'new list created' });
         }
         catch (error) {

@@ -11,7 +11,8 @@ export class CreateListValidatorService {
     const schema = yup.object().shape({
       name: yup.string().required(),
       accessLevel: yup.string().required(),
-      creatorEmail: yup.string(),
+      creatorEmail: yup.string().required(),
+      creatorUserName: yup.string().required(),
       emails: yup.array().of(yup.string().required()),
       description: yup.string().optional(),
       cyphered: yup.boolean().optional(),

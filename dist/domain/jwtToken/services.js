@@ -15,6 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TokenService = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const tsyringe_1 = require("tsyringe");
+const errors_1 = require("../common/errors");
+const helpers_1 = require("../../common/helpers");
 let TokenService = class TokenService {
     constructor() {
         this.accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
@@ -23,12 +25,30 @@ let TokenService = class TokenService {
     generateAccessToken(payload) {
         if (!this.accessTokenSecret)
             return null;
-        return jsonwebtoken_1.default.sign(payload, this.accessTokenSecret, { expiresIn: '3600s' });
+        return jsonwebtoken_1.default.sign(payload, this.accessTokenSecret, { expiresIn: '7200s' });
     }
     generateRefreshToken(payload) {
         if (!this.refreshTokenSecret)
             return null;
         return jsonwebtoken_1.default.sign(payload, this.refreshTokenSecret, { expiresIn: '60d' });
+    }
+    getUserIdFromAccessToken(req) {
+        const cookieHeader = req.headers.cookie;
+        if (!cookieHeader) {
+            throw new errors_1.ForbiddenError(errors_1.ErrorMessages.FORBIDDEN_ERROR);
+        }
+        const cookieRefreshToken = (0, helpers_1.retrieveTokenFromCookie)(cookieHeader, 'accessToken');
+        if (!cookieRefreshToken) {
+            throw new errors_1.ForbiddenError(errors_1.ErrorMessages.FORBIDDEN_ERROR);
+        }
+        const accessToken = cookieRefreshToken.split('=')[1];
+        const decoded = jsonwebtoken_1.default.decode(accessToken);
+        if (decoded && decoded.userInfo && decoded.userInfo.id) {
+            return decoded.userInfo.id.toString();
+        }
+        else {
+            throw new errors_1.ForbiddenError(errors_1.ErrorMessages.FORBIDDEN_ERROR);
+        }
     }
 };
 exports.TokenService = TokenService;

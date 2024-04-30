@@ -31,8 +31,24 @@ export class AppUserRepository implements IAppUserRepository {
     return await supabase.from('app-users').select().eq('refreshToken', refreshToken);
   }
 
-  public async clearUserRefreshToken(refreshToken: string) {
-    return await supabase.from('app-users').update({ refreshToken: '' }).eq('refreshToken', refreshToken);
+  public async clearRefreshTokenWithUserId(userId: string) {
+    const { data, error } = await supabase.from('app-users').update({ refreshToken: '' }).eq('user_id', userId);
+    if (error) {
+      throw new Error(
+        `something when wrong in the appUserRepository while suppressing the refreshToken with userId: ${error.message}`
+      );
+    }
+  }
+  public async clearRefreshTokenWithRefreshToken(refreshToken: string) {
+    const { data, error } = await supabase
+      .from('app-users')
+      .update({ refreshToken: '' })
+      .eq('refreshToken', refreshToken);
+    if (error) {
+      throw new Error(
+        `something when wrong in the appUserRepository while suppressing the refreshToken with refreshToken: ${error.message}`
+      );
+    }
   }
 
   public async getUserByRefreshToken(token: string): Promise<User | null> {

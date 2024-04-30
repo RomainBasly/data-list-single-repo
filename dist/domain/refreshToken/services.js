@@ -29,6 +29,7 @@ let RefreshTokenService = class RefreshTokenService {
             throw new errors_1.NoPreexistingRefreshToken(errors_1.ErrorMessages.NO_EXISTING_REFRESH_TOKEN);
         return foundUser;
     }
+    async disconnectUser(userId, refreshToken) { }
     async handleTokenRefresh(existingRefreshToken, refreshTokenSecret, accessTokenSecret, foundUser) {
         const decodedPayload = await (0, helpers_1.verifyJwt)(existingRefreshToken, refreshTokenSecret);
         if (!decodedPayload.email || foundUser.email !== decodedPayload.email) {
@@ -37,9 +38,9 @@ let RefreshTokenService = class RefreshTokenService {
         if (!accessTokenSecret) {
             throw new errors_1.accessTokenError(errors_1.ErrorMessages.ACCESSTOKEN_ERROR);
         }
-        const { user_id, email } = foundUser;
+        const { user_id, userName, email } = foundUser;
         const accessToken = this.tokenService.generateAccessToken({
-            userInfo: { id: user_id, roles: foundUser.roles },
+            userInfo: { id: user_id, roles: foundUser.roles, userName, email },
         });
         if (!accessToken) {
             throw new errors_1.FailToGenerateTokens(errors_1.ErrorMessages.FAIL_TO_GENERATE_TOKENS);

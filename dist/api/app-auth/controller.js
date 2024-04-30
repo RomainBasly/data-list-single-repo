@@ -24,8 +24,8 @@ const errors_1 = require("../../domain/common/errors");
 // Here is injection dependencies used in this architecture
 // If you do not get it please check tsyringe
 let AppAuthController = class AppAuthController {
-    constructor(userService) {
-        this.userService = userService;
+    constructor(appAuthService) {
+        this.appAuthService = appAuthService;
     }
     async register(req, res, next) {
         const { id, userName, email, password } = req.body;
@@ -34,7 +34,7 @@ let AppAuthController = class AppAuthController {
             return;
         }
         try {
-            await this.userService.registerUser(id, userName, email, password);
+            await this.appAuthService.registerUser(id, userName, email, password);
             res.status(201).json({ message: 'new user created' });
         }
         catch (error) {
@@ -50,33 +50,41 @@ let AppAuthController = class AppAuthController {
     async login(req, res, next) {
         try {
             const { email, password } = req.body;
-            const { accessToken, refreshToken, id } = await this.userService.login(email, password);
+            const { accessToken, refreshToken } = await this.appAuthService.login(email, password);
             (0, assert_1.default)(refreshToken, 'problem with refreshToken inside controller');
             (0, assert_1.default)(accessToken, 'problem with accesstoken inside controller');
             (0, helpers_1.cookieHandler)(req, res, refreshToken);
-            res.json({ accessToken, refreshToken, id });
+            res.json({ accessToken, refreshToken });
         }
         catch (error) {
             next(error);
         }
     }
-    async logoutUser(req, res) {
-        const cookies = req.cookies;
-        if (!(cookies === null || cookies === void 0 ? void 0 : cookies.jwt))
-            return res.sendStatus(204);
-        const refreshToken = cookies.jwt;
-        const isLoggedOut = await this.userService.logoutUser(refreshToken);
-        if (!isLoggedOut) {
-            res.clearCookie('jwt', { httpOnly: true, sameSite: 'none', secure: true, maxAge: 24 * 60 * 60 * 1000 });
-            return res.send(204);
+    async logoutUser(req, res, next) {
+        try {
+            const cookieHeaders = req.headers.cookie;
+            if (!cookieHeaders) {
+                return res.sendStatus(400).json({ message: 'Problem with the cookieHeader not present in the request' });
+            }
+            const cookieRefreshToken = (0, helpers_1.retrieveTokenFromCookie)(cookieHeaders, 'refreshToken');
+            const refreshToken = cookieRefreshToken === null || cookieRefreshToken === void 0 ? void 0 : cookieRefreshToken.split('=')[1];
+            const userId = req.body['userId'];
+            await this.appAuthService.logoutUser(userId, refreshToken);
+            res.status(200).json({
+                status: 'ok',
+                message: 'Disconnection OK. Please clear cookies and redirect to login page.',
+                action: 'clear_cookies_and_redirect',
+                redirectUrl: '/login',
+            });
         }
-        res.clearCookie('jwt', { httpOnly: true, sameSite: 'none', secure: true, maxAge: 24 * 60 * 60 * 1000 });
-        res.sendStatus(204);
+        catch (error) {
+            next(error);
+        }
     }
 };
 exports.AppAuthController = AppAuthController;
 exports.AppAuthController = AppAuthController = __decorate([
     (0, tsyringe_1.injectable)(),
-    __param(0, (0, tsyringe_1.inject)(services_1.UserService)),
-    __metadata("design:paramtypes", [services_1.UserService])
+    __param(0, (0, tsyringe_1.inject)(services_1.AppAuthService)),
+    __metadata("design:paramtypes", [services_1.AppAuthService])
 ], AppAuthController);

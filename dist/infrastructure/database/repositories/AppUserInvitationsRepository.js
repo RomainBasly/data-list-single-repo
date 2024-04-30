@@ -50,7 +50,7 @@ let AppUserInvitationsRepository = class AppUserInvitationsRepository {
         try {
             const { data, error } = await supabaseClient_1.default
                 .from('app-list-invitations')
-                .select('email, list_id, is_already_active_user, is_already_invited, user_id')
+                .select('id, email, list_id, is_already_active_user, is_already_invited, user_id')
                 .eq('list_id', listId)
                 .eq('is_already_invited', false);
             if (error)
@@ -61,9 +61,33 @@ let AppUserInvitationsRepository = class AppUserInvitationsRepository {
             throw new Error('error getting people invited (catch)');
         }
     }
-    async getListInvitationPerUser(userId) {
-        let { data, error } = await supabaseClient_1.default.from('app-list-invitations').select('*').eq('user_id', userId).eq('status', 1);
-        return data;
+    async getListInvitationPerUser(userId, status) {
+        try {
+            let { data } = await supabaseClient_1.default
+                .from('app-list-invitations')
+                .select(`id, list_id, user_id, status, app-lists:list_id ( listName, description ), app-users:creator_id ( email, userName )`)
+                .eq('user_id', userId)
+                .eq('status', status)
+                .order('created_at', { ascending: false });
+            return data;
+        }
+        catch (error) {
+            throw new Error('error getting people invitations');
+        }
+    }
+    async changeInvitationStatus(invitationId, userId, listId, status) {
+        try {
+            const { data } = await supabaseClient_1.default.rpc('handle_list_invitation', {
+                invitation_id: invitationId,
+                user_id: userId,
+                app_list_id: listId,
+                invitation_status: status,
+            });
+            return data;
+        }
+        catch (error) {
+            throw new Error('error changing the status of the invitation');
+        }
     }
 };
 exports.AppUserInvitationsRepository = AppUserInvitationsRepository;

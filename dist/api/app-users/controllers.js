@@ -64,6 +64,6 @@ let AppUserController = class AppUserController {
 exports.AppUserController = AppUserController;
 exports.AppUserController = AppUserController = __decorate([
     (0, tsyringe_1.injectable)(),
-    __param(0, (0, tsyringe_1.inject)(services_1.UserService)),
-    __metadata("design:paramtypes", [services_1.UserService])
+    __param(0, (0, tsyringe_1.inject)(services_1.AppAuthService)),
+    __metadata("design:paramtypes", [services_1.AppAuthService])
 ], AppUserController);

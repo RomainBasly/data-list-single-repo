@@ -3,10 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyRoles = exports.corsOriginCheck = exports.verifyUserAccessToken = exports.verifyRequestApiKey = void 0;
+exports.verifyRoles = exports.corsOriginCheck = exports.verifyRefreshToken = exports.verifyUserAccessToken = exports.verifyRequestApiKey = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const common_1 = require("../config/common");
+const errors_1 = require("../domain/common/errors");
+const helpers_1 = require("../common/helpers");
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 const envApiKey = process.env.BACKEND_API_KEY;
 const verifyRequestApiKey = (req, res, next) => {
     const apiKey = req.header('X-API-KEY');
@@ -19,18 +22,20 @@ const verifyRequestApiKey = (req, res, next) => {
 };
 exports.verifyRequestApiKey = verifyRequestApiKey;
 const verifyUserAccessToken = (req, res, next) => {
-    var _a;
     try {
-        const token = (_a = req.headers['authorization']) === null || _a === void 0 ? void 0 : _a.split(' ')[1];
-        console.log('token', token);
-        if (!token)
-            return res
-                .status(401)
-                .json({ message: 'No accessToken provided. Please include an accessToken to your request' });
+        const cookieHeader = req.headers.cookie;
+        if (!cookieHeader) {
+            throw new errors_1.ForbiddenError(errors_1.ErrorMessages.FORBIDDEN_ERROR);
+        }
+        const accessTokenCookie = (0, helpers_1.retrieveTokenFromCookie)(cookieHeader, 'accessToken');
+        if (!accessTokenCookie) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
         if (!accessTokenSecret)
             throw new Error('no accessToken accessible in middleware (verifyToken)');
-        const decodedToken = jsonwebtoken_1.default.verify(token, accessTokenSecret);
-        jsonwebtoken_1.default.verify(token, accessTokenSecret, (err, decoded) => {
+        const accessToken = accessTokenCookie.split('=')[1];
+        const decodedToken = jsonwebtoken_1.default.verify(accessToken, accessTokenSecret);
+        jsonwebtoken_1.default.verify(accessToken, accessTokenSecret, (err, decoded) => {
             if (err) {
                 throw err;
             }
@@ -44,6 +49,30 @@ const verifyUserAccessToken = (req, res, next) => {
     }
 };
 exports.verifyUserAccessToken = verifyUserAccessToken;
+const verifyRefreshToken = (req, res, next) => {
+    try {
+        const cookieHeader = req.headers.cookie;
+        if (!cookieHeader)
+            throw new Error('no refreshToken accessible in middleware (verifyToken)');
+        const refreshTokenCookie = (0, helpers_1.retrieveTokenFromCookie)(cookieHeader, 'refreshToken');
+        if (!refreshTokenCookie) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+        if (!refreshTokenSecret)
+            throw new Error('no refreshToken accessible in middleware (verifyToken)');
+        const refreshToken = refreshTokenCookie.split('=')[1];
+        jsonwebtoken_1.default.verify(refreshToken, refreshTokenSecret, (err) => {
+            if (err) {
+                throw err;
+            }
+            next();
+        });
+    }
+    catch (error) {
+        next(error);
+    }
+};
+exports.verifyRefreshToken = verifyRefreshToken;
 const corsOriginCheck = (req, res, next) => {
     const origin = req.headers.origin;
     if (origin && common_1.allowedOrigins.includes(origin)) {

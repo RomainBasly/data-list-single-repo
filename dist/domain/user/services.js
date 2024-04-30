@@ -12,14 +12,14 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
     return function (target, key) { decorator(target, key, paramIndex); }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.UserService = void 0;
+exports.AppAuthService = void 0;
 const tsyringe_1 = require("tsyringe");
 const api_1 = require("../../common/types/api");
 const AppUserRepository_1 = require("../../infrastructure/database/repositories/AppUserRepository");
 const errors_1 = require("../common/errors");
 const services_1 = require("../jwtToken/services");
 const services_2 = require("../password/services");
-let UserService = class UserService {
+let AppAuthService = class AppAuthService {
     constructor(userRepository, passwordService, tokenService) {
         this.userRepository = userRepository;
         this.passwordService = passwordService;
@@ -49,26 +49,37 @@ let UserService = class UserService {
             }
             const roles = this.addUserRole(user);
             const accessToken = this.tokenService.generateAccessToken({
-                userInfo: { id: user.user_id, roles },
+                userInfo: { id: user.user_id, roles, email, userName: user.userName },
             });
             const refreshToken = this.tokenService.generateRefreshToken({ email });
             if (!refreshToken || !accessToken) {
                 throw new errors_1.FailToGenerateTokens(errors_1.ErrorMessages.FAIL_TO_GENERATE_TOKENS);
             }
             await this.userRepository.updateRefreshToken(refreshToken, email);
-            return { accessToken, refreshToken, id: user.user_id };
+            return { accessToken, refreshToken };
         }
         catch (error) {
-            console.error('something went wrong in the service', error);
+            console.error('something went wrong in the login service', error);
             throw error;
         }
     }
-    async logoutUser(refreshToken) {
-        const foundUser = await this.userRepository.findUserByRefreshToken(refreshToken);
-        if (!foundUser)
-            return false;
-        await this.userRepository.clearUserRefreshToken(refreshToken);
-        return true;
+    async logoutUser(userId, refreshToken) {
+        try {
+            await this.userRepository.clearRefreshTokenWithUserId(userId);
+        }
+        catch (error) {
+            try {
+                if (refreshToken) {
+                    await this.userRepository.clearRefreshTokenWithUserId(refreshToken);
+                }
+            }
+            catch (error) {
+                console.error('something went wrong in the logout service after two attempts', error);
+                throw error;
+            }
+            console.error('something went wrong in the logout service', error);
+            throw error;
+        }
     }
     addUserRole(user) {
         const defaultRole = { [api_1.Roles.USER]: true };
@@ -76,8 +87,8 @@ let UserService = class UserService {
         return Object.assign(Object.assign({}, defaultRole), userRolesFromDB);
     }
 };
-exports.UserService = UserService;
-exports.UserService = UserService = __decorate([
+exports.AppAuthService = AppAuthService;
+exports.AppAuthService = AppAuthService = __decorate([
     (0, tsyringe_1.injectable)(),
     __param(0, (0, tsyringe_1.inject)(AppUserRepository_1.AppUserRepository)),
     __param(1, (0, tsyringe_1.inject)(services_2.PasswordService)),
@@ -85,4 +96,4 @@ exports.UserService = UserService = __decorate([
     __metadata("design:paramtypes", [AppUserRepository_1.AppUserRepository,
         services_2.PasswordService,
         services_1.TokenService])
-], UserService);
+], AppAuthService);

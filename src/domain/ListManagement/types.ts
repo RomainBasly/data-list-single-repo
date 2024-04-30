@@ -4,12 +4,14 @@ export type List = {
   name: string;
   accessLevel: string;
   creatorId: number;
+  creatorEmail: string;
+  creatorUserName: string;
   emails?: string[];
   description?: string;
   cyphered?: boolean;
 };
 export type IInputAppList = {
-  list_name: string;
+  listName: string;
   access_level: string;
   description?: string;
   cyphered?: boolean;
@@ -29,6 +31,7 @@ export type SupabaseReturnedList = {
 };
 
 export type ReturnedInvitedUsers = {
+  id: string;
   email: string;
   list_id: UUID;
   is_already_active_user: boolean;

@@ -1,11 +1,11 @@
 import { inject, injectable } from 'tsyringe';
 import { Response, Request } from 'express';
-import { UserService } from '../../domain/user/services';
+import { AppAuthService } from '../../domain/user/services';
 import { UserAlreadyExistsError } from '../../domain/common/errors';
 
 @injectable()
 export class AppUserController {
-  constructor(@inject(UserService) private readonly userService: UserService) {}
+  constructor(@inject(AppAuthService) private readonly userService: AppAuthService) {}
 
   async registerNewUser(req: Request, res: Response): Promise<void> {}
 

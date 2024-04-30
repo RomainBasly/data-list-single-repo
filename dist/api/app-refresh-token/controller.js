@@ -19,6 +19,7 @@ const services_2 = require("../../domain/refreshToken/services");
 //import { cookieHandler } from '../../common/helpers';
 const AppUserRepository_1 = require("../../infrastructure/database/repositories/AppUserRepository");
 const errors_1 = require("../../domain/common/errors");
+const helpers_1 = require("../../common/helpers");
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
 let AppRefreshTokenController = class AppRefreshTokenController {
@@ -27,20 +28,27 @@ let AppRefreshTokenController = class AppRefreshTokenController {
         this.tokenService = tokenService;
         this.userRepository = userRepository;
     }
-    async handleRefreshToken(req, res, next) {
-        const authHeader = req.headers.authorization;
-        if (!authHeader)
-            return res.status(401).json({ error: 'Here is a problem of being Unauthorized' });
-        const token = authHeader.split(' ')[1];
+    async generateNewAccessToken(req, res, next) {
+        const cookieHeader = req.headers.cookie;
+        if (!cookieHeader) {
+            return res.status(401).json({ message: 'Unauthorized 1' });
+        }
+        const cookieRefreshToken = (0, helpers_1.retrieveTokenFromCookie)(cookieHeader, 'refreshToken');
+        if (!cookieRefreshToken) {
+            return res.status(401).json({ message: 'Unauthorized 2' });
+        }
+        const refreshToken = cookieRefreshToken.split('=')[1];
         if (!refreshTokenSecret)
             throw new Error('no refreshTokenSecret in middleware');
         if (!accessTokenSecret)
             throw new Error('no accessTokenSecret in middleware');
+        console.log('refreshToken', refreshToken);
         try {
-            const foundUser = await this.refreshTokenService.getUserByRefreshToken(token);
+            const foundUser = await this.refreshTokenService.getUserByRefreshToken(refreshToken);
+            console.log('founduser', foundUser);
             if (!foundUser)
                 return res.status(401).json({ error: errors_1.ErrorMessages.UNAUTHORIZED });
-            const { newAccessToken } = await this.refreshTokenService.handleTokenRefresh(token, refreshTokenSecret, accessTokenSecret, foundUser);
+            const { newAccessToken } = await this.refreshTokenService.handleTokenRefresh(refreshToken, refreshTokenSecret, accessTokenSecret, foundUser);
             res.json({ accessToken: newAccessToken });
         }
         catch (error) {

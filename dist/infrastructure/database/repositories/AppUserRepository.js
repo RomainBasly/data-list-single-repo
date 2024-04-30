@@ -36,8 +36,20 @@ let AppUserRepository = class AppUserRepository {
     async findUserByRefreshToken(refreshToken) {
         return await supabaseClient_1.default.from('app-users').select().eq('refreshToken', refreshToken);
     }
-    async clearUserRefreshToken(refreshToken) {
-        return await supabaseClient_1.default.from('app-users').update({ refreshToken: '' }).eq('refreshToken', refreshToken);
+    async clearRefreshTokenWithUserId(userId) {
+        const { data, error } = await supabaseClient_1.default.from('app-users').update({ refreshToken: '' }).eq('user_id', userId);
+        if (error) {
+            throw new Error(`something when wrong in the appUserRepository while suppressing the refreshToken with userId: ${error.message}`);
+        }
+    }
+    async clearRefreshTokenWithRefreshToken(refreshToken) {
+        const { data, error } = await supabaseClient_1.default
+            .from('app-users')
+            .update({ refreshToken: '' })
+            .eq('refreshToken', refreshToken);
+        if (error) {
+            throw new Error(`something when wrong in the appUserRepository while suppressing the refreshToken with refreshToken: ${error.message}`);
+        }
     }
     async getUserByRefreshToken(token) {
         const { data, error } = await supabaseClient_1.default.from('app-users').select().eq('refreshToken', token);

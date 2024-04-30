@@ -28,30 +28,32 @@ let ListManagementService = class ListManagementService {
         this.userInvitationsService = userInvitationsService;
         this.appUserInvitationsRepository = appUserInvitationsRepository;
     }
-    async createList(inputs) {
+    async createList(inputs, creatorUserName, creatorEmail) {
         try {
             // étape 1 : créer la liste
             /// tous les champs utiles sont là
             /// check if the emails are valid
             /// Vérifier que la personne est ou n'est pas dans la BDD
             // étape 2 : envoyer un email pour faire connaitre l'application
-            const createListInput = {
-                list_name: inputs.name,
+            const { emails, description, name } = inputs;
+            const createListInputForListCreation = {
+                listName: inputs.name,
                 access_level: inputs.accessLevel,
                 description: inputs.description,
                 cyphered: false,
             };
-            const { emails } = inputs;
-            const dataListCreation = await this.appListRepository.createList(createListInput);
+            const dataListCreation = await this.appListRepository.createList(createListInputForListCreation);
             if (dataListCreation && dataListCreation.id) {
                 await this.appUserInvitationsRepository.addUserToListAsBeneficiary(dataListCreation.id, inputs.creatorId);
             }
             const validatedEmailAddresses = await this.validateEmails(emails);
             if (validatedEmailAddresses.length > 0) {
-                await this.userInvitationsService.addPeopleToListInvitations(validatedEmailAddresses, dataListCreation.id, inputs.creatorId);
+                await this.userInvitationsService.addPeopleToListInvitations(validatedEmailAddresses, dataListCreation.id, inputs.creatorId, creatorEmail, creatorUserName, name, description);
             }
             // ajout des emails dans app-list-invitations
             // passage de l'envoi des emails + ajout dans la BDD
+            // envoyer une information à la BDD
+            // envoyer l'information aux personnes concernées
         }
         catch (error) {
             console.log('error', error);

@@ -18,21 +18,36 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppUserInvitationsController = void 0;
 const tsyringe_1 = require("tsyringe");
 const services_1 = __importDefault(require("../../domain/user/Invitations/services"));
-const errors_1 = require("../../domain/common/errors");
+const assert_1 = __importDefault(require("assert"));
+const services_2 = require("../../domain/jwtToken/services");
 let AppUserInvitationsController = class AppUserInvitationsController {
-    constructor(userInvitationsService) {
+    constructor(userInvitationsService, tokenService) {
         this.userInvitationsService = userInvitationsService;
+        this.tokenService = tokenService;
     }
     async getUserInvitations(req, res, next) {
+        const userId = this.tokenService.getUserIdFromAccessToken(req);
+        (0, assert_1.default)(userId, 'no userId given in the request');
         try {
-            const { userId } = req.params;
-            const id = String(req.id);
-            if (!userId || userId !== id) {
-                throw new errors_1.ForbiddenError(errors_1.ErrorMessages.FORBIDDEN_ERROR);
-            }
-            const data = await this.userInvitationsService.fetchUserPendingInvitations(userId);
-            console.log('data controller', data);
+            const { status } = req.params;
+            const data = await this.userInvitationsService.fetchUserInvitations(userId, parseInt(status));
             res.json(data);
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+    async handleListInvitationStatus(req, res, next) {
+        try {
+            const { invitationId } = req.params;
+            const { listId, status } = req.body;
+            const userId = this.tokenService.getUserIdFromAccessToken(req);
+            (0, assert_1.default)(listId, 'No listId');
+            (0, assert_1.default)(invitationId, 'No invitationId');
+            (0, assert_1.default)(userId, 'no userId given in the request');
+            await this.userInvitationsService.changeInvitationStatus(parseInt(invitationId), parseInt(userId), listId, status);
+            //
+            res.status(200).json({ message: 'Invitation modified' });
         }
         catch (error) {
             next(error);
@@ -43,5 +58,7 @@ exports.AppUserInvitationsController = AppUserInvitationsController;
 exports.AppUserInvitationsController = AppUserInvitationsController = __decorate([
     (0, tsyringe_1.injectable)(),
     __param(0, (0, tsyringe_1.inject)(services_1.default)),
-    __metadata("design:paramtypes", [services_1.default])
+    __param(1, (0, tsyringe_1.inject)(services_2.TokenService)),
+    __metadata("design:paramtypes", [services_1.default,
+        services_2.TokenService])
 ], AppUserInvitationsController);

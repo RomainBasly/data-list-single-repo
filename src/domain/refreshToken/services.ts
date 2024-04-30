@@ -25,6 +25,8 @@ export class RefreshTokenService implements IRefreshTokenService {
     return foundUser;
   }
 
+  public async disconnectUser(userId: string, refreshToken: string): Promise<void> {}
+
   public async handleTokenRefresh(
     existingRefreshToken: string,
     refreshTokenSecret: string,
@@ -38,9 +40,9 @@ export class RefreshTokenService implements IRefreshTokenService {
     if (!accessTokenSecret) {
       throw new accessTokenError(ErrorMessages.ACCESSTOKEN_ERROR);
     }
-    const { user_id, email } = foundUser;
+    const { user_id, userName, email } = foundUser;
     const accessToken = this.tokenService.generateAccessToken({
-      userInfo: { id: user_id, roles: foundUser.roles },
+      userInfo: { id: user_id, roles: foundUser.roles, userName, email },
     });
     if (!accessToken) {
       throw new FailToGenerateTokens(ErrorMessages.FAIL_TO_GENERATE_TOKENS);
