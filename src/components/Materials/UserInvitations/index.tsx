@@ -18,6 +18,7 @@ type IInvitation = {
   'app-lists': {
     listName: string
     description: string
+    thematic: string
   }
   'app-users': {
     email: string
@@ -49,6 +50,7 @@ export default function UserInvitations() {
           'app-lists': {
             listName: packet.data.listName as string,
             description: packet.data.listDescription as string,
+            thematic: packet.data.thematic as string,
           },
           'app-users': {
             email: packet.data.creatorEmail as string,
@@ -83,7 +85,6 @@ export default function UserInvitations() {
             true,
           )
           const status = 1
-
           const response = await fetch(
             `/api/user/getInvitations?status=${status}`,
             {
@@ -210,50 +211,18 @@ export default function UserInvitations() {
 
   return (
     <div className={classes['root']}>
-      <h2>Mes Invitations en attente ({pendingInvitations.length})</h2>
-      <Suspense fallback={'Loading...'}>
-        {pendingInvitations.length === 0 ? (
-          <div className={classes['no-invitation']}>
-            <div className={classes['svg']}>{<InformationCircleIcon />}</div>
-            <div className={classes['text-content']}>
-              Pas de nouvelles invitations
+      <div className={classes['pending-invitations-section']}>
+        <h2>Mes Invitations en attente ({pendingInvitations.length})</h2>
+        <Suspense fallback={'Loading...'}>
+          {pendingInvitations.length === 0 ? (
+            <div className={classes['no-invitation']}>
+              <div className={classes['svg']}>{<InformationCircleIcon />}</div>
+              <div className={classes['text-content']}>
+                Pas de nouvelles invitations
+              </div>
             </div>
-          </div>
-        ) : (
-          pendingInvitations.map(async (invitation) => (
-            <InvitationCard
-              key={parseInt(invitation.id)}
-              listName={invitation['app-lists'].listName}
-              listId={invitation.list_id}
-              creatorName={invitation['app-users'].userName}
-              description={invitation['app-lists'].description}
-              creatorEmail={invitation['app-users'].email}
-              onAccept={() =>
-                sendInvitationOnStatusChange(
-                  invitation.id,
-                  invitation.list_id,
-                  2,
-                  false,
-                )
-              }
-              onRefuse={() =>
-                sendInvitationOnStatusChange(
-                  invitation.id,
-                  invitation.list_id,
-                  3,
-                  false,
-                )
-              }
-              invitationId={invitation.id}
-            ></InvitationCard>
-          ))
-        )}
-      </Suspense>
-      <Suspense>
-        {refusedInvitations.length > 0 && (
-          <>
-            <h2>Mes Invitations refusées {refusedInvitations.length}</h2>
-            {refusedInvitations.map(async (invitation) => (
+          ) : (
+            pendingInvitations.map(async (invitation) => (
               <InvitationCard
                 key={parseInt(invitation.id)}
                 listName={invitation['app-lists'].listName}
@@ -266,17 +235,55 @@ export default function UserInvitations() {
                     invitation.id,
                     invitation.list_id,
                     2,
-                    true,
+                    false,
+                  )
+                }
+                thematic={invitation['app-lists'].thematic}
+                onRefuse={() =>
+                  sendInvitationOnStatusChange(
+                    invitation.id,
+                    invitation.list_id,
+                    3,
+                    false,
                   )
                 }
                 invitationId={invitation.id}
-                isMasked={true}
-                acceptButtonText={"Changer d'avis et accepter"}
               ></InvitationCard>
-            ))}
-          </>
-        )}
-      </Suspense>
+            ))
+          )}
+        </Suspense>
+      </div>
+      <div className={classes['refused-invitations-section']}>
+        <Suspense>
+          {refusedInvitations.length > 0 && (
+            <div className={classes['refused-invitations-container']}>
+              <h2>Mes Invitations refusées ({refusedInvitations.length})</h2>
+              {refusedInvitations.map(async (invitation) => (
+                <InvitationCard
+                  key={parseInt(invitation.id)}
+                  listName={invitation['app-lists'].listName}
+                  listId={invitation.list_id}
+                  creatorName={invitation['app-users'].userName}
+                  description={invitation['app-lists'].description}
+                  creatorEmail={invitation['app-users'].email}
+                  onAccept={() =>
+                    sendInvitationOnStatusChange(
+                      invitation.id,
+                      invitation.list_id,
+                      2,
+                      true,
+                    )
+                  }
+                  thematic={invitation['app-lists'].thematic}
+                  invitationId={invitation.id}
+                  isMasked={true}
+                  acceptButtonText={"Changer d'avis et accepter"}
+                ></InvitationCard>
+              ))}
+            </div>
+          )}
+        </Suspense>
+      </div>
     </div>
   )
 }

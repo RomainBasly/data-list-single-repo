@@ -13,7 +13,6 @@ import {
   FolderPlusIcon,
   UserCircleIcon,
 } from '@heroicons/react/24/solid'
-import { HomeIcon, PencilIcon, XCircleIcon } from '@heroicons/react/24/outline'
 import UserMenuStatus, { EOpeningState } from '@/Stores/UserMenuStatus'
 import { useRouter } from 'next/navigation'
 import classnames from 'classnames'
