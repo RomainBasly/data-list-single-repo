@@ -8,7 +8,7 @@ import {
   BookOpenIcon,
 } from '@heroicons/react/24/outline'
 import classnames from 'classnames'
-import Button from '../Button'
+import Button from '../../Button'
 
 type IProps = {
   key: number
@@ -30,14 +30,6 @@ type IProps = {
 }
 
 export default function InvitationCard(props: IProps) {
-  // Todo : faire apparaitre la description et la possibilité d'accepter ou refuser
-  // Prévoir dans le back que la personne refuse et vérifier que l'id de app-invitation ne soit pas unique pour la réinviter si besoin
-  // Qui gère le fait d'envoyer l'information d'acceptation ou de refus?
-  const [isOpen, setIsOpen] = useState<boolean>(false)
-
-  function openDescription() {
-    setIsOpen(!isOpen)
-  }
   function setAccept(e: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     e.stopPropagation()
     props.onAccept(props.invitationId, props.listId, 2)
@@ -60,7 +52,7 @@ export default function InvitationCard(props: IProps) {
 
   return (
     <div className={classes['root']}>
-      <div className={classes['content']} onClick={openDescription}>
+      <div className={classes['content']}>
         <div className={classes['header']}>
           <div className={classes['thematic']}>{props.thematic}</div>
           <div className={classes['text']}>

@@ -1,6 +1,6 @@
 'use client'
 import React, { Suspense, useEffect, useState } from 'react'
-import InvitationCard from '../InvitationCard'
+import InvitationCard from './InvitationCard'
 import classes from './classes.module.scss'
 import StorageService from '@/Services/CookieService'
 import { getSocket } from '@/components/Elements/Socket'

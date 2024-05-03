@@ -4,9 +4,9 @@ import Layout from '@/components/Elements/Layout'
 import Button from '@/components/Materials/Button'
 import { FolderPlusIcon } from '@heroicons/react/24/solid'
 import Link from 'next/link'
-import SocketConnector from '@/components/Materials/SocketConnector'
 
 import React from 'react'
+import UserLists from '@/components/Materials/UserLists'
 
 export default async function Home() {
   //Here is the request I would like to trigger with the accessToken. How then to inject inside this request?
@@ -14,10 +14,8 @@ export default async function Home() {
   return (
     <Layout pageType="default">
       <div className={classes['root']}>
-        <div className={classes['title-container']}>
-          <h2 className={classes['title']}>Mes listes</h2>
-        </div>
-        <SocketConnector />
+        <div className={classes['title-container']}></div>
+        <UserLists />
         <div className={classes['redirection-button-container']}>
           <Link href="/lists/create-list">
             <Button
