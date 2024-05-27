@@ -6,8 +6,12 @@ type IProps = {
   id: string
   listName: string
   thematic: string
-  sharedWith: string[]
   description: string
+  beneficiaries: {
+    'app-users': {
+      userName: string
+    }
+  }[]
 }
 
 export default function ListCard(props: IProps) {
@@ -21,6 +25,35 @@ export default function ListCard(props: IProps) {
     return firstLetter + restOfLetters
   }
 
+  function formatBeneficiaries(
+    beneficiaryList: {
+      'app-users': {
+        userName: string
+      }
+    }[],
+  ) {
+    switch (beneficiaryList.length) {
+      case 0:
+        return 'Liste privée ou non acceptée par les autres bénéficiaires'
+      case 1:
+        return `Partagée avec ${props.beneficiaries[0]['app-users'].userName}`
+      case 2:
+        return `Partagée avec ${props.beneficiaries[0]['app-users'].userName} et ${props.beneficiaries[1]['app-users'].userName}`
+      case 3:
+        return `Partagée avec ${props.beneficiaries[0]['app-users'].userName}, ${props.beneficiaries[1]['app-users'].userName}
+    et ${props.beneficiaries[2]['app-users'].userName}`
+      case 4:
+        return `Partagée avec ${props.beneficiaries[0]['app-users'].userName}, ${props.beneficiaries[1]['app-users'].userName}
+    et ${props.beneficiaries[2]['app-users'].userName} et une autre personne`
+      default:
+        return `Partagée avec ${
+          props.beneficiaries[0]['app-users'].userName
+        }, ${props.beneficiaries[1]['app-users'].userName} et ${
+          props.beneficiaries[2]['app-users'].userName
+        } et ${props.beneficiaries.length - 2} autres personnes`
+    }
+  }
+
   return (
     <div className={classes['root']}>
       <div className={classes['header']}>
@@ -30,14 +63,13 @@ export default function ListCard(props: IProps) {
         </div>
       </div>
       <div className={classes['title']}>{formatTitle(props.listName)}</div>
-      {props.sharedWith.length > 0 && (
+
+      <div className={classes['shared-with']}>
+        <>{console.log('props', props)}</>
+      </div>
+      {props.beneficiaries.length > 0 && (
         <div className={classes['shared-with']}>
-          Partagée avec {props.sharedWith[0]},{' '}
-          {props.sharedWith[1] ? props.sharedWith[1] : ''}{' '}
-          {props.sharedWith[2]
-            ? `et ${props.sharedWith.length - 2} autre(s)
-          personne(s)`
-            : ''}
+          <>{formatBeneficiaries(props.beneficiaries)}</>
         </div>
       )}
     </div>

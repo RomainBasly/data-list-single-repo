@@ -1,4 +1,4 @@
-import UserListsApi from "@/api/Back/ListInvitationsApi";
+import UserListsApi from "@/api/Back/UserListsApi";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -6,13 +6,15 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const cookieHeader = req.headers.cookie;
-  const status = req.query.status;
+
   try {
-    const invitationsApi = UserListsApi.getInstance();
-    const invitations = await invitationsApi.getInvitations(status, {
+    const listUserApi = UserListsApi.getInstance();
+
+    const data = await listUserApi.getListsByUser({
       Cookie: cookieHeader || "",
     });
-    res.status(200).json(invitations);
+
+    return res.status(200).json(data);
   } catch (error) {
     // Handle errors (e.g., from your backend call)
     console.log("error is", error);

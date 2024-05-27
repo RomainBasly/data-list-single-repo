@@ -11,7 +11,6 @@ export default function CreateList() {
         <div className={classes['content']}>
           <h2 className={classes['subtitle']}>Créer une liste</h2>
           <CreateListForm />
-          <SocketConnector />
         </div>
       </div>
     </Layout>
