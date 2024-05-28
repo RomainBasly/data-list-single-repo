@@ -14,7 +14,6 @@ const publicRoutes_1 = __importDefault(require("./routes/publicRoutes"));
 const auth_middleware_1 = require("./middlewares/auth-middleware");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 require("./api/app-auth/controller");
-require("./api/app-users/controllers");
 const errors_1 = require("./domain/common/errors");
 const common_2 = require("./middlewares/common");
 const containerConfig_1 = require("./config/tsyringe/containerConfig");

@@ -86,6 +86,11 @@ let UserInvitationsService = class UserInvitationsService {
     }
     async changeInvitationStatus(invitationId, userId, listId, status) {
         try {
+            const isAlreadyUser = await this.appUserInvitationsRepository.checkIfUserIsAlreadyBeneficiary(userId, listId);
+            if (isAlreadyUser && isAlreadyUser.length > 0) {
+                console.log(`User ${userId} is already a beneficiary of list ${listId}`);
+                return;
+            }
             const response = await this.appUserInvitationsRepository.changeInvitationStatus(invitationId, userId, listId, status);
             return response;
         }

@@ -24,6 +24,16 @@ let AppListManagementRepository = class AppListManagementRepository {
         }
         return data && data.length > 0 ? data[0] : null;
     }
+    async getListsByUserId(userId) {
+        const { data, error } = await supabaseClient_1.default
+            .from('app-list-beneficiaries')
+            .select('app-lists:app-list-id ( id, listName, description, thematic, beneficiaries:app-list-beneficiaries (app-users:user-id ( user_id, userName )))')
+            .eq('user-id', userId);
+        if (error) {
+            throw new Error('Problem getting the lists');
+        }
+        return data && data.length > 0 ? data : null;
+    }
 };
 exports.AppListManagementRepository = AppListManagementRepository;
 exports.AppListManagementRepository = AppListManagementRepository = __decorate([

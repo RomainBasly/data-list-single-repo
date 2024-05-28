@@ -31,13 +31,19 @@ var __importStar = (this && this.__importStar) || function (mod) {
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CreateListValidatorService = void 0;
+exports.ListValidatorService = void 0;
 const tsyringe_1 = require("tsyringe");
 const yup = __importStar(require("yup"));
 const errors_1 = require("../common/errors");
-let CreateListValidatorService = class CreateListValidatorService {
-    constructor() { }
+const validation_1 = __importDefault(require("../emailVerification/validation"));
+let ListValidatorService = class ListValidatorService {
+    constructor(appEmailValidation) {
+        this.appEmailValidation = appEmailValidation;
+    }
     async preCheck(inputs) {
         const schema = yup.object().shape({
             name: yup.string().required(),
@@ -60,9 +66,19 @@ let CreateListValidatorService = class CreateListValidatorService {
             throw new Error('Error validating the list schema during precheck');
         }
     }
+    async validateEmails(emails) {
+        let emailsAddress = [];
+        if (emails) {
+            await Promise.all(emails.map(async (email) => {
+                const verifiedEmailObject = await this.appEmailValidation.validateEmail(email);
+                emailsAddress.push(verifiedEmailObject.email);
+            }));
+        }
+        return emailsAddress.length > 0 ? emailsAddress : [];
+    }
 };
-exports.CreateListValidatorService = CreateListValidatorService;
-exports.CreateListValidatorService = CreateListValidatorService = __decorate([
+exports.ListValidatorService = ListValidatorService;
+exports.ListValidatorService = ListValidatorService = __decorate([
     (0, tsyringe_1.injectable)(),
-    __metadata("design:paramtypes", [])
-], CreateListValidatorService);
+    __metadata("design:paramtypes", [validation_1.default])
+], ListValidatorService);

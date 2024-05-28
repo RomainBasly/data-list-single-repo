@@ -26,7 +26,7 @@ export class AppUserInvitationsRepository {
 
   public async addUserToListAsBeneficiary(listId: UUID, userId: number) {
     try {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('app-list-beneficiaries')
         .insert([{ 'user-id': userId, 'app-list-id': listId }])
         .select();
@@ -55,7 +55,7 @@ export class AppUserInvitationsRepository {
       let { data } = await supabase
         .from('app-list-invitations')
         .select(
-          `id, list_id, user_id, status, app-lists:list_id ( listName, description ), app-users:creator_id ( email, userName )`
+          `id, list_id, user_id, status, app-lists:list_id ( listName, description, thematic ), app-users:creator_id ( email, userName )`
         )
         .eq('user_id', userId)
         .eq('status', status)
@@ -74,6 +74,19 @@ export class AppUserInvitationsRepository {
         app_list_id: listId,
         invitation_status: status,
       });
+      return data;
+    } catch (error) {
+      throw new Error('error changing the status of the invitation');
+    }
+  }
+  public async checkIfUserIsAlreadyBeneficiary(userId: number, listId: UUID) {
+    try {
+      const { data } = await supabase
+        .from('app-list-beneficiaries')
+        .select('*')
+        .eq('user-id', userId)
+        .eq('app-list-id', listId);
+
       return data;
     } catch (error) {
       throw new Error('error changing the status of the invitation');

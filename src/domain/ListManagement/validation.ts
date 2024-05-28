@@ -2,10 +2,11 @@ import { injectable } from 'tsyringe';
 import * as yup from 'yup';
 import { ErrorMessages, ValidationError } from '../common/errors';
 import { List } from './types';
+import AppEmailValidation from '../emailVerification/validation';
 
 @injectable()
-export class CreateListValidatorService {
-  public constructor() {}
+export class ListValidatorService {
+  public constructor(private readonly appEmailValidation: AppEmailValidation) {}
 
   public async preCheck(inputs: List) {
     const schema = yup.object().shape({
@@ -28,5 +29,18 @@ export class CreateListValidatorService {
       }
       throw new Error('Error validating the list schema during precheck');
     }
+  }
+
+  public async validateEmails(emails: string[] | undefined) {
+    let emailsAddress: string[] = [];
+    if (emails) {
+      await Promise.all(
+        emails.map(async (email) => {
+          const verifiedEmailObject = await this.appEmailValidation.validateEmail(email);
+          emailsAddress.push(verifiedEmailObject.email);
+        })
+      );
+    }
+    return emailsAddress.length > 0 ? emailsAddress : [];
   }
 }

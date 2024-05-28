@@ -46,7 +46,6 @@ let AppUserInvitationsController = class AppUserInvitationsController {
             (0, assert_1.default)(invitationId, 'No invitationId');
             (0, assert_1.default)(userId, 'no userId given in the request');
             await this.userInvitationsService.changeInvitationStatus(parseInt(invitationId), parseInt(userId), listId, status);
-            //
             res.status(200).json({ message: 'Invitation modified' });
         }
         catch (error) {

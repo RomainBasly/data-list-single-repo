@@ -4,23 +4,41 @@ import AppEmailValidation from '../emailVerification/validation';
 import { AppListManagementRepository } from '../../infrastructure/database/repositories/AppListManagementRepository';
 import UserInvitationsService from '../user/Invitations/services';
 import { AppUserInvitationsRepository } from '../../infrastructure/database/repositories/AppUserInvitationsRepository';
+import { ListValidatorService } from './validation';
+import { UUID } from 'crypto';
+
+type User = {
+  user_id: number;
+  userName: string;
+};
+
+type Beneficiary = {
+  'app-users': User;
+};
+
+type ListType = {
+  id: string;
+  listName: string;
+  thematic: string;
+  description: string;
+  beneficiaries: Beneficiary[];
+};
+
+type IElementType = {
+  'app-lists': ListType;
+};
 
 @injectable()
 export class ListManagementService {
   public constructor(
-    private readonly appEmailValidation: AppEmailValidation,
     @inject(AppListManagementRepository) private readonly appListRepository: AppListManagementRepository,
     @inject(UserInvitationsService) private readonly userInvitationsService: UserInvitationsService,
-    @inject(AppUserInvitationsRepository) private readonly appUserInvitationsRepository: AppUserInvitationsRepository
+    @inject(AppUserInvitationsRepository) private readonly appUserInvitationsRepository: AppUserInvitationsRepository,
+    @inject(ListValidatorService) private readonly listValidatorService: ListValidatorService
   ) {}
 
   public async createList(inputs: List, creatorUserName: string, creatorEmail: string) {
     try {
-      // étape 1 : créer la liste
-      /// tous les champs utiles sont là
-      /// check if the emails are valid
-      /// Vérifier que la personne est ou n'est pas dans la BDD
-      // étape 2 : envoyer un email pour faire connaitre l'application
       const { emails, description, name, thematic } = inputs;
       const createListInputForListCreation = {
         listName: inputs.name,
@@ -35,7 +53,7 @@ export class ListManagementService {
         await this.appUserInvitationsRepository.addUserToListAsBeneficiary(dataListCreation.id, inputs.creatorId);
       }
 
-      const validatedEmailAddresses = await this.validateEmails(emails);
+      const validatedEmailAddresses = await this.listValidatorService.validateEmails(emails);
       if (validatedEmailAddresses.length > 0) {
         await this.userInvitationsService.addPeopleToListInvitations(
           validatedEmailAddresses,
@@ -48,26 +66,41 @@ export class ListManagementService {
           description
         );
       }
-      // ajout des emails dans app-list-invitations
-      // passage de l'envoi des emails + ajout dans la BDD
-      // envoyer une information à la BDD
-      // envoyer l'information aux personnes concernées
     } catch (error) {
-      console.log('error', error);
       throw error;
     }
   }
 
-  private async validateEmails(emails: string[] | undefined) {
-    let emailsAddress: string[] = [];
-    if (emails) {
-      await Promise.all(
-        emails.map(async (email) => {
-          const verifiedEmailObject = await this.appEmailValidation.validateEmail(email);
-          emailsAddress.push(verifiedEmailObject.email);
-        })
-      );
+  public async getListBeneficiariesById(userId: number): Promise<IElementType[]> {
+    try {
+      const beneficiaries = await this.appListRepository.getListsByUserId(userId);
+
+      if (!beneficiaries) {
+        console.error('Unexpected beneficiaries structure', beneficiaries);
+        return [];
+      }
+
+      const filteredBeneficiaries = beneficiaries.map((element: any) => {
+        if (element && element['app-lists'] && Array.isArray(element['app-lists'].beneficiaries)) {
+          return {
+            ...element,
+            'app-lists': {
+              ...element['app-lists'],
+              beneficiaries: element['app-lists'].beneficiaries.filter(
+                (beneficiary: { [x: string]: { user_id: number } }) => beneficiary['app-users'].user_id !== userId
+              ),
+            },
+          };
+        } else {
+          console.error('Unexpected element structure', element);
+          return element; // or handle accordingly
+        }
+      });
+
+      return filteredBeneficiaries;
+    } catch (error) {
+      console.error('Error fetching list beneficiaries', error);
+      throw error;
     }
-    return emailsAddress.length > 0 ? emailsAddress : [];
   }
 }

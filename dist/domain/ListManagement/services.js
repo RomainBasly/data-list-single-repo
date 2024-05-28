@@ -17,24 +17,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ListManagementService = void 0;
 const tsyringe_1 = require("tsyringe");
-const validation_1 = __importDefault(require("../emailVerification/validation"));
 const AppListManagementRepository_1 = require("../../infrastructure/database/repositories/AppListManagementRepository");
 const services_1 = __importDefault(require("../user/Invitations/services"));
 const AppUserInvitationsRepository_1 = require("../../infrastructure/database/repositories/AppUserInvitationsRepository");
+const validation_1 = require("./validation");
 let ListManagementService = class ListManagementService {
-    constructor(appEmailValidation, appListRepository, userInvitationsService, appUserInvitationsRepository) {
-        this.appEmailValidation = appEmailValidation;
+    constructor(appListRepository, userInvitationsService, appUserInvitationsRepository, listValidatorService) {
         this.appListRepository = appListRepository;
         this.userInvitationsService = userInvitationsService;
         this.appUserInvitationsRepository = appUserInvitationsRepository;
+        this.listValidatorService = listValidatorService;
     }
     async createList(inputs, creatorUserName, creatorEmail) {
         try {
-            // étape 1 : créer la liste
-            /// tous les champs utiles sont là
-            /// check if the emails are valid
-            /// Vérifier que la personne est ou n'est pas dans la BDD
-            // étape 2 : envoyer un email pour faire connaitre l'application
             const { emails, description, name, thematic } = inputs;
             const createListInputForListCreation = {
                 listName: inputs.name,
@@ -47,39 +42,48 @@ let ListManagementService = class ListManagementService {
             if (dataListCreation && dataListCreation.id) {
                 await this.appUserInvitationsRepository.addUserToListAsBeneficiary(dataListCreation.id, inputs.creatorId);
             }
-            const validatedEmailAddresses = await this.validateEmails(emails);
+            const validatedEmailAddresses = await this.listValidatorService.validateEmails(emails);
             if (validatedEmailAddresses.length > 0) {
                 await this.userInvitationsService.addPeopleToListInvitations(validatedEmailAddresses, dataListCreation.id, inputs.creatorId, creatorEmail, creatorUserName, name, thematic, description);
             }
-            // ajout des emails dans app-list-invitations
-            // passage de l'envoi des emails + ajout dans la BDD
-            // envoyer une information à la BDD
-            // envoyer l'information aux personnes concernées
         }
         catch (error) {
-            console.log('error', error);
             throw error;
         }
     }
-    async validateEmails(emails) {
-        let emailsAddress = [];
-        if (emails) {
-            await Promise.all(emails.map(async (email) => {
-                const verifiedEmailObject = await this.appEmailValidation.validateEmail(email);
-                emailsAddress.push(verifiedEmailObject.email);
-            }));
+    async getListBeneficiariesById(userId) {
+        try {
+            const beneficiaries = await this.appListRepository.getListsByUserId(userId);
+            if (!beneficiaries) {
+                console.error('Unexpected beneficiaries structure', beneficiaries);
+                return [];
+            }
+            const filteredBeneficiaries = beneficiaries.map((element) => {
+                if (element && element['app-lists'] && Array.isArray(element['app-lists'].beneficiaries)) {
+                    return Object.assign(Object.assign({}, element), { 'app-lists': Object.assign(Object.assign({}, element['app-lists']), { beneficiaries: element['app-lists'].beneficiaries.filter((beneficiary) => beneficiary['app-users'].user_id !== userId) }) });
+                }
+                else {
+                    console.error('Unexpected element structure', element);
+                    return element; // or handle accordingly
+                }
+            });
+            return filteredBeneficiaries;
         }
-        return emailsAddress.length > 0 ? emailsAddress : [];
+        catch (error) {
+            console.error('Error fetching list beneficiaries', error);
+            throw error;
+        }
     }
 };
 exports.ListManagementService = ListManagementService;
 exports.ListManagementService = ListManagementService = __decorate([
     (0, tsyringe_1.injectable)(),
-    __param(1, (0, tsyringe_1.inject)(AppListManagementRepository_1.AppListManagementRepository)),
-    __param(2, (0, tsyringe_1.inject)(services_1.default)),
-    __param(3, (0, tsyringe_1.inject)(AppUserInvitationsRepository_1.AppUserInvitationsRepository)),
-    __metadata("design:paramtypes", [validation_1.default,
-        AppListManagementRepository_1.AppListManagementRepository,
+    __param(0, (0, tsyringe_1.inject)(AppListManagementRepository_1.AppListManagementRepository)),
+    __param(1, (0, tsyringe_1.inject)(services_1.default)),
+    __param(2, (0, tsyringe_1.inject)(AppUserInvitationsRepository_1.AppUserInvitationsRepository)),
+    __param(3, (0, tsyringe_1.inject)(validation_1.ListValidatorService)),
+    __metadata("design:paramtypes", [AppListManagementRepository_1.AppListManagementRepository,
         services_1.default,
-        AppUserInvitationsRepository_1.AppUserInvitationsRepository])
+        AppUserInvitationsRepository_1.AppUserInvitationsRepository,
+        validation_1.ListValidatorService])
 ], ListManagementService);

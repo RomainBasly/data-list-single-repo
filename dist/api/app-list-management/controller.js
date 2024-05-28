@@ -18,9 +18,9 @@ const services_1 = require("../../domain/ListManagement/services");
 const validation_1 = require("../../domain/ListManagement/validation");
 const helpers_1 = require("../../common/helpers");
 let ListManagementController = class ListManagementController {
-    constructor(listManagementService, createListValidatorService) {
+    constructor(listManagementService, listValidatorService) {
         this.listManagementService = listManagementService;
-        this.createListValidatorService = createListValidatorService;
+        this.listValidatorService = listValidatorService;
     }
     async createList(req, res, next) {
         try {
@@ -29,7 +29,7 @@ let ListManagementController = class ListManagementController {
             const creatorUserName = userInfo.userName;
             const creatorEmail = userInfo.email;
             const creatorId = userInfo.id;
-            const validatedInputs = await this.createListValidatorService.preCheck({
+            const validatedInputs = await this.listValidatorService.preCheck({
                 name: listName,
                 accessLevel,
                 description,
@@ -47,12 +47,24 @@ let ListManagementController = class ListManagementController {
             next(error);
         }
     }
+    async getListForUserById(req, res, next) {
+        try {
+            const { userInfo } = (0, helpers_1.getFromJWTToken)(req, 'accessToken');
+            const userId = userInfo.id;
+            const data = await this.listManagementService.getListBeneficiariesById(userId);
+            console.log('data', data);
+            res.json(data);
+        }
+        catch (error) {
+            next(error);
+        }
+    }
 };
 exports.ListManagementController = ListManagementController;
 exports.ListManagementController = ListManagementController = __decorate([
     (0, tsyringe_1.injectable)(),
     __param(0, (0, tsyringe_1.inject)(services_1.ListManagementService)),
-    __param(1, (0, tsyringe_1.inject)(validation_1.CreateListValidatorService)),
+    __param(1, (0, tsyringe_1.inject)(validation_1.ListValidatorService)),
     __metadata("design:paramtypes", [services_1.ListManagementService,
-        validation_1.CreateListValidatorService])
+        validation_1.ListValidatorService])
 ], ListManagementController);

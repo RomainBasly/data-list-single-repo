@@ -44,7 +44,6 @@ export class AppUserInvitationsController {
         listId,
         status
       );
-      //
       res.status(200).json({ message: 'Invitation modified' });
     } catch (error) {
       next(error);
