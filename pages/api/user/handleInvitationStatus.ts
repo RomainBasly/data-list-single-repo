@@ -22,7 +22,6 @@ export default async function handler(
       Cookie: cookieHeader || "",
     });
 
-    console.log("I pass here in the handler");
     return res.status(200).json({ message: "List modified" });
   } catch (error) {
     // Handle errors (e.g., from your backend call)

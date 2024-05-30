@@ -4,28 +4,21 @@ import classes from './classes.module.scss'
 import { InformationCircleIcon } from '@heroicons/react/20/solid'
 import ListCard from './ListCard'
 import { useAuthInitialization } from '@/components/hooks/useAuthInitialization'
-import { useTokenRefresh } from '@/components/hooks/useTokenRefresh'
 import StorageService from '@/Services/CookieService'
+import { useRouter } from 'next/navigation'
+import { IBeneficiary, IListContent } from './ListPage'
+import LoadingMaterial from '../LoadingMaterial'
 
-type IHomeList = {
-  'app-lists': {
-    id: string
-    listName: string
-    thematic: string
-    description: string
-    beneficiaries: {
-      'app-users': {
-        userName: string
-      }
-    }[]
-  }
+export type IList = {
+  'app-lists': IListContent
 }
 
 export default function UserLists() {
   const [loading, setLoading] = useState(true)
-  const [userLists, setUserLists] = useState<IHomeList[]>([])
+  const [userLists, setUserLists] = useState<IList[]>([])
   const [error, setError] = useState<string>('')
   const { accessToken } = useAuthInitialization()
+  const router = useRouter()
 
   useEffect(() => {
     const fetchListsByUser = async () => {
@@ -43,7 +36,7 @@ export default function UserLists() {
           })
 
           if (!response.ok) {
-            throw new Error('Failed to fetch invitations')
+            throw new Error('Failed to fetch lists')
           }
           const data = await response.json()
           setUserLists(data)
@@ -61,11 +54,16 @@ export default function UserLists() {
     fetchListsByUser()
   }, [accessToken])
 
+  const handleListClick = (list: IList) => {
+    const url = `/lists/user-list/${list['app-lists'].id}`
+    router.push(url)
+  }
+
   return (
     <div className={classes['root']}>
-      <Suspense>
-        <h2 className={classes['title']}>Mes listes</h2>
-        {userLists.length === 0 && (
+      <h2 className={classes['title']}>Mes listes</h2>
+      <Suspense fallback={<LoadingMaterial />}>
+        {userLists.length === 0 && !loading && (
           <div className={classes['no-invitation']}>
             <div className={classes['svg']}>{<InformationCircleIcon />}</div>
             <div className={classes['text-content']}>
@@ -76,17 +74,19 @@ export default function UserLists() {
         {userLists.length > 0 && (
           <div className={classes['user-lists-container']}>
             {userLists.map(async (list, index) => (
-              <>
-                {console.log('list element', list['app-lists'])}
+              <div
+                className={classes['unit']}
+                key={index}
+                onClick={() => handleListClick(list)}
+              >
                 <ListCard
-                  key={index}
                   id={list['app-lists'].id}
                   listName={list['app-lists'].listName}
                   thematic={list['app-lists'].thematic}
-                  beneficiaries={list['app-lists'].beneficiaries}
+                  // beneficiaries={list['app-lists'].beneficiaries}
                   description={list['app-lists'].description}
                 />
-              </>
+              </div>
             ))}
           </div>
         )}

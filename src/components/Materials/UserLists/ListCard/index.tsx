@@ -1,17 +1,14 @@
 import React from 'react'
 import classes from './classes.module.scss'
 import { Cog8ToothIcon } from '@heroicons/react/24/solid'
+import { IBeneficiary, IUser } from '../ListPage'
 
 type IProps = {
   id: string
   listName: string
   thematic: string
   description: string
-  beneficiaries: {
-    'app-users': {
-      userName: string
-    }
-  }[]
+  beneficiaries?: IBeneficiary[]
 }
 
 export default function ListCard(props: IProps) {
@@ -25,32 +22,28 @@ export default function ListCard(props: IProps) {
     return firstLetter + restOfLetters
   }
 
-  function formatBeneficiaries(
-    beneficiaryList: {
-      'app-users': {
-        userName: string
+  function formatBeneficiaries(beneficiaryList: IBeneficiary[]) {
+    if (props.beneficiaries) {
+      switch (beneficiaryList.length) {
+        case 0:
+          return 'Liste privée ou non acceptée par les autres bénéficiaires'
+        case 1:
+          return `Partagée avec ${props.beneficiaries[0]['app-users'].userName}`
+        case 2:
+          return `Partagée avec ${props.beneficiaries[0]['app-users'].userName} et ${props.beneficiaries[1]['app-users'].userName}`
+        case 3:
+          return `Partagée avec ${props.beneficiaries[0]['app-users'].userName}, ${props.beneficiaries[1]['app-users'].userName}
+      et ${props.beneficiaries[2]['app-users'].userName}`
+        case 4:
+          return `Partagée avec ${props.beneficiaries[0]['app-users'].userName}, ${props.beneficiaries[1]['app-users'].userName}
+      et ${props.beneficiaries[2]['app-users'].userName} et une autre personne`
+        default:
+          return `Partagée avec ${
+            props.beneficiaries[0]['app-users'].userName
+          }, ${props.beneficiaries[1]['app-users'].userName} et ${
+            props.beneficiaries[2]['app-users'].userName
+          } et ${props.beneficiaries.length - 2} autres personnes`
       }
-    }[],
-  ) {
-    switch (beneficiaryList.length) {
-      case 0:
-        return 'Liste privée ou non acceptée par les autres bénéficiaires'
-      case 1:
-        return `Partagée avec ${props.beneficiaries[0]['app-users'].userName}`
-      case 2:
-        return `Partagée avec ${props.beneficiaries[0]['app-users'].userName} et ${props.beneficiaries[1]['app-users'].userName}`
-      case 3:
-        return `Partagée avec ${props.beneficiaries[0]['app-users'].userName}, ${props.beneficiaries[1]['app-users'].userName}
-    et ${props.beneficiaries[2]['app-users'].userName}`
-      case 4:
-        return `Partagée avec ${props.beneficiaries[0]['app-users'].userName}, ${props.beneficiaries[1]['app-users'].userName}
-    et ${props.beneficiaries[2]['app-users'].userName} et une autre personne`
-      default:
-        return `Partagée avec ${
-          props.beneficiaries[0]['app-users'].userName
-        }, ${props.beneficiaries[1]['app-users'].userName} et ${
-          props.beneficiaries[2]['app-users'].userName
-        } et ${props.beneficiaries.length - 2} autres personnes`
     }
   }
 
@@ -63,15 +56,9 @@ export default function ListCard(props: IProps) {
         </div>
       </div>
       <div className={classes['title']}>{formatTitle(props.listName)}</div>
-
       <div className={classes['shared-with']}>
-        <>{console.log('props', props)}</>
+        {props.beneficiaries && formatBeneficiaries(props.beneficiaries)}
       </div>
-      {props.beneficiaries.length > 0 && (
-        <div className={classes['shared-with']}>
-          <>{formatBeneficiaries(props.beneficiaries)}</>
-        </div>
-      )}
     </div>
   )
 }

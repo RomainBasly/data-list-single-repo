@@ -2,7 +2,7 @@ import assert from "assert";
 import BaseApiService, { ContentType } from "../BaseAPIService";
 import { BackendError } from "@/Services/errorHandlingService";
 
-export type GetLIstsParams = {
+export type GetListsParams = {
   Cookie: string;
 };
 
@@ -20,10 +20,31 @@ export default class ListsApi extends BaseApiService {
     return this.instance;
   }
 
-  public async getListsByUser(params: GetLIstsParams) {
+  public async getListsByUser(params: GetListsParams) {
     assert(this.baseUrl, "Backend URL is missing");
     const url = new URL(
       this.baseUrl.concat("/lists").concat(`/get-user-lists`)
+    );
+    try {
+      return await this.getRequest<any>(url, ContentType.JSON, {
+        Cookie: params.Cookie,
+      });
+    } catch (error) {
+      if (error instanceof Response) {
+        const errorBody: BackendError = await error.json();
+        throw errorBody;
+      }
+      throw error;
+    }
+  }
+
+  public async getListItemsByListId(
+    listId: string | string[] | undefined,
+    params: any
+  ) {
+    assert(this.baseUrl, "Backend URL is missing");
+    const url = new URL(
+      this.baseUrl.concat("/lists").concat(`/get-list/${listId}`)
     );
     try {
       return await this.getRequest<any>(url, ContentType.JSON, {

@@ -1,0 +1,85 @@
+.root {
+  display: flex;
+  width: 100%;
+  position: relative;
+  align-items: center;
+  margin-top: 20px;
+
+  .dynamic-button,
+  .form {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .dynamic-button {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    background: transparent;
+    align-items: center;
+    padding: 10px 20px;
+    cursor: pointer;
+    border: 1px solid #333533;
+    outline: 1px solid #333533;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    position: absolute;
+    left: 0;
+    transform: translateX(0);
+
+    .svg {
+      display: flex;
+      align-items: center;
+      width: 30px;
+    }
+
+    &.is-button-invisible {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(-100%);
+    }
+  }
+
+  .form {
+    display: none;
+    width: 100%;
+    gap: 10px;
+    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    position: absolute;
+    left: 0;
+    opacity: 0;
+    transform: translateX(100%);
+
+    &.is-form-visible {
+      display: flex;
+      opacity: 1;
+      transform: translateX(0);
+      .dynamic-input {
+        flex: 1;
+        gap: 10px;
+        width: 100%;
+        background: transparent;
+        align-items: center;
+        padding: 15px 20px;
+        border: 1px solid #333533;
+        outline: 1px solid #333533;
+
+        input::placeholder {
+          color: #333533;
+          font-size: 12px;
+        }
+
+        input:focus,
+        input:active,
+        input:focus-visible,
+        input:focus-within {
+          outline: 2px solid #333533;
+        }
+      }
+      .svg {
+        display: flex;
+        align-items: center;
+        width: 30px;
+        cursor: pointer;
+      }
+    }
+  }
+}

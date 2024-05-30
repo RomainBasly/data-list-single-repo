@@ -24,3 +24,9 @@ export interface JWTPayload {
   sub?: string;
   userInfo: UserInfo;
 }
+
+export enum ListStatus {
+  ACTIVE = "active",
+  CROSSED = "CROSSED",
+  ARCHIVED = "ARCHIVED",
+}

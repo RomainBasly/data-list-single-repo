@@ -1,7 +1,7 @@
 importScripts(
   "https://storage.googleapis.com/workbox-cdn/releases/7.0.0/workbox-sw.js"
 );
-workbox.precaching.precacheAndRoute([{"revision":"a5281aa1504c5d6bcd7ba1097870376a","url":"fallback-ba59bcac333a1e0f.js"},{"revision":"332720a866c529e65f12ae8ce16ae578","url":"manifest.json"}] || []);
+workbox.precaching.precacheAndRoute([{"revision":"332720a866c529e65f12ae8ce16ae578","url":"manifest.json"}] || []);
 
 const urlsToCache = [
   "/",
@@ -170,7 +170,6 @@ self.clients.matchAll().then((clients) => {
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
   if (url.pathname === "/images/leightWeightImage.png") {
-    // Attempt to fetch from network, fall back to offline handling if network fails
     event.respondWith(
       fetch(event.request).catch(() => caches.match("/offline"))
     );
@@ -178,7 +177,7 @@ self.addEventListener("fetch", (event) => {
   }
 
   if (url.pathname.startsWith("/api/user/")) {
-    return fetch(event.request);
+    return;
   }
 
   event.respondWith(
@@ -199,6 +198,7 @@ self.addEventListener("fetch", (event) => {
       });
     })
   );
+
   if (event.request.mode === "navigate" && url.pathname === "/") {
     event.respondWith(
       Response.redirect(new URL("/home", event.request.url).href)

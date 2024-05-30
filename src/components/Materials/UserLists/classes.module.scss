@@ -2,4 +2,34 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+
+  .user-lists-container {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    gap: 16px;
+
+    .unit {
+      display: flex;
+      cursor: pointer;
+      border-radius: 12px;
+
+      &:hover {
+        background-color: #dbe7e4;
+      }
+    }
+  }
+  .no-invitation {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #2a5293;
+    border-radius: 8px;
+    padding: 8px;
+
+    .svg {
+      display: flex;
+      width: 30px;
+    }
+  }
 }

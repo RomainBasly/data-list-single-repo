@@ -2,7 +2,6 @@ import Layout from '@/components/Elements/Layout'
 import React from 'react'
 import classes from './classes.module.scss'
 import { CreateListForm } from '@/components/Elements/Form/CreateListForm'
-import SocketConnector from '@/components/Materials/SocketConnector'
 
 export default function CreateList() {
   return (

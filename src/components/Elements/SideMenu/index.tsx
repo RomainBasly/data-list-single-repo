@@ -52,7 +52,6 @@ export default function SideMenu(props: IProps) {
   async function disconnectUser() {
     try {
       const userId = userAttributes.userId
-      console.log('userId', userId)
       const response = await AuthenticationApi.getInstance().disconnect(userId)
       if (response.status === 'ok') {
         Cookies.remove('accessToken')

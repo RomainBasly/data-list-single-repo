@@ -1,0 +1,35 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  max-width: 650px;
+  width: 100%;
+
+  @media screen and (max-width: 500px) {
+    padding: 10px 30px;
+  }
+
+  .list-item {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+
+    .element {
+      display: flex;
+      width: 100%;
+      border-radius: 12px;
+      background-color: #dbe7e4;
+      .id {
+        font-size: 16px;
+        color: red;
+      }
+    }
+  }
+
+  .loading {
+    display: flex;
+    justify-content: center;
+    padding: 20px 20px;
+    align-items: center;
+  }
+}

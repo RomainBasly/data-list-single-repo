@@ -6,9 +6,10 @@
   max-width: 650px;
   justify-content: center;
   margin: auto;
+  width: 100%;
 
   @media screen and (max-width: 500px) {
-    padding: 20px 60px;
+    padding: 20px 40px;
   }
 
   .title-container {

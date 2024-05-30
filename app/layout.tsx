@@ -4,9 +4,10 @@ import { Inter } from 'next/font/google'
 import React from 'react'
 import Script from 'next/script'
 import { headers } from 'next/headers'
-import ServiceWorkerInitiator from '@/components/Elements/ServiceWorkerInitiator'
+// import ServiceWorkerInitiator from '@/components/Elements/ServiceWorkerInitiator'
 import { SocketProvider } from '@/components/providers/socket-provider'
 import { UserInfoProvider } from '@/components/providers/user-info-provider'
+import ServiceWorkerInitiator from '@/components/Elements/ServiceWorkerInitiator'
 
 const inter = Inter({ subsets: ['latin'] })
 
