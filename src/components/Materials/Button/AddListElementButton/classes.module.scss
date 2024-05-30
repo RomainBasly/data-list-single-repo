@@ -39,10 +39,10 @@
   }
 
   .form {
-    display: none;
+    visibility: hidden;
     width: 100%;
     gap: 10px;
-    transition: opacity 1s ease-in-out, transform 1s ease-in-out;
+    transition: opacity 0.6s ease-in-out, transform 0.6s ease-in-out;
     position: absolute;
     left: 0;
     opacity: 0;
@@ -50,6 +50,7 @@
 
     &.is-form-visible {
       display: flex;
+      visibility: visible;
       opacity: 1;
       transform: translateX(0);
       .dynamic-input {
