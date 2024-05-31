@@ -4,7 +4,7 @@ import { PlusIcon } from '@heroicons/react/24/solid'
 import classNames from 'classnames'
 
 type IProps = {
-  onInputSubmit: (value: string) => void
+  onInputSubmit: (value: string) => Promise<boolean>
 }
 
 export default function DynamicButtonInput(props: IProps) {
@@ -15,10 +15,18 @@ export default function DynamicButtonInput(props: IProps) {
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) =>
     setValue(event?.target.value)
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = async (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
+      await submitForm(e)
+    }
+  }
+
+  const submitForm = async (e: React.FormEvent | React.MouseEvent) => {
+    e.preventDefault()
+    const success = await props.onInputSubmit(value)
+    if (success) {
       setIsEditing(false)
-      props.onInputSubmit(value)
+      setValue('')
     }
   }
 
@@ -38,11 +46,7 @@ export default function DynamicButtonInput(props: IProps) {
         className={classNames(classes['form'], {
           [classes['is-form-visible']]: isEditing,
         })}
-        onSubmit={(e) => {
-          e.preventDefault()
-          props.onInputSubmit(value)
-          setIsEditing(false)
-        }}
+        onSubmit={submitForm}
       >
         <input
           className={classes['dynamic-input']}
@@ -51,11 +55,9 @@ export default function DynamicButtonInput(props: IProps) {
           autoFocus
           type={'text'}
           onKeyDown={handleKeyDown}
+          value={value}
         />
-        <div
-          className={classes['svg']}
-          onClick={() => props.onInputSubmit(value)}
-        >
+        <div className={classes['svg']} onClick={submitForm}>
           <PlusIcon />
         </div>
       </form>

@@ -58,7 +58,7 @@ export default function ListPage() {
           )
 
           const response = await fetch(
-            `/api/user/getListItems?listId=${listId}`,
+            `/api/lists/getListItems?listId=${listId}`,
             {
               credentials: 'include',
             },
@@ -77,6 +77,7 @@ export default function ListPage() {
           setError(error.message)
         }
         setLoading(false)
+        // prévoir le cas où ce n'est pas où la personne n'est pas autorisée
       }
     }
 
@@ -96,9 +97,29 @@ export default function ListPage() {
     )
   }
 
-  const addItemToList = (element: string) => {
-    console.log('input received from the child', element)
+  const addItemToList = async (element: string): Promise<boolean> => {
     setElementValue(element)
+    try {
+      const response = await fetch(
+        `/api/lists/addItemToList?listId=${listId}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({ listId, element }),
+        },
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to post item to list')
+      }
+      return true
+    } catch (error) {
+      console.error(error)
+      return false
+    }
   }
 
   const listDetails = listElements['app-lists']
@@ -115,6 +136,7 @@ export default function ListPage() {
             )}
             description={listDetails.description}
           />
+          <>{console.log("ListDetails", listDetails)}</>
         </div>
       </div>
       {listDetails.item &&

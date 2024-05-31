@@ -31,7 +31,7 @@ export default function UserLists() {
             accessToken,
             true,
           )
-          const response = await fetch(`/api/user/getLists`, {
+          const response = await fetch(`/api/lists/getLists`, {
             credentials: 'include',
           })
 

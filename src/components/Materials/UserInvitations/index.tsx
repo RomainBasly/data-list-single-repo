@@ -86,7 +86,7 @@ export default function UserInvitations() {
           )
           const status = 1
           const response = await fetch(
-            `/api/user/getInvitations?status=${status}`,
+            `/api/lists/getInvitations?status=${status}`,
             {
               credentials: 'include',
             },
@@ -126,7 +126,7 @@ export default function UserInvitations() {
           const status = 3
 
           const response = await fetch(
-            `/api/user/getInvitations?status=${status}`,
+            `/api/lists/getInvitations?status=${status}`,
             {
               credentials: 'include',
             },
@@ -162,13 +162,14 @@ export default function UserInvitations() {
     try {
       let accessToken = Cookies.get('accessToken')
 
+      // TODO test if that works if the cookie is outdated and if we suppressed the following
       if (
         !accessToken ||
         JwtService.getInstance().isTokenExpired(accessToken)
       ) {
         accessToken = await refreshAccessToken()
       }
-      const response = await fetch(`/api/user/handleInvitationStatus/`, {
+      const response = await fetch(`/api/lists/handleInvitationStatus/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
