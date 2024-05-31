@@ -1,6 +1,50 @@
 import { injectable } from 'tsyringe';
 import supabase from '../../../config/database/supabaseClient';
 import { IInputAppList, SupabaseReturnedList } from '../../../domain/ListManagement/types';
+import { UUID } from 'crypto';
+
+interface User {
+  user_id: number;
+  userName: string;
+}
+
+interface Beneficiary {
+  'app-users': User;
+}
+
+interface Item {
+  id: number;
+  updated_at: string;
+  content: string;
+  status: string;
+}
+
+interface List {
+  id: string;
+  listName: string;
+  description: string;
+  thematic: string;
+  beneficiaries: Beneficiary[];
+  items: Item[];
+}
+
+interface BeneficiaryData {
+  'app-lists': List;
+}
+
+interface SupabaseResponse {
+  data: BeneficiaryData[] | null;
+  error: any;
+}
+
+interface SupabaseError {
+  error: true;
+  message: string;
+}
+
+function isSupabaseError(response: any): response is SupabaseError {
+  return response && response.error === true;
+}
 
 @injectable()
 export class AppListManagementRepository {
@@ -19,7 +63,20 @@ export class AppListManagementRepository {
     const { data, error } = await supabase
       .from('app-list-beneficiaries')
       .select(
-        'app-lists:app-list-id ( id, listName, description, thematic, beneficiaries:app-list-beneficiaries (app-users:user-id ( user_id, userName )))'
+        `
+        app-lists:app-list-id (
+          id,
+          listName,
+          description,
+          thematic,
+          beneficiaries:app-list-beneficiaries (
+            app-users:user-id (
+              user_id,
+              userName
+            )
+          )
+        )
+      `
       )
       .eq('user-id', userId);
 
@@ -27,5 +84,63 @@ export class AppListManagementRepository {
       throw new Error('Problem getting the lists');
     }
     return data && data.length > 0 ? data : null;
+  }
+
+  public async getListById(listId: UUID, userId: number) {
+    try {
+      const { data } = await supabase
+        .from('app-list-beneficiaries')
+        .select(
+          `
+          app-lists:app-list-id (
+            id,
+            listName,
+            description,
+            thematic,
+            beneficiaries:app-list-beneficiaries (
+              app-users:user-id (
+                user_id,
+                userName
+              )
+            ),
+            items:app-list-items (
+              id,
+              updated_at,
+              content,
+              status
+            )
+          )
+        `
+        )
+        .eq('user-id', userId)
+        .eq('app-list-id', listId);
+      return data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
+  public async addItemToList(listId: UUID, userId: number, content: string) {
+    try {
+      const { data } = await supabase.from('app-list-items').insert([{ content, status: '1', listId }]);
+      console.log('data', data);
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async isUserAllowedToChangeList(listId: UUID, userId: number): Promise<any> {
+    try {
+      const { data } = await supabase
+        .from('app-list-beneficiaries')
+        .select('*')
+        .eq('user-id', userId)
+        .eq('app-list-id', listId);
+      return data;
+    } catch (error) {
+      throw error;
+    }
   }
 }

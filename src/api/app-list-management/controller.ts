@@ -5,6 +5,7 @@ import { ListValidatorService } from '../../domain/ListManagement/validation';
 import { getFromJWTToken } from '../../common/helpers';
 import { UserInfo } from '../../common/types/api';
 import assert from 'assert';
+import { UUID } from 'crypto';
 
 @injectable()
 export class ListManagementController {
@@ -43,8 +44,33 @@ export class ListManagementController {
       const { userInfo } = getFromJWTToken(req, 'accessToken') as UserInfo;
       const userId = userInfo.id;
       const data = await this.listManagementService.getListBeneficiariesById(userId);
-      console.log('data', data);
+      console.log('sent from backend', data);
       res.json(data);
+    } catch (error) {
+      next(error);
+    }
+  }
+  public async getListById(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userInfo } = getFromJWTToken(req, 'accessToken') as UserInfo;
+      const listId = req.params.listId as UUID;
+
+      const userId = userInfo.id;
+      const data = await this.listManagementService.getListByListId(listId, userId);
+      res.json(data);
+    } catch (error) {
+      next(error);
+    }
+  }
+  public async addItemToList(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { userInfo } = getFromJWTToken(req, 'accessToken') as UserInfo;
+      const listId = req.params.listId as UUID;
+
+      const userId = userInfo.id;
+      const content = req.body.content;
+      await this.listManagementService.addItemToList(listId, userId, content);
+      res.status(200).json({ message: 'item added' });
     } catch (error) {
       next(error);
     }

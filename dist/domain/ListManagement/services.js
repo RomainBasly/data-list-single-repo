@@ -22,8 +22,8 @@ const services_1 = __importDefault(require("../user/Invitations/services"));
 const AppUserInvitationsRepository_1 = require("../../infrastructure/database/repositories/AppUserInvitationsRepository");
 const validation_1 = require("./validation");
 let ListManagementService = class ListManagementService {
-    constructor(appListRepository, userInvitationsService, appUserInvitationsRepository, listValidatorService) {
-        this.appListRepository = appListRepository;
+    constructor(appListManagementRepository, userInvitationsService, appUserInvitationsRepository, listValidatorService) {
+        this.appListManagementRepository = appListManagementRepository;
         this.userInvitationsService = userInvitationsService;
         this.appUserInvitationsRepository = appUserInvitationsRepository;
         this.listValidatorService = listValidatorService;
@@ -38,7 +38,7 @@ let ListManagementService = class ListManagementService {
                 cyphered: false,
                 thematic: inputs.thematic,
             };
-            const dataListCreation = await this.appListRepository.createList(createListInputForListCreation);
+            const dataListCreation = await this.appListManagementRepository.createList(createListInputForListCreation);
             if (dataListCreation && dataListCreation.id) {
                 await this.appUserInvitationsRepository.addUserToListAsBeneficiary(dataListCreation.id, inputs.creatorId);
             }
@@ -53,7 +53,7 @@ let ListManagementService = class ListManagementService {
     }
     async getListBeneficiariesById(userId) {
         try {
-            const beneficiaries = await this.appListRepository.getListsByUserId(userId);
+            const beneficiaries = await this.appListManagementRepository.getListsByUserId(userId);
             if (!beneficiaries) {
                 console.error('Unexpected beneficiaries structure', beneficiaries);
                 return [];
@@ -71,6 +71,39 @@ let ListManagementService = class ListManagementService {
         }
         catch (error) {
             console.error('Error fetching list beneficiaries', error);
+            throw error;
+        }
+    }
+    async getListByListId(listId, userId) {
+        try {
+            const list = await this.appListManagementRepository.getListById(listId, userId);
+            if (!list) {
+                console.error('Unexpected list structure', list);
+                return [];
+            }
+            const filteredBeneficiariesList = list.map((element) => {
+                if (element && element['app-lists'] && Array.isArray(element['app-lists'].beneficiaries)) {
+                    return Object.assign(Object.assign({}, element), { 'app-lists': Object.assign(Object.assign({}, element['app-lists']), { beneficiaries: element['app-lists'].beneficiaries.filter((beneficiary) => beneficiary['app-users'].user_id !== userId) }) });
+                }
+                else {
+                    console.error('Unexpected element structure', element);
+                    return element; // or handle accordingly
+                }
+            });
+            return filteredBeneficiariesList;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async addItemToList(listId, userId, content) {
+        try {
+            const isAllowed = await this.appListManagementRepository.isUserAllowedToChangeList(listId, userId);
+            if (isAllowed.length > 0) {
+                await this.appListManagementRepository.addItemToList(listId, userId, content);
+            }
+        }
+        catch (error) {
             throw error;
         }
     }

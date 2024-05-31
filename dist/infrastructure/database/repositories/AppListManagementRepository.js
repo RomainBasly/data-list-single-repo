@@ -15,6 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppListManagementRepository = void 0;
 const tsyringe_1 = require("tsyringe");
 const supabaseClient_1 = __importDefault(require("../../../config/database/supabaseClient"));
+function isSupabaseError(response) {
+    return response && response.error === true;
+}
 let AppListManagementRepository = class AppListManagementRepository {
     constructor() { }
     async createList(inputsAppList) {
@@ -27,12 +30,81 @@ let AppListManagementRepository = class AppListManagementRepository {
     async getListsByUserId(userId) {
         const { data, error } = await supabaseClient_1.default
             .from('app-list-beneficiaries')
-            .select('app-lists:app-list-id ( id, listName, description, thematic, beneficiaries:app-list-beneficiaries (app-users:user-id ( user_id, userName )))')
+            .select(`
+        app-lists:app-list-id (
+          id,
+          listName,
+          description,
+          thematic,
+          beneficiaries:app-list-beneficiaries (
+            app-users:user-id (
+              user_id,
+              userName
+            )
+          )
+        )
+      `)
             .eq('user-id', userId);
         if (error) {
             throw new Error('Problem getting the lists');
         }
         return data && data.length > 0 ? data : null;
+    }
+    async getListById(listId, userId) {
+        try {
+            const { data } = await supabaseClient_1.default
+                .from('app-list-beneficiaries')
+                .select(`
+          app-lists:app-list-id (
+            id,
+            listName,
+            description,
+            thematic,
+            beneficiaries:app-list-beneficiaries (
+              app-users:user-id (
+                user_id,
+                userName
+              )
+            ),
+            items:app-list-items (
+              id,
+              updated_at,
+              content,
+              status
+            )
+          )
+        `)
+                .eq('user-id', userId)
+                .eq('app-list-id', listId);
+            return data;
+        }
+        catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+    async addItemToList(listId, userId, content) {
+        try {
+            const { data } = await supabaseClient_1.default.from('app-list-items').insert([{ content, status: '1', listId }]);
+            console.log('data', data);
+            return data;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async isUserAllowedToChangeList(listId, userId) {
+        try {
+            const { data } = await supabaseClient_1.default
+                .from('app-list-beneficiaries')
+                .select('*')
+                .eq('user-id', userId)
+                .eq('app-list-id', listId);
+            return data;
+        }
+        catch (error) {
+            throw error;
+        }
     }
 };
 exports.AppListManagementRepository = AppListManagementRepository;

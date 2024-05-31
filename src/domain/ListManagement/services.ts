@@ -31,7 +31,7 @@ type IElementType = {
 @injectable()
 export class ListManagementService {
   public constructor(
-    @inject(AppListManagementRepository) private readonly appListRepository: AppListManagementRepository,
+    @inject(AppListManagementRepository) private readonly appListManagementRepository: AppListManagementRepository,
     @inject(UserInvitationsService) private readonly userInvitationsService: UserInvitationsService,
     @inject(AppUserInvitationsRepository) private readonly appUserInvitationsRepository: AppUserInvitationsRepository,
     @inject(ListValidatorService) private readonly listValidatorService: ListValidatorService
@@ -48,7 +48,7 @@ export class ListManagementService {
         thematic: inputs.thematic,
       };
 
-      const dataListCreation = await this.appListRepository.createList(createListInputForListCreation);
+      const dataListCreation = await this.appListManagementRepository.createList(createListInputForListCreation);
       if (dataListCreation && dataListCreation.id) {
         await this.appUserInvitationsRepository.addUserToListAsBeneficiary(dataListCreation.id, inputs.creatorId);
       }
@@ -73,7 +73,7 @@ export class ListManagementService {
 
   public async getListBeneficiariesById(userId: number): Promise<IElementType[]> {
     try {
-      const beneficiaries = await this.appListRepository.getListsByUserId(userId);
+      const beneficiaries = await this.appListManagementRepository.getListsByUserId(userId);
 
       if (!beneficiaries) {
         console.error('Unexpected beneficiaries structure', beneficiaries);
@@ -100,6 +100,48 @@ export class ListManagementService {
       return filteredBeneficiaries;
     } catch (error) {
       console.error('Error fetching list beneficiaries', error);
+      throw error;
+    }
+  }
+
+  public async getListByListId(listId: UUID, userId: number) {
+    try {
+      const list = await this.appListManagementRepository.getListById(listId, userId);
+
+      if (!list) {
+        console.error('Unexpected list structure', list);
+        return [];
+      }
+
+      const filteredBeneficiariesList = list.map((element: any) => {
+        if (element && element['app-lists'] && Array.isArray(element['app-lists'].beneficiaries)) {
+          return {
+            ...element,
+            'app-lists': {
+              ...element['app-lists'],
+              beneficiaries: element['app-lists'].beneficiaries.filter(
+                (beneficiary: { [x: string]: { user_id: number } }) => beneficiary['app-users'].user_id !== userId
+              ),
+            },
+          };
+        } else {
+          console.error('Unexpected element structure', element);
+          return element; // or handle accordingly
+        }
+      });
+      return filteredBeneficiariesList;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async addItemToList(listId: UUID, userId: number, content: string) {
+    try {
+      const isAllowed = await this.appListManagementRepository.isUserAllowedToChangeList(listId, userId);
+      if (isAllowed.length > 0) {
+        await this.appListManagementRepository.addItemToList(listId, userId, content);
+      }
+    } catch (error) {
       throw error;
     }
   }

@@ -52,8 +52,33 @@ let ListManagementController = class ListManagementController {
             const { userInfo } = (0, helpers_1.getFromJWTToken)(req, 'accessToken');
             const userId = userInfo.id;
             const data = await this.listManagementService.getListBeneficiariesById(userId);
-            console.log('data', data);
+            console.log('sent from backend', data);
             res.json(data);
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+    async getListById(req, res, next) {
+        try {
+            const { userInfo } = (0, helpers_1.getFromJWTToken)(req, 'accessToken');
+            const listId = req.params.listId;
+            const userId = userInfo.id;
+            const data = await this.listManagementService.getListByListId(listId, userId);
+            res.json(data);
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+    async addItemToList(req, res, next) {
+        try {
+            const { userInfo } = (0, helpers_1.getFromJWTToken)(req, 'accessToken');
+            const listId = req.params.listId;
+            const userId = userInfo.id;
+            const content = req.body.content;
+            await this.listManagementService.addItemToList(listId, userId, content);
+            res.status(200).json({ message: 'item added' });
         }
         catch (error) {
             next(error);
