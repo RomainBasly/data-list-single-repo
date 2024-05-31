@@ -23,17 +23,16 @@
   }
 
   .redirection-button-container {
-    border: 1px solid #dee2e6;
     padding: 8px;
-    border-radius: 4px;
+    border-radius: 12px;
     cursor: pointer;
-    background-color: #efe9ae;
-
-    transition: border-color 1s, background-color 1s;
+    border: 1px solid;
+    border-color: #adb5bd;
+    background-color: #ffcb77b3;
+    transition: border-color 1s;
 
     &:hover {
-      border-color: #adb5bd;
-      background-color: #ffcb77b3;
+      border-color: #e27396;
     }
     .create-list-button {
       border: none;

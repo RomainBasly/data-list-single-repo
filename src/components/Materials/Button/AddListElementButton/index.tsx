@@ -2,6 +2,9 @@ import React, { useState } from 'react'
 import classes from './classes.module.scss'
 import { PlusIcon } from '@heroicons/react/24/solid'
 import classNames from 'classnames'
+import { sanitize } from 'isomorphic-dompurify'
+import { validateCodeInput } from '@/Services/validation'
+import { getErrorMessage } from '@/Services/errorHandlingService'
 
 type IProps = {
   onInputSubmit: (value: string) => Promise<boolean>
@@ -10,6 +13,7 @@ type IProps = {
 export default function DynamicButtonInput(props: IProps) {
   const [isEditing, setIsEditing] = useState<boolean>(false)
   const [value, setValue] = useState<string>('')
+  const [errors, setErrors] = useState<Record<string, string>>()
 
   const changeButtonToInput = () => setIsEditing(true)
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) =>
@@ -24,11 +28,22 @@ export default function DynamicButtonInput(props: IProps) {
 
   const submitForm = async (e: React.FormEvent | React.MouseEvent) => {
     e.preventDefault()
-    console.log('value', value)
-    const success = await props.onInputSubmit(value)
-    if (success) {
-      setIsEditing(false)
-      setValue('')
+    const sanitizedCode = sanitize(value)
+    const formErrors = validateCodeInput(sanitizedCode)
+    if (Object.keys(formErrors).length > 0) {
+      setErrors(formErrors)
+      return
+    }
+    try {
+      const success = await props.onInputSubmit(sanitizedCode)
+      if (success) {
+        setIsEditing(false)
+        setValue('')
+      }
+    } catch (error) {
+      // Todo : add error for that problem
+      const errorMessage = getErrorMessage(error)
+      setErrors({ ...errors, form: errorMessage })
     }
   }
 
