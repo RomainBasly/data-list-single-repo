@@ -18,7 +18,7 @@ export type IListContent = {
   thematic: string
   description: string
   beneficiaries: IBeneficiary[]
-  item: IElement[]
+  items: IElement[]
 }
 
 export type IBeneficiary = {
@@ -68,6 +68,7 @@ export default function ListPage() {
             throw new Error('Failed to fetch lists items')
           }
           const data = await response.json()
+
           setListElements(data[0])
           setLoading(false)
         }
@@ -97,8 +98,7 @@ export default function ListPage() {
     )
   }
 
-  const addItemToList = async (element: string): Promise<boolean> => {
-    setElementValue(element)
+  const addItemToList = async (inputElement: string): Promise<boolean> => {
     try {
       const response = await fetch(
         `/api/lists/addItemToList?listId=${listId}`,
@@ -108,7 +108,7 @@ export default function ListPage() {
             'Content-Type': 'application/json',
           },
           credentials: 'include',
-          body: JSON.stringify({ listId, element }),
+          body: JSON.stringify({ listId, content: inputElement }),
         },
       )
 
@@ -136,11 +136,10 @@ export default function ListPage() {
             )}
             description={listDetails.description}
           />
-          <>{console.log("ListDetails", listDetails)}</>
         </div>
       </div>
-      {listDetails.item &&
-        listDetails.item.map((element, index) => {
+      {listDetails.items &&
+        listDetails.items.map((element, index) => {
           return <ul key={index}>{element.content}</ul>
         })}
       <DynamicButtonInput onInputSubmit={addItemToList} />

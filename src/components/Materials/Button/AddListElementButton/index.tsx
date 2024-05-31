@@ -17,12 +17,14 @@ export default function DynamicButtonInput(props: IProps) {
 
   const handleKeyDown = async (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
+      console.log('value child handleKeydown', value)
       await submitForm(e)
     }
   }
 
   const submitForm = async (e: React.FormEvent | React.MouseEvent) => {
     e.preventDefault()
+    console.log('value', value)
     const success = await props.onInputSubmit(value)
     if (success) {
       setIsEditing(false)
