@@ -3,7 +3,7 @@ import classes from './classes.module.scss'
 import { PlusIcon } from '@heroicons/react/24/solid'
 import classNames from 'classnames'
 import { sanitize } from 'isomorphic-dompurify'
-import { validateCodeInput, validateInputAddItemToList } from '@/Services/validation'
+import { validateInputAddItemToList } from '@/Services/validation'
 import { getErrorMessage } from '@/Services/errorHandlingService'
 
 type IProps = {
@@ -16,12 +16,14 @@ export default function DynamicButtonInput(props: IProps) {
   const [errors, setErrors] = useState<Record<string, string>>()
 
   const changeButtonToInput = () => setIsEditing(true)
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setValue(event?.target.value)
+    setErrors({ ...errors, itemContent: '' })
+  }
 
   const handleKeyDown = async (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
-      console.log('value child handleKeydown', value)
       await submitForm(e)
     }
   }
@@ -65,17 +67,24 @@ export default function DynamicButtonInput(props: IProps) {
         })}
         onSubmit={submitForm}
       >
-        <input
-          className={classes['dynamic-input']}
-          placeholder={'Text'}
-          onChange={handleInputChange}
-          autoFocus
-          type={'text'}
-          onKeyDown={handleKeyDown}
-          value={value}
-        />
-        <div className={classes['svg']} onClick={submitForm}>
-          <PlusIcon />
+        <div className={classes['content']}>
+          <input
+            className={classes['dynamic-input']}
+            placeholder={'Text'}
+            onChange={handleInputChange}
+            autoFocus
+            type={'text'}
+            onKeyDown={handleKeyDown}
+            value={value}
+          />
+          <div className={classes['svg']} onClick={submitForm}>
+            <PlusIcon />
+          </div>
+        </div>
+        <div className={classes['error-container']}>
+          {errors && (
+            <div className={classes['error']}>{errors.itemContent}</div>
+          )}
         </div>
       </form>
     </div>

@@ -47,40 +47,57 @@
     left: 0;
     opacity: 0;
     transform: translateX(100%);
+    margin-top: 50px;
 
     &.is-form-visible {
       display: flex;
       visibility: visible;
       opacity: 1;
       transform: translateX(0);
-      
-      .dynamic-input {
-        flex: 1;
-        gap: 10px;
-        width: 100%;
-        background: transparent;
-        align-items: center;
-        padding: 15px 20px;
-        border: 1px solid #333533;
-        outline: 1px solid #333533;
+      flex-direction: column;
 
-        input::placeholder {
-          color: #333533;
-          font-size: 12px;
+      .content {
+        display: flex;
+        border: 1px solid red;
+        .dynamic-input {
+          flex: 1;
+          gap: 10px;
+          width: 100%;
+          background: transparent;
+          align-items: center;
+          padding: 15px 20px;
+          border: 1px solid #333533;
+          outline: 1px solid #333533;
+
+          input::placeholder {
+            color: #333533;
+            font-size: 12px;
+          }
+
+          input:focus,
+          input:active,
+          input:focus-visible,
+          input:focus-within {
+            outline: 2px solid #333533;
+          }
         }
-
-        input:focus,
-        input:active,
-        input:focus-visible,
-        input:focus-within {
-          outline: 2px solid #333533;
+        .svg {
+          display: flex;
+          align-items: center;
+          width: 30px;
+          cursor: pointer;
         }
       }
-      .svg {
-        display: flex;
-        align-items: center;
-        width: 30px;
-        cursor: pointer;
+
+      .error-container {
+        min-height: 40px;
+        max-height: 40px;
+        height: 100%;
+        border: 1px solid orange;
+        .error {
+          color: #950e0e;
+          font-size: 13px;
+        }
       }
     }
   }

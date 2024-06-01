@@ -1,6 +1,6 @@
 'use client'
-import React, { useState, useEffect, Suspense } from 'react'
-import { useParams, useRouter, useSearchParams } from 'next/navigation'
+import React, { useState, useEffect } from 'react'
+import { useParams, useRouter } from 'next/navigation'
 import classes from './classes.module.scss'
 import { useAuthInitialization } from '@/components/hooks/useAuthInitialization'
 import StorageService from '@/Services/CookieService'
@@ -8,6 +8,7 @@ import ListCard from '../ListCard'
 import { ListStatus } from '../../../../../types'
 import LoadingMaterial from '../../LoadingMaterial'
 import DynamicButtonInput from '../../Button/AddListElementButton'
+import { sortItemObjectByUpdatedDate } from '@/components/Helpers'
 
 export type IList = {
   'app-lists': IListContent
@@ -30,11 +31,11 @@ export type IUser = {
   user_id: string
 }
 
-type IElement = {
+export type IElement = {
   id: number
-  updated_at: Date
+  updated_at: string
   content: string
-  status: ListStatus
+  status: string
 }
 
 export default function ListPage() {
@@ -69,8 +70,21 @@ export default function ListPage() {
           }
           const data = await response.json()
 
-          setListElements(data[0])
-          setLoading(false)
+          if (data) {
+            const sortedItems = data[0]['app-lists'].items.sort(
+              sortItemObjectByUpdatedDate,
+            )
+
+            const sortedElements: IList = {
+              ...data[0],
+              'app-lists': {
+                ...data[0]['app-lists'],
+                items: sortedItems,
+              },
+            }
+            setListElements(sortedElements)
+            setLoading(false)
+          }
         }
       } catch (error) {
         console.error('Error fetching list items:', error)
@@ -86,7 +100,6 @@ export default function ListPage() {
       fetchListData()
     }
   }, [accessToken, listId])
-
   if (!listElements) {
     return (
       <div className={classes['root']}>

@@ -93,17 +93,14 @@ export function matchingPasswords(
 
 export function validateInputAddItemToList(input: string) {
   const errors: Record<string, string> = {};
-  if (input.length < 3) {
-    errors.username = "L'élément doit avoir minimum 3 caractères";
-  } else if (!isValidString) {
-    errors.username =
-      "L'élément de votre liste ne peut pas détenir les caractères <, >, & ', \", ', / ou \\";
+  if (!isValidString(input)) {
+    errors.itemContent =
+      "L'élément que vous avez tapé contient des caractères méchants ou verboten (ex: <, >, & ', \", ', / ou \\)";
   }
   return errors;
 }
 
 function isValidString(input: string) {
-  const regex = /^[A-Za-z0-9:\-+]+$/;
+  const regex = /^[A-Za-z0-9:\-+%âêîôûàèìòùäëïöüçœé]+$/;
   return regex.test(input);
 }
-
