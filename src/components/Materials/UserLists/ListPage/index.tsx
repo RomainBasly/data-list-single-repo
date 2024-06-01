@@ -99,6 +99,7 @@ export default function ListPage() {
   }
 
   const addItemToList = async (inputElement: string): Promise<boolean> => {
+    console.log('inputlistElement', inputElement)
     try {
       const response = await fetch(
         `/api/lists/addItemToList?listId=${listId}`,

@@ -3,7 +3,7 @@ import classes from './classes.module.scss'
 import { PlusIcon } from '@heroicons/react/24/solid'
 import classNames from 'classnames'
 import { sanitize } from 'isomorphic-dompurify'
-import { validateCodeInput } from '@/Services/validation'
+import { validateCodeInput, validateInputAddItemToList } from '@/Services/validation'
 import { getErrorMessage } from '@/Services/errorHandlingService'
 
 type IProps = {
@@ -29,7 +29,7 @@ export default function DynamicButtonInput(props: IProps) {
   const submitForm = async (e: React.FormEvent | React.MouseEvent) => {
     e.preventDefault()
     const sanitizedCode = sanitize(value)
-    const formErrors = validateCodeInput(sanitizedCode)
+    const formErrors = validateInputAddItemToList(sanitizedCode)
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors)
       return

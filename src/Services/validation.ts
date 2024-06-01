@@ -90,3 +90,20 @@ export function matchingPasswords(
   }
   return errors;
 }
+
+export function validateInputAddItemToList(input: string) {
+  const errors: Record<string, string> = {};
+  if (input.length < 3) {
+    errors.username = "L'élément doit avoir minimum 3 caractères";
+  } else if (!isValidString) {
+    errors.username =
+      "L'élément de votre liste ne peut pas détenir les caractères <, >, & ', \", ', / ou \\";
+  }
+  return errors;
+}
+
+function isValidString(input: string) {
+  const regex = /^[A-Za-z0-9:\-+]+$/;
+  return regex.test(input);
+}
+
