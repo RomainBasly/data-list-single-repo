@@ -9,6 +9,7 @@ import { ListStatus } from '../../../../../types'
 import LoadingMaterial from '../../LoadingMaterial'
 import DynamicButtonInput from '../../Button/AddListElementButton'
 import { sortItemObjectByUpdatedDate } from '@/components/Helpers'
+import ListElement from './ListElement'
 
 export type IList = {
   'app-lists': IListContent
@@ -83,6 +84,8 @@ export default function ListPage() {
             }
             setListElements(sortedElements)
             setLoading(false)
+          } else {
+            router.push('/')
           }
         }
       } catch (error) {
@@ -91,6 +94,7 @@ export default function ListPage() {
           setError(error.message)
         }
         setLoading(false)
+        router.push('/')
         // prévoir le cas où ce n'est pas où la personne n'est pas autorisée
       }
     }
@@ -98,7 +102,7 @@ export default function ListPage() {
     if (accessToken && listId) {
       fetchListData()
     }
-  }, [accessToken, listId])
+  }, [accessToken, listId, router])
   if (!listElements) {
     return (
       <div className={classes['root']}>
@@ -151,12 +155,13 @@ export default function ListPage() {
           />
         </div>
       </div>
-      {listDetails.items &&
-        listDetails.items.map((element, index) => {
-          return <ul key={index}>{element.content}</ul>
+      <div className={classes['elements-container']}>
+        {listDetails.items?.map((element, index) => {
+          return <ListElement content={element.content} key={index} />
         })}
+      </div>
+
       <DynamicButtonInput onInputSubmit={addItemToList} />
-      {/* button form pour créer un element de la liste */}
     </div>
   )
 }
