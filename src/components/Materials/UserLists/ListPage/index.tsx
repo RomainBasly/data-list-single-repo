@@ -41,7 +41,6 @@ export type IElement = {
 export default function ListPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
-  const [elementValue, setElementValue] = useState<string>('')
   const [listElements, setListElements] = useState<IList | null>(null)
   const { accessToken } = useAuthInitialization()
   const router = useRouter()
