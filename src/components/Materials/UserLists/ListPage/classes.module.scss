@@ -24,6 +24,12 @@
     }
   }
 
+  .elements-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  
   .loading {
     display: flex;
     justify-content: center;
