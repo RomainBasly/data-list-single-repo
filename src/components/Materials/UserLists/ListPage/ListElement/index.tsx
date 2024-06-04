@@ -75,6 +75,7 @@ export default function ListElement(props: IProps) {
     setErrors({ ...errors, textEditContent: '' })
     setTextContent(e.target.value)
   }
+  
   return (
     <div
       className={classNames(classes['root'], {
@@ -116,6 +117,7 @@ export default function ListElement(props: IProps) {
               className={classes['input']}
               value={textContent}
               onChange={editTextContent}
+              autoFocus
             />
           </form>
         )}

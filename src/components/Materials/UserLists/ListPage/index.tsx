@@ -8,8 +8,13 @@ import ListCard from '../ListCard'
 import { ListStatus } from '../../../../../types'
 import LoadingMaterial from '../../LoadingMaterial'
 import DynamicButtonInput from '../../Button/AddListElementButton'
-import { sortItemObjectByUpdatedDate } from '@/components/Helpers'
+import {
+  sortItemObjectByUpdatedDateASC,
+  sortItemObjectByUpdatedDateDSC,
+} from '@/components/Helpers'
 import ListElement from './ListElement'
+
+type IResponse = IList[]
 
 export type IList = {
   'app-lists': IListContent
@@ -42,7 +47,8 @@ export type IElement = {
 export default function ListPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
-  const [listElements, setListElements] = useState<IList | null>(null)
+  const [listTop, setListTop] = useState<IList | null>(null)
+  const [listItems, setListItems] = useState<IElement[] | null>(null)
   const { accessToken } = useAuthInitialization()
   const router = useRouter()
   const paramsInitiator = useParams()
@@ -68,21 +74,27 @@ export default function ListPage() {
           if (!response.ok) {
             throw new Error('Failed to fetch lists items')
           }
-          const data = await response.json()
+          const data: IResponse = await response.json()
 
           if (data) {
-            const sortedItems = data[0]['app-lists'].items.sort(
-              sortItemObjectByUpdatedDate,
-            )
+            const LIVE = data[0]['app-lists'].items
+              .filter((item) => item.status === '1')
+              .sort(sortItemObjectByUpdatedDateDSC)
+            const CROSSED = data[0]['app-lists'].items
+              .filter((item) => item.status === '2')
+              .sort(sortItemObjectByUpdatedDateDSC)
+
+            const sortedItems = [...LIVE, ...CROSSED]
+            setListItems(sortedItems)
 
             const sortedElements: IList = {
               ...data[0],
               'app-lists': {
                 ...data[0]['app-lists'],
-                items: sortedItems,
+                items: LIVE,
               },
             }
-            setListElements(sortedElements)
+            setListTop(sortedElements)
             setLoading(false)
           } else {
             router.push('/')
@@ -103,7 +115,8 @@ export default function ListPage() {
       fetchListData()
     }
   }, [accessToken, listId, router])
-  if (!listElements) {
+
+  if (!listTop) {
     return (
       <div className={classes['root']}>
         <div className={classes['loading']}>
@@ -115,7 +128,6 @@ export default function ListPage() {
   }
 
   const addItemToList = async (inputElement: string): Promise<boolean> => {
-    console.log('inputlistElement', inputElement)
     try {
       const response = await fetch(
         `/api/lists/addItemToList?listId=${listId}`,
@@ -128,6 +140,16 @@ export default function ListPage() {
           body: JSON.stringify({ listId, content: inputElement }),
         },
       )
+      const result = await response.json()
+      console.log('result Item added', result.itemAdded)
+
+      if (listItems) {
+        const updatedItems = [...listItems, result.itemAdded[0]]
+        const sortedElements = updatedItems.sort(sortItemObjectByUpdatedDateDSC)
+        setListItems(updatedItems)
+      } else {
+        setListItems(result.itemAdded)
+      }
 
       if (!response.ok) {
         throw new Error('Failed to post item to list')
@@ -139,7 +161,7 @@ export default function ListPage() {
     }
   }
 
-  const listDetails = listElements['app-lists']
+  const listDetails = listTop['app-lists']
   return (
     <div className={classes['root']}>
       <div className={classes['list-item']}>
@@ -156,11 +178,10 @@ export default function ListPage() {
         </div>
       </div>
       <div className={classes['elements-container']}>
-        {listDetails.items?.map((element, index) => {
-          return <ListElement content={element.content} key={index} />
+        {listItems?.map((element) => {
+          return <ListElement content={element.content} key={element.id} />
         })}
       </div>
-
       <DynamicButtonInput onInputSubmit={addItemToList} />
     </div>
   )

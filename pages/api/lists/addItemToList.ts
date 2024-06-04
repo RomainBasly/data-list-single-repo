@@ -18,11 +18,11 @@ export default async function handler(
   try {
     const listsApi = ListsApi.getInstance();
 
-    await listsApi.addItemToList(listId, content, {
+    const itemAdded = await listsApi.addItemToList(listId, content, {
       Cookie: cookieHeader || "",
     });
 
-    return res.status(200).json({ message: "Item added to list" });
+    return res.status(200).json({ message: "Item added to list", itemAdded : itemAdded.addedElement });
   } catch (error) {
     // Handle errors (e.g., from your backend call)
     console.log("error is", error);
