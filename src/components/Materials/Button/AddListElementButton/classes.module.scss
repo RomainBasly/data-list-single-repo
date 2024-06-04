@@ -24,6 +24,12 @@
     position: absolute;
     left: 0;
     transform: translateX(0);
+    background-color: #eaf2d7;
+    transition: background-color 0.4s ease-in-out;
+
+    &:hover {
+      background-color: #c9e4de;
+    }
 
     .svg {
       display: flex;

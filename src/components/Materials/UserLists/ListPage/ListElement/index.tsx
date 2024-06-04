@@ -18,6 +18,9 @@ export default function ListElement(props: IProps) {
   const [textContent, setTextContent] = useState<string>(props.content)
   const [isCrossed, setIsCrossed] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isChoiceContainerOpen, setIsChoiceContainerOpen] = useState<boolean>(
+    false,
+  )
   const [errors, setErrors] = useState<{ [key: string]: string }>()
   const [isEditing, setIsEditing] = useState<boolean | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -27,20 +30,31 @@ export default function ListElement(props: IProps) {
     if (inputRef.current && !inputRef.current.contains(event.target as Node)) {
       setIsEditing(false)
       setIsSelected(false)
+      setIsChoiceContainerOpen(false)
     } else if (
       elementRef.current &&
       !elementRef.current.contains(event.target as Node)
     ) {
       setIsSelected(false)
+      setIsChoiceContainerOpen(false)
     }
   }
 
   const handleClickOnRootDiv = () => {
+    if (isChoiceContainerOpen) {
+      return
+    }
+
     if (!isSelected) {
       setIsSelected(!isSelected)
     } else if (isSelected && !isEditing) {
       setIsCrossed(!isCrossed)
     }
+  }
+
+  const crossElement = (event: React.MouseEvent) => {
+    event.stopPropagation()
+    setIsCrossed(!isCrossed)
   }
 
   useEffect(() => {
@@ -59,15 +73,13 @@ export default function ListElement(props: IProps) {
   }, [isEditing, isSelected])
 
   function changeMode(event: React.MouseEvent) {
-    // cas 1 : element non sélectionnné : on le selectionne l'élement
-    if (!isSelected) {
-      setIsSelected(!isSelected)
-    } else {
-      event.stopPropagation()
-      setIsEditing(!isEditing)
-      setIsCrossed(false)
-    }
+    event.stopPropagation()
+    setIsEditing(true)
+    setIsSelected(true)
+    setIsCrossed(false)
+    setIsChoiceContainerOpen(false)
   }
+
   const isTextContentVisible =
     (!isEditing && !isSelected) || (!isEditing && isSelected)
 
@@ -75,7 +87,13 @@ export default function ListElement(props: IProps) {
     setErrors({ ...errors, textEditContent: '' })
     setTextContent(e.target.value)
   }
-  
+
+  function openChoiceContainer(event: React.MouseEvent) {
+    event.stopPropagation()
+    console.log('state', isChoiceContainerOpen)
+    setIsChoiceContainerOpen(!isChoiceContainerOpen)
+  }
+
   return (
     <div
       className={classNames(classes['root'], {
@@ -123,7 +141,7 @@ export default function ListElement(props: IProps) {
         )}
       </div>
       {isSelected && !isEditing && (
-        <div className={classes['ellipsis-icon']}>
+        <div className={classes['ellipsis-icon']} onClick={openChoiceContainer}>
           <EllipsisHorizontalIcon className={classes['svg']} />
         </div>
       )}
@@ -131,6 +149,17 @@ export default function ListElement(props: IProps) {
       {isSelected && isEditing && (
         <div className={classes['ellipsis-icon']}>
           <PlusIcon className={classes['svg']} />
+        </div>
+      )}
+      {isChoiceContainerOpen && (
+        <div className={classes['choice-container']}>
+          <div className={classes['choice']} onClick={changeMode}>
+            Editer
+          </div>
+          <div className={classes['choice']} onClick={crossElement}>
+            Barrer l'élement
+          </div>
+          <div className={classes['choice']}>Supprimer l'élement</div>
         </div>
       )}
     </div>
