@@ -5,6 +5,10 @@
   height: 70px;
   border-bottom: 1px solid #adb5bd;
 
+  @media screen and (max-width: 320px) {
+    height: 51px;
+  }
+
   .logo-big-screen {
     display: flex;
     height: 100%;

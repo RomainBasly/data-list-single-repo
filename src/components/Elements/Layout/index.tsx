@@ -29,15 +29,18 @@ export default function Layout({ children, pageType }: ILayoutProps) {
         <div className={classes['root']}>
           <Header className={classes['header']} />
           <SideMenu />
+          <div className={classes['layout-content']}>
+            {children}
+            <NetworkStatusNotifierWithNoSSR
+              className={classes['internet-notifier']}
+            />
+          </div>
         </div>
       )}
-
-      <div className={classes['layout-content']}>
-        {children}
-        <NetworkStatusNotifierWithNoSSR
-          className={classes['internet-notifier']}
-        />
-      </div>
+      {pageType === 'login' ||
+        (pageType === 'register' && (
+          <div className={classes['root']}>{children}</div>
+        ))}
     </>
   )
 }

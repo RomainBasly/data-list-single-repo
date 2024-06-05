@@ -8,10 +8,7 @@ import ListCard from '../ListCard'
 import { ListStatus } from '../../../../../types'
 import LoadingMaterial from '../../LoadingMaterial'
 import DynamicButtonInput from '../../Button/AddListElementButton'
-import {
-  sortItemObjectByUpdatedDateASC,
-  sortItemObjectByUpdatedDateDSC,
-} from '@/components/Helpers'
+import { sortItemObjectByUpdatedDateDSC } from '@/components/Helpers'
 import ListElement from './ListElement'
 
 type IResponse = IList[]
@@ -141,12 +138,11 @@ export default function ListPage() {
         },
       )
       const result = await response.json()
-      console.log('result Item added', result.itemAdded)
 
       if (listItems) {
         const updatedItems = [...listItems, result.itemAdded[0]]
         const sortedElements = updatedItems.sort(sortItemObjectByUpdatedDateDSC)
-        setListItems(updatedItems)
+        setListItems(sortedElements)
       } else {
         setListItems(result.itemAdded)
       }
@@ -182,7 +178,9 @@ export default function ListPage() {
           return <ListElement content={element.content} key={element.id} />
         })}
       </div>
-      <DynamicButtonInput onInputSubmit={addItemToList} />
+      <div className={classes['dynamic-button-input']}>
+        <DynamicButtonInput onInputSubmit={addItemToList} />
+      </div>
     </div>
   )
 }

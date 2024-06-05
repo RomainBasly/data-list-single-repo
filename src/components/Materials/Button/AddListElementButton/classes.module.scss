@@ -20,12 +20,16 @@
     cursor: pointer;
     border: 1px solid #333533;
     outline: 1px solid #333533;
-    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out,
+      background-color 0.4s ease-in-out;
     position: absolute;
     left: 0;
     transform: translateX(0);
     background-color: #eaf2d7;
-    transition: background-color 0.4s ease-in-out;
+
+    @media screen and (max-width: 320px) {
+      padding: 2px 20px;
+    }
 
     &:hover {
       background-color: #c9e4de;
@@ -55,6 +59,10 @@
     transform: translateX(100%);
     margin-top: 50px;
 
+    @media screen and (max-width: 500px) {
+      gap: 2px;
+    }
+
     &.is-form-visible {
       display: flex;
       visibility: visible;
@@ -64,16 +72,27 @@
 
       .content {
         display: flex;
-        border: 1px solid red;
+
         .dynamic-input {
           flex: 1;
           gap: 10px;
           width: 100%;
-          background: transparent;
+          background-color: #efe9ae;
           align-items: center;
           padding: 15px 20px;
           border: 1px solid #333533;
           outline: 1px solid #333533;
+          font-size: 16px;
+
+          &.error-form {
+            border: 1px solid #950e0e;
+            outline: 1px solid #950e0e;
+            background-color: #fec5bb;
+          }
+
+          @media screen and (max-width: 320px) {
+            padding: 5px 20px;
+          }
 
           input::placeholder {
             color: #333533;
@@ -96,14 +115,30 @@
       }
 
       .error-container {
+        display: flex;
+        align-items: center;
         min-height: 40px;
         max-height: 40px;
         height: 100%;
-        border: 1px solid orange;
+        width: 100%;
+        padding-top: 20px;
+
         .error {
-          color: #950e0e;
+          display: inline-block;
+          color: orange;
           font-size: 13px;
+          max-width: 400px;
+          white-space: normal;
+          overflow: hidden;
         }
+      }
+    }
+
+    .content {
+      display: flex;
+      flex-direction: row;
+      .svg {
+        width: 20px;
       }
     }
   }

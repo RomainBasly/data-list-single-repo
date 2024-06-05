@@ -13,7 +13,7 @@
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.15);
   transition: transform 300ms ease-in-out, opacity 300ms,
     width 300ms ease-in-out, box-shadow 300ms ease-in-out;
-  z-index: 2;
+  z-index: 100;
 
   @media screen and (max-width: 350px) {
     width: 100%;

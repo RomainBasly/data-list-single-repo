@@ -2,7 +2,11 @@
 import React, { useRef, useState, useEffect } from 'react'
 import classes from './classes.module.scss'
 import classNames from 'classnames'
-import { EllipsisHorizontalIcon, PlusIcon } from '@heroicons/react/24/solid'
+import {
+  EllipsisHorizontalIcon,
+  PlusIcon,
+  ExclamationTriangleIcon,
+} from '@heroicons/react/24/solid'
 
 type IProps = {
   content: string
@@ -25,6 +29,37 @@ export default function ListElement(props: IProps) {
   const [isEditing, setIsEditing] = useState<boolean | null>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const elementRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (isEditing || isSelected) {
+      document.addEventListener('click', clickOutside, true)
+      document.addEventListener('touchstart', clickOutside, true)
+    } else {
+      document.removeEventListener('click', clickOutside, true)
+      document.removeEventListener('touchstart', clickOutside, true)
+    }
+
+    return () => {
+      document.removeEventListener('click', clickOutside, true)
+      document.removeEventListener('touchstart', clickOutside, true)
+    }
+  }, [isEditing, isSelected])
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsSelected(false)
+        setIsChoiceContainerOpen(false)
+        setIsEditing(false)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
 
   const clickOutside = (event: MouseEvent | TouchEvent) => {
     if (inputRef.current && !inputRef.current.contains(event.target as Node)) {
@@ -55,22 +90,8 @@ export default function ListElement(props: IProps) {
   const crossElement = (event: React.MouseEvent) => {
     event.stopPropagation()
     setIsCrossed(!isCrossed)
+    setIsChoiceContainerOpen(false)
   }
-
-  useEffect(() => {
-    if (isEditing || isSelected) {
-      document.addEventListener('click', clickOutside, true)
-      document.addEventListener('touchstart', clickOutside, true)
-    } else {
-      document.removeEventListener('click', clickOutside, true)
-      document.removeEventListener('touchstart', clickOutside, true)
-    }
-
-    return () => {
-      document.removeEventListener('click', clickOutside, true)
-      document.removeEventListener('touchstart', clickOutside, true)
-    }
-  }, [isEditing, isSelected])
 
   function changeMode(event: React.MouseEvent) {
     event.stopPropagation()
@@ -90,7 +111,6 @@ export default function ListElement(props: IProps) {
 
   function openChoiceContainer(event: React.MouseEvent) {
     event.stopPropagation()
-    console.log('state', isChoiceContainerOpen)
     setIsChoiceContainerOpen(!isChoiceContainerOpen)
   }
 
@@ -98,10 +118,12 @@ export default function ListElement(props: IProps) {
     <div
       className={classNames(classes['root'], {
         [classes['is-selected']]: isSelected,
+        [classes['blurred']]: !isSelected && isChoiceContainerOpen,
       })}
       onClick={handleClickOnRootDiv}
       ref={elementRef}
     >
+      {isChoiceContainerOpen && <div className={classes['blur-overlay']}></div>}
       {!isLoading && (
         <div className={classes['circle']}>
           <div
@@ -141,25 +163,34 @@ export default function ListElement(props: IProps) {
         )}
       </div>
       {isSelected && !isEditing && (
-        <div className={classes['ellipsis-icon']} onClick={openChoiceContainer}>
+        <div className={classes['icon']} onClick={openChoiceContainer}>
           <EllipsisHorizontalIcon className={classes['svg']} />
         </div>
       )}
 
       {isSelected && isEditing && (
-        <div className={classes['ellipsis-icon']}>
+        <div className={classes['icon']}>
           <PlusIcon className={classes['svg']} />
         </div>
       )}
       {isChoiceContainerOpen && (
         <div className={classes['choice-container']}>
-          <div className={classes['choice']} onClick={changeMode}>
-            Editer
-          </div>
+          {!isCrossed && (
+            <div className={classes['choice']} onClick={changeMode}>
+              Editer
+            </div>
+          )}
           <div className={classes['choice']} onClick={crossElement}>
-            Barrer l'élement
+            <div className={classes['text']}>
+              {isCrossed ? "Décocher l'élément" : "Barrer l'élement"}
+            </div>
           </div>
-          <div className={classes['choice']}>Supprimer l'élement</div>
+          {isCrossed && (
+            <div className={classes['choice']}>
+              <ExclamationTriangleIcon className={classes['svg']} />
+              <div className={classes['text']}>Supprimer l'élement</div>
+            </div>
+          )}
         </div>
       )}
     </div>

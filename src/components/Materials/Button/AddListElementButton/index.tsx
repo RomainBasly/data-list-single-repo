@@ -10,7 +10,7 @@ type IProps = {
   onInputSubmit: (value: string) => Promise<boolean>
 }
 
-export default function DynamicButtonInput(props: IProps) {
+export default function DynamicButtonInput(props: Readonly<IProps>) {
   const [isEditing, setIsEditing] = useState<boolean>(false)
   const [value, setValue] = useState<string>('')
   const [errors, setErrors] = useState<Record<string, string>>()
@@ -69,7 +69,9 @@ export default function DynamicButtonInput(props: IProps) {
       >
         <div className={classes['content']}>
           <input
-            className={classes['dynamic-input']}
+            className={classNames(classes['dynamic-input'], {
+              [classes['error-form']]: errors?.itemContent,
+            })}
             placeholder={'Text'}
             onChange={handleInputChange}
             autoFocus
@@ -82,8 +84,13 @@ export default function DynamicButtonInput(props: IProps) {
           </div>
         </div>
         <div className={classes['error-container']}>
-          {errors && (
-            <div className={classes['error']}>{errors.itemContent}</div>
+          {errors && errors.itemContent && (
+            <div className={classes['error']}>
+              <>
+                {console.log('errors.itemContent', errors, errors.itemContent)}
+              </>
+              {errors.itemContent}
+            </div>
           )}
         </div>
       </form>
