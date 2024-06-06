@@ -6,8 +6,8 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const cookieHeader = req.headers.cookie;
+  const elementId = req.body.elementId;
   const listId = req.body.listId;
-  const content = req.body.content;
 
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method Not Allowed" });
@@ -16,18 +16,21 @@ export default async function handler(
 
   try {
     const listsApi = ListsApi.getInstance();
-
-    const itemAdded = await listsApi.addItemToList(listId, content, {
+    const itemSuppressed = await listsApi.suppressItem(listId, elementId, {
       Cookie: cookieHeader || "",
     });
 
-    return res.status(200).json({
-      message: "Item added to list",
-      itemAdded: itemAdded.addedElement,
-    });
+    if (itemSuppressed.success) {
+      return res.status(200).json({
+        success: true,
+        message: "Item suppress of list",
+      });
+    }
   } catch (error) {
     // Handle errors (e.g., from your backend call)
     console.log("error is", error);
-    res.status(500).json({ error: "Failed to add an element to the list" });
+    res
+      .status(500)
+      .json({ error: "Failed to suppress the element of the list" });
   }
 }

@@ -35,7 +35,7 @@ export type IUser = {
 }
 
 export type IElement = {
-  id: number
+  id: string
   updated_at: string
   content: string
   status: string
@@ -44,6 +44,9 @@ export type IElement = {
 export default function ListPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
+  const [animateSuppressionByItemId, setAnimateSuppressionByItemId] = useState<
+    string | null
+  >(null)
   const [listTop, setListTop] = useState<IList | null>(null)
   const [listItems, setListItems] = useState<IElement[] | null>(null)
   const { accessToken } = useAuthInitialization()
@@ -157,6 +160,48 @@ export default function ListPage() {
     }
   }
 
+  const suppressElement = async (id: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`/api/lists/suppressItem`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ listId, elementId: id }),
+      })
+      if (response.status === 200) {
+        setAnimateSuppressionByItemId(id)
+        setTimeout(() => {
+          if (listItems) {
+            const newList = listItems.filter((item) => item.id !== id)
+            setListItems(newList)
+            setAnimateSuppressionByItemId(null)
+          }
+        }, 700)
+      }
+      return true
+    } catch (error) {
+      return false
+    }
+  }
+
+  const handleElementStatus = async (id: string, status: boolean) => {
+    try {
+      const response = await fetch('/api/lists/updateStatus', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ itemId: id, status }),
+      })
+      return true
+    } catch (error) {
+      return false
+    }
+  }
+
   const listDetails = listTop['app-lists']
   return (
     <div className={classes['root']}>
@@ -175,7 +220,18 @@ export default function ListPage() {
       </div>
       <div className={classes['elements-container']}>
         {listItems?.map((element) => {
-          return <ListElement content={element.content} key={element.id} />
+          return (
+            <ListElement
+              content={element.content}
+              key={element.id}
+              onCrossElement={handleElementStatus}
+              onElementSuppress={suppressElement}
+              id={element.id}
+              animateSuppressionByItemId={
+                animateSuppressionByItemId === element.id
+              }
+            />
+          )
         })}
       </div>
       <div className={classes['dynamic-button-input']}>

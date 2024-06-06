@@ -95,7 +95,7 @@ export function validateInputAddItemToList(input: string) {
   const errors: Record<string, string> = {};
   if (!isValidString(input)) {
     errors.itemContent =
-      "L'élément que vous avez tapé contient des caractères méchants ou verboten (ex: <, >, & ', \", ', / ou \\)";
+      "Certains caractères ne sont pas autorisés (ex: <, >, & ', \", ', / ou \\)";
   }
   return errors;
 }

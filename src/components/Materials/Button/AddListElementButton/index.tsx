@@ -86,9 +86,6 @@ export default function DynamicButtonInput(props: Readonly<IProps>) {
         <div className={classes['error-container']}>
           {errors && errors.itemContent && (
             <div className={classes['error']}>
-              <>
-                {console.log('errors.itemContent', errors, errors.itemContent)}
-              </>
               {errors.itemContent}
             </div>
           )}

@@ -7,18 +7,24 @@ import {
   PlusIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/solid'
+import { getErrorMessage } from '@/Services/errorHandlingService'
 
 type IProps = {
+  id: string
   content: string
+  animateSuppressionByItemId: boolean
+  onElementSuppress: (id: string) => Promise<boolean>
+  onCrossElement: (id: string, status: boolean) => Promise<boolean>
 }
 
-enum Status {
-  LIVE = 'LIVE',
-  CROSSED = 'CROSSED',
-}
+// enum Status {
+//   LIVE = 'LIVE',
+//   CROSSED = 'CROSSED',
+// }
 
 export default function ListElement(props: IProps) {
   const [isSelected, setIsSelected] = useState<boolean>(false)
+  const [isSuppressing, setIsSuppressing] = useState<boolean>(false)
   const [textContent, setTextContent] = useState<string>(props.content)
   const [isCrossed, setIsCrossed] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -114,11 +120,25 @@ export default function ListElement(props: IProps) {
     setIsChoiceContainerOpen(!isChoiceContainerOpen)
   }
 
+  async function suppressElement(id: string) {
+    try {
+      const response = await props.onElementSuppress(id)
+      if (!response) {
+        setIsSuppressing(false)
+      }
+    } catch (error) {
+      // Todo : add error for that problem
+      const errorMessage = getErrorMessage(error)
+      setErrors({ ...errors, form: errorMessage })
+    }
+  }
+
   return (
     <div
       className={classNames(classes['root'], {
         [classes['is-selected']]: isSelected,
         [classes['blurred']]: !isSelected && isChoiceContainerOpen,
+        [classes['is-suppressing']]: props.animateSuppressionByItemId,
       })}
       onClick={handleClickOnRootDiv}
       ref={elementRef}
@@ -167,32 +187,37 @@ export default function ListElement(props: IProps) {
           <EllipsisHorizontalIcon className={classes['svg']} />
         </div>
       )}
-
       {isSelected && isEditing && (
         <div className={classes['icon']}>
           <PlusIcon className={classes['svg']} />
         </div>
       )}
-      {isChoiceContainerOpen && (
-        <div className={classes['choice-container']}>
-          {!isCrossed && (
-            <div className={classes['choice']} onClick={changeMode}>
-              Editer
-            </div>
-          )}
-          <div className={classes['choice']} onClick={crossElement}>
-            <div className={classes['text']}>
-              {isCrossed ? "Décocher l'élément" : "Barrer l'élement"}
-            </div>
+      <div
+        className={classNames(classes['choice-container'], {
+          [classes['open']]:
+            isChoiceContainerOpen && !props.animateSuppressionByItemId,
+        })}
+      >
+        {!isCrossed && (
+          <div className={classes['choice']} onClick={changeMode}>
+            Editer
           </div>
-          {isCrossed && (
-            <div className={classes['choice']}>
-              <ExclamationTriangleIcon className={classes['svg']} />
-              <div className={classes['text']}>Supprimer l'élement</div>
-            </div>
-          )}
+        )}
+        <div className={classes['choice']} onClick={crossElement}>
+          <div className={classes['text']}>
+            {isCrossed ? "Décocher l'élément" : "Barrer l'élement"}
+          </div>
         </div>
-      )}
+        {isCrossed && (
+          <div
+            className={classes['choice']}
+            onClick={() => suppressElement(props.id)}
+          >
+            <ExclamationTriangleIcon className={classes['svg']} />
+            <div className={classes['text']}>Supprimer l'élement</div>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
