@@ -39,3 +39,9 @@ export type ReturnedInvitedUsers = {
   is_already_invited: boolean;
   user_id: UUID | null;
 };
+
+export type IInputAddToList = {
+  listId: UUID;
+  userId: number;
+  content: string;
+};

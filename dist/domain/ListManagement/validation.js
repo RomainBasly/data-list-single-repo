@@ -44,7 +44,7 @@ let ListValidatorService = class ListValidatorService {
     constructor(appEmailValidation) {
         this.appEmailValidation = appEmailValidation;
     }
-    async preCheck(inputs) {
+    async preCheckListCreation(inputs) {
         const schema = yup.object().shape({
             name: yup.string().required(),
             accessLevel: yup.string().required(),
@@ -75,6 +75,22 @@ let ListValidatorService = class ListValidatorService {
             }));
         }
         return emailsAddress.length > 0 ? emailsAddress : [];
+    }
+    async verifyInputAddItem(inputs) {
+        const schema = yup.object().shape({
+            listId: yup.string().required(),
+            userId: yup.number().required(),
+            content: yup.string().required(),
+        });
+        try {
+            return await schema.validate(inputs);
+        }
+        catch (error) {
+            if (error instanceof yup.ValidationError) {
+                throw new errors_1.ValidationError(errors_1.ErrorMessages.VALIDATION_ERROR, error.message);
+            }
+            throw new Error('Error validating the content schema during content creation');
+        }
     }
 };
 exports.ListValidatorService = ListValidatorService;

@@ -1,14 +1,15 @@
 import { injectable } from 'tsyringe';
 import * as yup from 'yup';
 import { ErrorMessages, ValidationError } from '../common/errors';
-import { List } from './types';
+import { IInputAddToList, List } from './types';
 import AppEmailValidation from '../emailVerification/validation';
+import { UUID } from 'crypto';
 
 @injectable()
 export class ListValidatorService {
   public constructor(private readonly appEmailValidation: AppEmailValidation) {}
 
-  public async preCheck(inputs: List) {
+  public async preCheckListCreation(inputs: List) {
     const schema = yup.object().shape({
       name: yup.string().required(),
       accessLevel: yup.string().required(),
@@ -42,5 +43,22 @@ export class ListValidatorService {
       );
     }
     return emailsAddress.length > 0 ? emailsAddress : [];
+  }
+
+  public async verifyInputAddItem(inputs: IInputAddToList) {
+    const schema = yup.object().shape({
+      listId: yup.string().required(),
+      userId: yup.number().required(),
+      content: yup.string().required(),
+    });
+
+    try {
+      return await schema.validate(inputs);
+    } catch (error) {
+      if (error instanceof yup.ValidationError) {
+        throw new ValidationError(ErrorMessages.VALIDATION_ERROR, error.message);
+      }
+      throw new Error('Error validating the content schema during content creation');
+    }
   }
 }

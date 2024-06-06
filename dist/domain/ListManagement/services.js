@@ -98,9 +98,22 @@ let ListManagementService = class ListManagementService {
     }
     async addItemToList(listId, userId, content) {
         try {
+            const inputs = { listId, userId, content };
+            await this.listValidatorService.verifyInputAddItem(inputs);
             const isAllowed = await this.appListManagementRepository.isUserAllowedToChangeList(listId, userId);
             if (isAllowed.length > 0) {
-                await this.appListManagementRepository.addItemToList(listId, userId, content);
+                return await this.appListManagementRepository.addItemToList(listId, content);
+            }
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async suppressElementById(listId, userId, elementId) {
+        try {
+            const isAllowed = await this.appListManagementRepository.isUserAllowedToChangeList(listId, userId);
+            if (isAllowed.length > 0) {
+                return await this.appListManagementRepository.suppressItemById(listId, elementId);
             }
         }
         catch (error) {

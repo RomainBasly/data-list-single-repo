@@ -29,7 +29,7 @@ let ListManagementController = class ListManagementController {
             const creatorUserName = userInfo.userName;
             const creatorEmail = userInfo.email;
             const creatorId = userInfo.id;
-            const validatedInputs = await this.listValidatorService.preCheck({
+            const validatedInputs = await this.listValidatorService.preCheckListCreation({
                 name: listName,
                 accessLevel,
                 description,
@@ -77,8 +77,21 @@ let ListManagementController = class ListManagementController {
             const listId = req.params.listId;
             const userId = userInfo.id;
             const content = req.body.content;
-            await this.listManagementService.addItemToList(listId, userId, content);
-            res.status(200).json({ message: 'item added' });
+            const addedElement = await this.listManagementService.addItemToList(listId, userId, content);
+            res.status(200).json({ message: 'item added', addedElement });
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+    async suppressItemByListId(req, res, next) {
+        try {
+            const { userInfo } = (0, helpers_1.getFromJWTToken)(req, 'accessToken');
+            const elementId = req.params.elementId;
+            const listId = req.body.listId;
+            const userId = userInfo.id;
+            await this.listManagementService.suppressElementById(listId, userId, elementId);
+            res.status(200).json({ success: true, message: 'item suppressed' });
         }
         catch (error) {
             next(error);

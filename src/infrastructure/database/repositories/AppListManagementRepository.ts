@@ -121,10 +121,12 @@ export class AppListManagementRepository {
     }
   }
 
-  public async addItemToList(listId: UUID, userId: number, content: string) {
+  public async addItemToList(listId: UUID, content: string) {
     try {
-      const { data } = await supabase.from('app-list-items').insert([{ content, status: '1', listId }]);
-      console.log('data', data);
+      const { data } = await supabase
+        .from('app-list-items')
+        .insert([{ content, status: '1', list_id: listId }])
+        .select();
       return data;
     } catch (error) {
       throw error;
@@ -139,6 +141,14 @@ export class AppListManagementRepository {
         .eq('user-id', userId)
         .eq('app-list-id', listId);
       return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async suppressItemById(listId: UUID, elementId: string) {
+    try {
+      await supabase.from('app-list-items').delete().eq('id', elementId).eq('list_id', listId);
     } catch (error) {
       throw error;
     }

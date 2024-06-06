@@ -83,10 +83,12 @@ let AppListManagementRepository = class AppListManagementRepository {
             throw error;
         }
     }
-    async addItemToList(listId, userId, content) {
+    async addItemToList(listId, content) {
         try {
-            const { data } = await supabaseClient_1.default.from('app-list-items').insert([{ content, status: '1', listId }]);
-            console.log('data', data);
+            const { data } = await supabaseClient_1.default
+                .from('app-list-items')
+                .insert([{ content, status: '1', list_id: listId }])
+                .select();
             return data;
         }
         catch (error) {
@@ -101,6 +103,14 @@ let AppListManagementRepository = class AppListManagementRepository {
                 .eq('user-id', userId)
                 .eq('app-list-id', listId);
             return data;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async suppressItemById(listId, elementId) {
+        try {
+            await supabaseClient_1.default.from('app-list-items').delete().eq('id', elementId).eq('list_id', listId);
         }
         catch (error) {
             throw error;

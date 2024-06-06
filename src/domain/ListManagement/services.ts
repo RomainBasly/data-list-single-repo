@@ -1,6 +1,5 @@
 import { injectable, inject } from 'tsyringe';
 import { List } from './types';
-import AppEmailValidation from '../emailVerification/validation';
 import { AppListManagementRepository } from '../../infrastructure/database/repositories/AppListManagementRepository';
 import UserInvitationsService from '../user/Invitations/services';
 import { AppUserInvitationsRepository } from '../../infrastructure/database/repositories/AppUserInvitationsRepository';
@@ -137,9 +136,21 @@ export class ListManagementService {
 
   public async addItemToList(listId: UUID, userId: number, content: string) {
     try {
+      const inputs = { listId, userId, content };
+      await this.listValidatorService.verifyInputAddItem(inputs);
       const isAllowed = await this.appListManagementRepository.isUserAllowedToChangeList(listId, userId);
       if (isAllowed.length > 0) {
-        await this.appListManagementRepository.addItemToList(listId, userId, content);
+        return await this.appListManagementRepository.addItemToList(listId, content);
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+  public async suppressElementById(listId: UUID, userId: number, elementId: string) {
+    try {
+      const isAllowed = await this.appListManagementRepository.isUserAllowedToChangeList(listId, userId);
+      if (isAllowed.length > 0) {
+        return await this.appListManagementRepository.suppressItemById(listId, elementId);
       }
     } catch (error) {
       throw error;
