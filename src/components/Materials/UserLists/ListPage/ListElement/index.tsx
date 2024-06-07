@@ -12,21 +12,15 @@ import { getErrorMessage } from '@/Services/errorHandlingService'
 type IProps = {
   id: string
   content: string
+  statusOpen: boolean
   animateSuppressionByItemId: boolean
   onElementSuppress: (id: string) => Promise<boolean>
   onCrossElement: (id: string, status: boolean) => Promise<boolean>
 }
 
-// enum Status {
-//   LIVE = 'LIVE',
-//   CROSSED = 'CROSSED',
-// }
-
 export default function ListElement(props: IProps) {
   const [isSelected, setIsSelected] = useState<boolean>(false)
-  const [isSuppressing, setIsSuppressing] = useState<boolean>(false)
   const [textContent, setTextContent] = useState<string>(props.content)
-  const [isCrossed, setIsCrossed] = useState<boolean>(false)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [isChoiceContainerOpen, setIsChoiceContainerOpen] = useState<boolean>(
     false,
@@ -89,21 +83,29 @@ export default function ListElement(props: IProps) {
     if (!isSelected) {
       setIsSelected(!isSelected)
     } else if (isSelected && !isEditing) {
-      setIsCrossed(!isCrossed)
+      // setStatusOpen(!statusOpen) Cas où on clique sur la div
     }
   }
 
-  const crossElement = (event: React.MouseEvent) => {
+  const crossElement = async (event: React.MouseEvent) => {
     event.stopPropagation()
-    setIsCrossed(!isCrossed)
-    setIsChoiceContainerOpen(false)
+    try {
+      const trigger = await props.onCrossElement(props.id, !props.statusOpen)
+      if (trigger) {
+        setIsChoiceContainerOpen(false)
+        setIsSelected(false)
+      }
+    } catch (error) {
+      // Todo : add error for that problem
+      const errorMessage = getErrorMessage(error)
+      setErrors({ ...errors, form: errorMessage })
+    }
   }
 
   function changeMode(event: React.MouseEvent) {
     event.stopPropagation()
     setIsEditing(true)
     setIsSelected(true)
-    setIsCrossed(false)
     setIsChoiceContainerOpen(false)
   }
 
@@ -122,10 +124,7 @@ export default function ListElement(props: IProps) {
 
   async function suppressElement(id: string) {
     try {
-      const response = await props.onElementSuppress(id)
-      if (!response) {
-        setIsSuppressing(false)
-      }
+      await props.onElementSuppress(id)
     } catch (error) {
       // Todo : add error for that problem
       const errorMessage = getErrorMessage(error)
@@ -149,7 +148,7 @@ export default function ListElement(props: IProps) {
           <div
             className={classNames(classes['circle-selected'], {
               [classes['is-selected']]: isSelected,
-              [classes['is-crossed']]: isCrossed,
+              [classes['is-crossed']]: !props.statusOpen,
             })}
           ></div>
         </div>
@@ -163,7 +162,7 @@ export default function ListElement(props: IProps) {
         {isTextContentVisible && (
           <div
             className={classNames(classes['text'], {
-              [classes['is-crossed']]: isCrossed,
+              [classes['is-crossed']]: !props.statusOpen,
             })}
           >
             {textContent}
@@ -198,17 +197,17 @@ export default function ListElement(props: IProps) {
             isChoiceContainerOpen && !props.animateSuppressionByItemId,
         })}
       >
-        {!isCrossed && (
+        {props.statusOpen && (
           <div className={classes['choice']} onClick={changeMode}>
             Editer
           </div>
         )}
         <div className={classes['choice']} onClick={crossElement}>
           <div className={classes['text']}>
-            {isCrossed ? "Décocher l'élément" : "Barrer l'élement"}
+            {!props.statusOpen ? "Décocher l'élément" : "Barrer l'élement"}
           </div>
         </div>
-        {isCrossed && (
+        {!props.statusOpen && (
           <div
             className={classes['choice']}
             onClick={() => suppressElement(props.id)}

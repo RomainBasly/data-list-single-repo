@@ -95,12 +95,12 @@ export function validateInputAddItemToList(input: string) {
   const errors: Record<string, string> = {};
   if (!isValidString(input)) {
     errors.itemContent =
-      "Certains caractères ne sont pas autorisés (ex: <, >, & ', \", ', / ou \\)";
+      "Certains caractères ne sont pas autorisés (ex: <, >, ', \", / ou \\)";
   }
   return errors;
 }
 
 function isValidString(input: string) {
-  const regex = /^[A-Za-z0-9:\-+%âêîôûàèìòùäëïöüçœé\s]+$/;
+  const regex = /^[A-Za-z0-9:\-+%âêîôûàèìòùäëïöüçœé\s'&]+$/;
   return regex.test(input);
 }

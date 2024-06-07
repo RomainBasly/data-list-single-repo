@@ -38,7 +38,7 @@ export type IElement = {
   id: string
   updated_at: string
   content: string
-  status: string
+  statusOpen: boolean
 }
 
 export default function ListPage() {
@@ -77,24 +77,25 @@ export default function ListPage() {
           const data: IResponse = await response.json()
 
           if (data) {
-            const LIVE = data[0]['app-lists'].items
-              .filter((item) => item.status === '1')
-              .sort(sortItemObjectByUpdatedDateDSC)
-            const CROSSED = data[0]['app-lists'].items
-              .filter((item) => item.status === '2')
-              .sort(sortItemObjectByUpdatedDateDSC)
+            if (data[0]['app-lists'].items) {
+              const LIVE = data[0]['app-lists'].items
+                .filter((item) => item.statusOpen === true)
+                .sort(sortItemObjectByUpdatedDateDSC)
+              const CROSSED = data[0]['app-lists'].items
+                .filter((item) => item.statusOpen === false)
+                .sort(sortItemObjectByUpdatedDateDSC)
 
-            const sortedItems = [...LIVE, ...CROSSED]
-            setListItems(sortedItems)
+              const sortedItems = [...LIVE, ...CROSSED]
+              setListItems(sortedItems)
+            }
 
-            const sortedElements: IList = {
+            const topElements: IList = {
               ...data[0],
               'app-lists': {
                 ...data[0]['app-lists'],
-                items: LIVE,
               },
             }
-            setListTop(sortedElements)
+            setListTop(topElements)
             setLoading(false)
           } else {
             router.push('/')
@@ -186,21 +187,97 @@ export default function ListPage() {
     }
   }
 
-  const handleElementStatus = async (id: string, status: boolean) => {
+  const handleElementStatusChange = async (id: string, statusOpen: boolean) => {
     try {
-      const response = await fetch('/api/lists/updateStatus', {
+      const response = await fetch('/api/lists/handleItemStatusChange', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ itemId: id, status }),
+        body: JSON.stringify({ listId, elementId: id, statusOpen: statusOpen }),
       })
+
+      const responseData = await response.json()
+      console.log('response data:', responseData)
+
+      // Ensure listItems is defined and is an array
+      if (!Array.isArray(listItems)) {
+        console.error('listItems is not an array:', listItems)
+        return false
+      }
+
+      // Log original listItems
+      console.log('original listItems:', listItems)
+
+      // Filter out the specific element
+      const otherElements = listItems.filter((element) => element.id !== id)
+      console.log('filtered otherElements:', otherElements)
+
+      // Check if otherElements is an array and has length > 0
+      const isArray = Array.isArray(otherElements)
+      const hasLength = otherElements.length > 0
+      console.log('Array.isArray(otherElements):', isArray)
+      console.log('otherElements.length > 0:', hasLength)
+
+      if (isArray && hasLength) {
+        console.log('I pass here:', responseData)
+
+        if (Array.isArray(responseData.data)) {
+          const newElements = [...otherElements, ...responseData.data]
+          console.log('newElements:', newElements)
+
+          // Update the state with the new elements
+          setListItems(newElements)
+        } else {
+          console.error('Data is not an array:', responseData.data)
+        }
+      }
+
       return true
     } catch (error) {
+      console.error('Error:', error)
       return false
     }
   }
+
+  // const handleElementStatusChange = async (id: string, statusOpen: boolean) => {
+  //   try {
+  //     const response = await fetch('/api/lists/handleItemStatusChange', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       credentials: 'include',
+  //       body: JSON.stringify({ listId, elementId: id, statusOpen: statusOpen }),
+  //     })
+  //     const data = await response.json()
+  //     // modifier l'objet
+  //     if (!Array.isArray(listItems)) {
+  //       console.error('listItems is not an array:', listItems);
+  //       return false;
+  //     }
+  //     const otherElements = listItems?.filter((element) => element.id !== id)
+
+  //     console.log('otherElements', otherElements)
+  //     console.log(
+  //       'otherElements.length > 0',
+  //       otherElements && otherElements.length > 0,
+  //     )
+  //     if (Array.isArray(otherElements) && otherElements.length > 0) {
+  //       if (Array.isArray(data)) {
+  //         const newElements = [...otherElements, ...data]
+  //         console.log('newElements', newElements)
+  //         setListItems(newElements);
+  //       }
+  //     }
+  //     // retrier
+  //     // mettre à jour listItems
+  //     return true
+  //   } catch (error) {
+  //     return false
+  //   }
+  // }
 
   const listDetails = listTop['app-lists']
   return (
@@ -224,12 +301,13 @@ export default function ListPage() {
             <ListElement
               content={element.content}
               key={element.id}
-              onCrossElement={handleElementStatus}
+              onCrossElement={handleElementStatusChange}
               onElementSuppress={suppressElement}
               id={element.id}
               animateSuppressionByItemId={
                 animateSuppressionByItemId === element.id
               }
+              statusOpen={element.statusOpen}
             />
           )
         })}

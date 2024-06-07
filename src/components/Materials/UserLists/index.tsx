@@ -39,6 +39,7 @@ export default function UserLists() {
             throw new Error('Failed to fetch lists')
           }
           const data = await response.json()
+          
           setUserLists(data)
           setLoading(false)
         }
