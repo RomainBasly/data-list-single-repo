@@ -101,6 +101,6 @@ export function validateInputAddItemToList(input: string) {
 }
 
 function isValidString(input: string) {
-  const regex = /^[A-Za-z0-9:\-+%âêîôûàèìòùäëïöüçœé\s'&]+$/;
+  const regex = /^[A-Za-z0-9:\-+%âêîôûàèìòùäëïöüçœé\s'&?]+$/;
   return regex.test(input);
 }

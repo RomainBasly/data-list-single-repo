@@ -75,7 +75,7 @@ export default function ListElement(props: IProps) {
     }
   }
 
-  const handleClickOnRootDiv = () => {
+  const handleClickOnRootDiv = async () => {
     if (isChoiceContainerOpen) {
       return
     }
@@ -83,12 +83,11 @@ export default function ListElement(props: IProps) {
     if (!isSelected) {
       setIsSelected(!isSelected)
     } else if (isSelected && !isEditing) {
-      // setStatusOpen(!statusOpen) Cas où on clique sur la div
+      await crossElement()
     }
   }
 
-  const crossElement = async (event: React.MouseEvent) => {
-    event.stopPropagation()
+  const crossElement = async () => {
     try {
       const trigger = await props.onCrossElement(props.id, !props.statusOpen)
       if (trigger) {
