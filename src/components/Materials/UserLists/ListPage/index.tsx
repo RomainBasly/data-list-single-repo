@@ -186,49 +186,78 @@ export default function ListPage() {
       return false
     }
   }
+
+  const fetchItemStatusChange = async (
+    listId: string,
+    id: string,
+    statusOpen: boolean,
+  ) => {
+    const response = await fetch('/api/lists/handleItemStatusChange', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({ listId, elementId: id, statusOpen: statusOpen }),
+    })
+
+    return response.json()
+  }
+
+  const transformListItems = (
+    id: string,
+    responseData: any,
+    listItems: IElement[],
+  ) => {
+    const otherElements = listItems.filter((element) => element.id !== id)
+
+    const isArray = Array.isArray(otherElements)
+    const hasLength = otherElements.length > 0
+
+    if (isArray && hasLength) {
+      if (Array.isArray(responseData.data.itemStatusChanged)) {
+        const updatedListNotSorted = [
+          ...responseData.data.itemStatusChanged,
+          ...otherElements,
+        ]
+        const newLiveElementsSorted = updatedListNotSorted
+          .filter((item) => item.statusOpen === true)
+          .sort(sortItemObjectByUpdatedDateDSC)
+        const newCrossedElementsSorted = updatedListNotSorted
+          .filter((item) => item.statusOpen === false)
+          .sort(sortItemObjectByUpdatedDateDSC)
+
+        const newElements = [
+          ...newLiveElementsSorted,
+          ...newCrossedElementsSorted,
+        ]
+        return newElements
+      } else {
+        console.error('responseData.data.itemStatusChanged is not an array')
+        return null
+      }
+    } else {
+      console.error('otherElements is not an array or is empty')
+      return null
+    }
+  }
+
   const handleElementStatusChange = async (id: string, statusOpen: boolean) => {
     try {
-      const response = await fetch('/api/lists/handleItemStatusChange', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify({ listId, elementId: id, statusOpen: statusOpen }),
-      })
+      if (listId) {
+        const responseData = await fetchItemStatusChange(listId, id, statusOpen)
 
-      const responseData = await response.json()
+        if (!Array.isArray(listItems)) {
+          console.error('listItems is not an array:', listItems)
+          return false
+        }
 
-      if (!Array.isArray(listItems)) {
-        console.error('listItems is not an array:', listItems)
-        return false
-      }
+        const newElements = transformListItems(id, responseData, listItems)
 
-      const otherElements = listItems.filter((element) => element.id !== id)
-
-      const isArray = Array.isArray(otherElements)
-      const hasLength = otherElements.length > 0
-
-      if (isArray && hasLength) {
-        if (Array.isArray(responseData.data.itemStatusChanged)) {
-          const updatedListNotSorted = [
-            ...responseData.data.itemStatusChanged,
-            ...otherElements,
-          ]
-          const newLiveElementsSorted = updatedListNotSorted
-            .filter((item) => item.statusOpen === true)
-            .sort(sortItemObjectByUpdatedDateDSC)
-          const newCrossedElementsSorted = updatedListNotSorted
-            .filter((item) => item.statusOpen === false)
-            .sort(sortItemObjectByUpdatedDateDSC)
-
-          const newElements = [...newLiveElementsSorted, ...newCrossedElementsSorted]
+        if (newElements) {
           setListItems(newElements)
         }
-      } else {
-        console.error('otherElements is not an array or is empty')
       }
-
       return true
     } catch (error) {
       console.error('Error:', error)
