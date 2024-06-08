@@ -4,10 +4,10 @@ import classes from './classes.module.scss'
 import classNames from 'classnames'
 import {
   EllipsisHorizontalIcon,
-  PlusIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/solid'
 import { getErrorMessage } from '@/Services/errorHandlingService'
+import EditListForm from '@/components/Elements/Form/EditListForm'
 
 type IProps = {
   id: string
@@ -16,6 +16,11 @@ type IProps = {
   animateSuppressionByItemId: boolean
   onElementSuppress: (id: string) => Promise<boolean>
   onCrossElement: (id: string, status: boolean) => Promise<boolean>
+  onInputSubmit: (
+    updatedContent: string,
+    elementId?: string,
+    onSuccess?: () => void,
+  ) => Promise<boolean>
 }
 
 export default function ListElement(props: IProps) {
@@ -31,6 +36,45 @@ export default function ListElement(props: IProps) {
   const elementRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
+    setTextContent(props.content)
+  }, [props.content])
+
+  useEffect(() => {
+    const clickOutside = async (event: MouseEvent | TouchEvent) => {
+      if (
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        if (textContent !== props.content) {
+          try {
+            const success = await props.onInputSubmit(
+              textContent,
+              props.id,
+              () => {
+                setIsEditing(false)
+                setTextContent(textContent)
+              },
+            )
+            if (!success) {
+              setErrors({ ...errors, form: 'Failed to save changes.' })
+            }
+          } catch (error) {
+            const errorMessage = getErrorMessage(error)
+            setErrors({ ...errors, form: errorMessage })
+          }
+        } else {
+          setIsEditing(false)
+        }
+        setIsEditing(false)
+        setIsChoiceContainerOpen(false)
+      } else if (
+        elementRef.current &&
+        !elementRef.current.contains(event.target as Node)
+      ) {
+        setIsSelected(false)
+        setIsChoiceContainerOpen(false)
+      }
+    }
     if (isEditing || isSelected) {
       document.addEventListener('click', clickOutside, true)
       document.addEventListener('touchstart', clickOutside, true)
@@ -43,7 +87,7 @@ export default function ListElement(props: IProps) {
       document.removeEventListener('click', clickOutside, true)
       document.removeEventListener('touchstart', clickOutside, true)
     }
-  }, [isEditing, isSelected])
+  }, [isEditing, isSelected, errors, props, textContent])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -61,35 +105,22 @@ export default function ListElement(props: IProps) {
     }
   }, [])
 
-  const clickOutside = (event: MouseEvent | TouchEvent) => {
-    if (inputRef.current && !inputRef.current.contains(event.target as Node)) {
-      setIsEditing(false)
-      setIsSelected(false)
-      setIsChoiceContainerOpen(false)
-    } else if (
-      elementRef.current &&
-      !elementRef.current.contains(event.target as Node)
-    ) {
-      setIsSelected(false)
-      setIsChoiceContainerOpen(false)
-    }
-  }
-
   const handleClickOnRootDiv = async () => {
+    // check if this if is really necessary
     if (isChoiceContainerOpen) {
       return
     }
 
     if (!isSelected) {
       setIsSelected(!isSelected)
-    } else if (isSelected && !isEditing) {
-      await crossElement()
+    } else if (isSelected) {
+      await handleCrossElement()
     }
   }
 
-  const crossElement = async () => {
+  const handleCrossElement = async () => {
     try {
-      const trigger = await props.onCrossElement(props.id, !props.statusOpen)
+      const trigger = await props.onCrossElement(props.id, props.statusOpen)
       if (trigger) {
         setIsChoiceContainerOpen(false)
         setIsSelected(false)
@@ -101,20 +132,16 @@ export default function ListElement(props: IProps) {
     }
   }
 
-  function changeMode(event: React.MouseEvent) {
+  function handleEditMode(event: React.MouseEvent) {
     event.stopPropagation()
-    setIsEditing(true)
-    setIsSelected(true)
+    // setIsEditing(true)
+    setIsEditing(!isEditing)
+    // setIsSelected(true)
+    setIsSelected(isSelected)
     setIsChoiceContainerOpen(false)
   }
 
-  const isTextContentVisible =
-    (!isEditing && !isSelected) || (!isEditing && isSelected)
-
-  function editTextContent(e: React.ChangeEvent<HTMLInputElement>) {
-    setErrors({ ...errors, textEditContent: '' })
-    setTextContent(e.target.value)
-  }
+  const isTextContentVisible = !isEditing
 
   function openChoiceContainer(event: React.MouseEvent) {
     event.stopPropagation()
@@ -131,12 +158,17 @@ export default function ListElement(props: IProps) {
     }
   }
 
+  const onInputChange = (newText: string) => {
+    setTextContent(newText)
+  }
+
   return (
     <div
       className={classNames(classes['root'], {
         [classes['is-selected']]: isSelected,
         [classes['blurred']]: !isSelected && isChoiceContainerOpen,
         [classes['is-suppressing']]: props.animateSuppressionByItemId,
+        [classes['is-editing-container']]: isEditing,
       })}
       onClick={handleClickOnRootDiv}
       ref={elementRef}
@@ -156,7 +188,7 @@ export default function ListElement(props: IProps) {
         className={classNames(classes['text-container'], {
           [classes['is-editing']]: isEditing,
         })}
-        onDoubleClick={changeMode}
+        onDoubleClick={handleEditMode}
       >
         {isTextContentVisible && (
           <div
@@ -168,26 +200,21 @@ export default function ListElement(props: IProps) {
           </div>
         )}
         {!isTextContentVisible && (
-          <form className={classes['form']}>
-            <input
-              placeholder={props.content}
-              ref={inputRef}
-              className={classes['input']}
-              value={textContent}
-              onChange={editTextContent}
-              autoFocus
-            />
-          </form>
+          <EditListForm
+            onInputSubmit={props.onInputSubmit}
+            isEditing={isEditing}
+            type={'edit-element'}
+            content={props.content}
+            ref={inputRef}
+            id={props.id}
+            handleEditing={() => setIsEditing(!isEditing)}
+            onInputChange={onInputChange}
+          />
         )}
       </div>
       {isSelected && !isEditing && (
         <div className={classes['icon']} onClick={openChoiceContainer}>
           <EllipsisHorizontalIcon className={classes['svg']} />
-        </div>
-      )}
-      {isSelected && isEditing && (
-        <div className={classes['icon']}>
-          <PlusIcon className={classes['svg']} />
         </div>
       )}
       <div
@@ -197,11 +224,11 @@ export default function ListElement(props: IProps) {
         })}
       >
         {props.statusOpen && (
-          <div className={classes['choice']} onClick={changeMode}>
+          <div className={classes['choice']} onClick={handleEditMode}>
             Editer
           </div>
         )}
-        <div className={classes['choice']} onClick={crossElement}>
+        <div className={classes['choice']} onClick={handleCrossElement}>
           <div className={classes['text']}>
             {!props.statusOpen ? "Décocher l'élément" : "Barrer l'élement"}
           </div>

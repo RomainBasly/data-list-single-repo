@@ -130,6 +130,7 @@ export default function ListPage() {
 
   const addItemToList = async (inputElement: string): Promise<boolean> => {
     try {
+      // Voir si on doit refacto avec le listId en paramètre
       const response = await fetch(
         `/api/lists/addItemToList?listId=${listId}`,
         {
@@ -153,6 +154,59 @@ export default function ListPage() {
 
       if (!response.ok) {
         throw new Error('Failed to post item to list')
+      }
+      return true
+    } catch (error) {
+      console.error(error)
+      return false
+    }
+  }
+  const updateElement = async (
+    updatedContent: string,
+    elementId?: string,
+    onSuccess?: () => void,
+  ): Promise<boolean> => {
+    try {
+      const response = await fetch(`/api/lists/updateListElement`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          listId,
+          elementId,
+          contentUpdate: updatedContent,
+        }),
+      })
+      const result = await response.json()
+
+      if (elementId && listItems) {
+        const otherElements = listItems.filter(
+          (element) => element.id !== elementId,
+        )
+        const newElement = result.data.itemContentChanged[0]
+        const mergeElements = [...otherElements, newElement]
+
+        const newLiveElementsSorted = mergeElements
+          .filter((item) => item.statusOpen === true)
+          .sort(sortItemObjectByUpdatedDateDSC)
+        const newCrossedElementsSorted = mergeElements
+          .filter((item) => item.statusOpen === false)
+          .sort(sortItemObjectByUpdatedDateDSC)
+
+        const newElements = [
+          ...newLiveElementsSorted,
+          ...newCrossedElementsSorted,
+        ]
+        if (onSuccess) {
+          onSuccess()
+        }
+        setListItems(newElements)
+      }
+
+      if (!response.ok) {
+        throw new Error('Failed to modify item to list')
       }
       return true
     } catch (error) {
@@ -245,7 +299,11 @@ export default function ListPage() {
   const handleElementStatusChange = async (id: string, statusOpen: boolean) => {
     try {
       if (listId) {
-        const responseData = await fetchItemStatusChange(listId, id, statusOpen)
+        const responseData = await fetchItemStatusChange(
+          listId,
+          id,
+          !statusOpen,
+        )
 
         if (!Array.isArray(listItems)) {
           console.error('listItems is not an array:', listItems)
@@ -294,6 +352,7 @@ export default function ListPage() {
                 animateSuppressionByItemId === element.id
               }
               statusOpen={element.statusOpen}
+              onInputSubmit={updateElement}
             />
           )
         })}

@@ -135,4 +135,29 @@ export default class ListsApi extends BaseApiService {
       throw error;
     }
   }
+  public async handleItemContentChange(
+    listId: string | string[] | undefined,
+    elementId: string | string[] | undefined,
+    contentUpdated: string,
+    params: any
+  ) {
+    assert(this.baseUrl, "Backend URL is missing");
+    const url = new URL(
+      this.baseUrl.concat("/lists").concat(`/update-list-content/`)
+    );
+
+    try {
+      return await this.postRequest<any>(
+        url,
+        { listId, elementId, content: contentUpdated },
+        { Cookie: params.Cookie }
+      );
+    } catch (error) {
+      if (error instanceof Response) {
+        const errorBody: BackendError = await error.json();
+        throw errorBody;
+      }
+      throw error;
+    }
+  }
 }

@@ -10,9 +10,11 @@
 
   @media screen and (max-width: 400px) {
     padding-top: 10px;
+    max-width: 320px;
   }
   @media screen and (max-width: 320px) {
     padding: 6px 18px;
+    max-width: 280px;
   }
 
   .list-item {
