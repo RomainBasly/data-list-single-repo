@@ -107,7 +107,7 @@ export class AppListManagementRepository {
               id,
               updated_at,
               content,
-              status
+              statusOpen
             )
           )
         `
@@ -125,7 +125,7 @@ export class AppListManagementRepository {
     try {
       const { data } = await supabase
         .from('app-list-items')
-        .insert([{ content, status: '1', list_id: listId }])
+        .insert([{ content, statusOpen: true, list_id: listId }])
         .select();
       return data;
     } catch (error) {
@@ -149,6 +149,35 @@ export class AppListManagementRepository {
   public async suppressItemById(listId: UUID, elementId: string) {
     try {
       await supabase.from('app-list-items').delete().eq('id', elementId).eq('list_id', listId);
+    } catch (error) {
+      throw error;
+    }
+  }
+  public async changeItemStatus(listId: UUID, elementId: string, status: boolean) {
+    try {
+      const currentTimestamp = new Date().toISOString();
+      const { data } = await supabase
+        .from('app-list-items')
+        .update({ statusOpen: status, updated_at: currentTimestamp })
+        .eq('id', elementId)
+        .eq('list_id', listId)
+        .select();
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+  public async updateItemContent(listId: UUID, elementId: string, content: string) {
+    try {
+      const currentTimestamp = new Date().toISOString();
+      const { data } = await supabase
+        .from('app-list-items')
+        .update({ content, updated_at: currentTimestamp, statusOpen: true })
+        .eq('id', elementId)
+        .eq('list_id', listId)
+        .select('id, updated_at, content, statusOpen');
+      return data;
     } catch (error) {
       throw error;
     }

@@ -52,7 +52,6 @@ let ListManagementController = class ListManagementController {
             const { userInfo } = (0, helpers_1.getFromJWTToken)(req, 'accessToken');
             const userId = userInfo.id;
             const data = await this.listManagementService.getListBeneficiariesById(userId);
-            console.log('sent from backend', data);
             res.json(data);
         }
         catch (error) {
@@ -74,7 +73,7 @@ let ListManagementController = class ListManagementController {
     async addItemToList(req, res, next) {
         try {
             const { userInfo } = (0, helpers_1.getFromJWTToken)(req, 'accessToken');
-            const listId = req.params.listId;
+            const listId = req.body.listId;
             const userId = userInfo.id;
             const content = req.body.content;
             const addedElement = await this.listManagementService.addItemToList(listId, userId, content);
@@ -87,11 +86,41 @@ let ListManagementController = class ListManagementController {
     async suppressItemByListId(req, res, next) {
         try {
             const { userInfo } = (0, helpers_1.getFromJWTToken)(req, 'accessToken');
-            const elementId = req.params.elementId;
+            const elementId = req.body.elementId;
             const listId = req.body.listId;
             const userId = userInfo.id;
             await this.listManagementService.suppressElementById(listId, userId, elementId);
             res.status(200).json({ success: true, message: 'item suppressed' });
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+    async changeItemStatus(req, res, next) {
+        try {
+            const { userInfo } = (0, helpers_1.getFromJWTToken)(req, 'accessToken');
+            const elementId = req.body.elementId;
+            const status = req.body.status;
+            const listId = req.body.listId;
+            const userId = userInfo.id;
+            const response = await this.listManagementService.changeItemStatus(listId, userId, elementId, status);
+            console.log('reponse in the controller', response);
+            res.status(200).json({ success: true, message: 'status changed', itemStatusChanged: response });
+        }
+        catch (error) {
+            next(error);
+        }
+    }
+    async updateItemContent(req, res, next) {
+        try {
+            const { userInfo } = (0, helpers_1.getFromJWTToken)(req, 'accessToken');
+            const elementId = req.body.elementId;
+            const content = req.body.content;
+            const listId = req.body.listId;
+            const userId = userInfo.id;
+            const response = await this.listManagementService.updateItemContent(listId, userId, elementId, content);
+            console.log('response in the controller', response);
+            res.status(200).json({ success: true, message: 'content of the item updated', itemContentChanged: response });
         }
         catch (error) {
             next(error);

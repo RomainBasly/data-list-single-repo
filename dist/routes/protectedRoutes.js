@@ -26,7 +26,13 @@ protectedRoutes
     .post('/api/lists/add-item-to-list/:listId', (req, res, next) => {
     appListManagementController.addItemToList(req, res, next);
 })
-    .post('/api/lists/suppress-item/:elementId', (req, res, next) => {
+    .post('/api/lists/suppress-item/', (req, res, next) => {
     appListManagementController.suppressItemByListId(req, res, next);
+})
+    .post('/api/lists/change-item-status/', (req, res, next) => {
+    appListManagementController.changeItemStatus(req, res, next);
+})
+    .post('/api/lists/update-list-content/', (req, res, next) => {
+    appListManagementController.updateItemContent(req, res, next);
 });
 exports.default = protectedRoutes;

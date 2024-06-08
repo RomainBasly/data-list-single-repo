@@ -45,7 +45,7 @@ export class ListValidatorService {
     return emailsAddress.length > 0 ? emailsAddress : [];
   }
 
-  public async verifyInputAddItem(inputs: IInputAddToList) {
+  public async verifyInputAddOrUpdateItem(inputs: IInputAddToList) {
     const schema = yup.object().shape({
       listId: yup.string().required(),
       userId: yup.number().required(),
@@ -58,7 +58,7 @@ export class ListValidatorService {
       if (error instanceof yup.ValidationError) {
         throw new ValidationError(ErrorMessages.VALIDATION_ERROR, error.message);
       }
-      throw new Error('Error validating the content schema during content creation');
+      throw new Error('Error validating the content schema during content creation or update of the list');
     }
   }
 }

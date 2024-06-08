@@ -70,7 +70,7 @@ let AppListManagementRepository = class AppListManagementRepository {
               id,
               updated_at,
               content,
-              status
+              statusOpen
             )
           )
         `)
@@ -87,7 +87,7 @@ let AppListManagementRepository = class AppListManagementRepository {
         try {
             const { data } = await supabaseClient_1.default
                 .from('app-list-items')
-                .insert([{ content, status: '1', list_id: listId }])
+                .insert([{ content, statusOpen: true, list_id: listId }])
                 .select();
             return data;
         }
@@ -111,6 +111,36 @@ let AppListManagementRepository = class AppListManagementRepository {
     async suppressItemById(listId, elementId) {
         try {
             await supabaseClient_1.default.from('app-list-items').delete().eq('id', elementId).eq('list_id', listId);
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async changeItemStatus(listId, elementId, status) {
+        try {
+            const currentTimestamp = new Date().toISOString();
+            const { data } = await supabaseClient_1.default
+                .from('app-list-items')
+                .update({ statusOpen: status, updated_at: currentTimestamp })
+                .eq('id', elementId)
+                .eq('list_id', listId)
+                .select();
+            return data;
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async updateItemContent(listId, elementId, content) {
+        try {
+            const currentTimestamp = new Date().toISOString();
+            const { data } = await supabaseClient_1.default
+                .from('app-list-items')
+                .update({ content, updated_at: currentTimestamp, statusOpen: true })
+                .eq('id', elementId)
+                .eq('list_id', listId)
+                .select('id, updated_at, content, statusOpen');
+            return data;
         }
         catch (error) {
             throw error;

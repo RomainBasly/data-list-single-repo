@@ -99,7 +99,7 @@ let ListManagementService = class ListManagementService {
     async addItemToList(listId, userId, content) {
         try {
             const inputs = { listId, userId, content };
-            await this.listValidatorService.verifyInputAddItem(inputs);
+            await this.listValidatorService.verifyInputAddOrUpdateItem(inputs);
             const isAllowed = await this.appListManagementRepository.isUserAllowedToChangeList(listId, userId);
             if (isAllowed.length > 0) {
                 return await this.appListManagementRepository.addItemToList(listId, content);
@@ -114,6 +114,30 @@ let ListManagementService = class ListManagementService {
             const isAllowed = await this.appListManagementRepository.isUserAllowedToChangeList(listId, userId);
             if (isAllowed.length > 0) {
                 return await this.appListManagementRepository.suppressItemById(listId, elementId);
+            }
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async changeItemStatus(listId, userId, elementId, status) {
+        try {
+            const isAllowed = await this.appListManagementRepository.isUserAllowedToChangeList(listId, userId);
+            if (isAllowed.length > 0) {
+                return await this.appListManagementRepository.changeItemStatus(listId, elementId, status);
+            }
+        }
+        catch (error) {
+            throw error;
+        }
+    }
+    async updateItemContent(listId, userId, elementId, content) {
+        try {
+            const inputs = { listId, userId, content };
+            await this.listValidatorService.verifyInputAddOrUpdateItem(inputs);
+            const isAllowed = await this.appListManagementRepository.isUserAllowedToChangeList(listId, userId);
+            if (isAllowed.length > 0) {
+                return await this.appListManagementRepository.updateItemContent(listId, elementId, content);
             }
         }
         catch (error) {
