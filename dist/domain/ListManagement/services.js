@@ -55,7 +55,7 @@ let ListManagementService = class ListManagementService {
         try {
             const beneficiaries = await this.appListManagementRepository.getListsByUserId(userId);
             if (!beneficiaries) {
-                console.error('Unexpected beneficiaries structure', beneficiaries);
+                console.error('No beneficiaries or no list', beneficiaries);
                 return [];
             }
             const filteredBeneficiaries = beneficiaries.map((element) => {
