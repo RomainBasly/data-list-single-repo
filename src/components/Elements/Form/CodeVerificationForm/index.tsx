@@ -25,12 +25,15 @@ export default function CodeVerificationForm() {
 
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()
-    const sanitizedCode = sanitize(code)
+    const sanitizedCode = sanitize(code.trim())
     const formErrors = validateCodeInput(sanitizedCode)
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors)
       return
     }
+    // todo : voir si on peut pas penser à une autre manière de valider le code,
+    // notamment l'email stored dans le local storage, tout en gardant la sécurité
+    // au maximum
     const body = { email, code }
 
     try {

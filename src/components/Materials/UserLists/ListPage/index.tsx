@@ -176,7 +176,7 @@ export default function ListPage() {
         body: JSON.stringify({
           listId,
           elementId,
-          contentUpdate: updatedContent,
+          contentUpdate: updatedContent.trim(),
         }),
       })
       const result = await response.json()

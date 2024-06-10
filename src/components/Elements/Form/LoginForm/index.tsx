@@ -24,7 +24,8 @@ export function LoginForm() {
 
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()
-    const lowerCaseEmail = email.toLowerCase()
+    const trimmedEmail = email.trim()
+    const lowerCaseEmail = trimmedEmail.toLowerCase()
     const formErrors = validateConnectFormInputs(lowerCaseEmail, password)
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors)

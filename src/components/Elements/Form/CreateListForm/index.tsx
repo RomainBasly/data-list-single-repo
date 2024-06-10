@@ -3,22 +3,26 @@ import Link from 'next/link'
 import classes from './classes.module.scss'
 import { useState, useEffect } from 'react'
 import AuthenticationApi from '@/api/Back/AuthenticationApi'
-import { validateEmailInput } from '@/Services/validation'
+import {
+  validateCreateListForm,
+  validateEmailInput,
+} from '@/Services/validation'
 import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
 
 import Button from '@/components/Materials/Button'
 import {
-  PlusIcon,
+  UserPlusIcon,
   EyeSlashIcon,
   ShareIcon,
-  GlobeAltIcon,
   ChevronRightIcon,
-  MinusIcon,
+  UserMinusIcon,
+  UserIcon,
 } from '@heroicons/react/24/outline'
 import { sanitize } from 'isomorphic-dompurify'
 import CustomSelector from '@/components/Materials/CustomSelector'
 import classnames from 'classnames'
+import classNames from 'classnames'
 
 export type IBody = {
   email: string
@@ -30,43 +34,63 @@ export function CreateListForm() {
   const [removeEmailAnimationIndex, setRemoveEmailAnimationIndex] = useState<
     number | null
   >(null)
-  const [emailsArray, setEmailsArray] = useState<string[]>([])
+  const [emails, setEmailsArray] = useState<string[]>([])
   const [confidentiality, setConfidentiality] = useState<string>('')
   const [name, setName] = useState<string>('')
+  const [thematic, setThematic] = useState<string>('')
+  const [description, setDescription] = useState<string>('')
   const [password, setPassword] = useState<string>('')
-  const [errors, setErrors] = useState<{ [key: string]: string }>()
+  const [errors, setErrors] = useState<{ [key: string]: string }>({})
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const router = useRouter()
+  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true)
+
+  useEffect(() => {
+    const isThereAnyError = Object.values(errors).some((value) => value !== '')
+
+    setIsButtonDisabled(isThereAnyError)
+  }, [errors])
 
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()
+    setIsLoading(true)
+    if (emailState) {
+      addEmailToList()
+    }
 
-    // TODO perform a check if selectedValue !== "shared" => set the EmailsArray to []
+    const body = {
+      listName: name.trim(),
+      emails,
+      thematic: thematic.trim(),
+      accessLevel: confidentiality,
+      description: description.trim(),
+      cyphered: true,
+    }
 
-    //const lowerCaseEmail = emailsArray.toLowerCase()
-    //const formErrors = validateConnectFormInputs(lowerCaseEmail, password)
-    // if (Object.keys(formErrors).length > 0) {
-    //   setErrors(formErrors)
-    //   return
-    // }
-    // const body = { email: lowerCaseEmail, password }
+    const formErrors = validateCreateListForm(body)
+
+    if (Object.values(formErrors).length > 0) {
+      setErrors(formErrors)
+      setIsLoading(false)
+      return
+    } else {
+      setErrors({})
+    }
 
     try {
-      //   const response = await AuthenticationApi.getInstance().login(body)
-      //   response.accessToken &&
-      //     StorageService.getInstance().setCookies(
-      //       'accessToken',
-      //       response.accessToken,
-      //       true,
-      //     )
-      //   response.refreshToken &&
-      //     StorageService.getInstance().setCookies(
-      //       'refreshToken',
-      //       response.refreshToken,
-      //       false,
-      //     )
-      //   setIsLoading(!isLoading)
-      //   router.push('/')
+      const response = await fetch('/api/lists/createList', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(body),
+      })
+
+      if (response.ok) {
+        setIsLoading(false)
+        router.push('/')
+      }
     } catch (error) {
       setIsLoading(false)
       const errorMessage = getErrorMessage(error)
@@ -77,26 +101,21 @@ export function CreateListForm() {
     }
   }
 
-  function handlePassword(e: React.ChangeEvent<HTMLInputElement>) {
-    setErrors({ ...errors, password: '', form: '' })
-    setIsLoading(false)
-    setPassword(e.target.value)
-  }
-
   function handleEmail(e: React.ChangeEvent<HTMLInputElement>) {
-    setErrors({ ...errors, email: '', form: '' })
+    setErrors({ ...errors, email: '' })
     setIsLoading(false)
     setEmailState(e.target.value.toLowerCase())
   }
 
   function handleEnterKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key.toLowerCase() === 'enter') {
+      e.preventDefault()
       addEmailToList()
     }
   }
 
   function addEmailToList() {
-    const sanitizedEmail = sanitize(emailState)
+    const sanitizedEmail = sanitize(emailState.trim())
     const formErrors = validateEmailInput(sanitizedEmail)
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors)
@@ -104,7 +123,7 @@ export function CreateListForm() {
     }
 
     if (emailState) {
-      setEmailsArray([...emailsArray, sanitizedEmail])
+      setEmailsArray([...emails, sanitizedEmail])
       setEmailState('')
     }
   }
@@ -112,7 +131,7 @@ export function CreateListForm() {
   function removeEmailFromList(index: number) {
     setRemoveEmailAnimationIndex(index)
     setTimeout(() => {
-      const newArray = emailsArray.filter(
+      const newArray = emails.filter(
         (_, currentIndex) => currentIndex !== index,
       )
       setEmailsArray(newArray)
@@ -121,12 +140,25 @@ export function CreateListForm() {
   }
 
   function handleName(e: React.ChangeEvent<HTMLInputElement>) {
-    setErrors({ ...errors, name: '', form: '' })
+    setErrors({ ...errors, listName: '' })
     setIsLoading(false)
     setName(e.target.value)
   }
 
+  function handleThematic(e: React.ChangeEvent<HTMLInputElement>) {
+    setErrors({ ...errors, thematic: '' })
+    setIsLoading(false)
+    setThematic(e.target.value)
+  }
+  function handleDescription(e: React.ChangeEvent<HTMLInputElement>) {
+    setErrors({ ...errors, description: '' })
+    setIsLoading(false)
+    setDescription(e.target.value)
+  }
+
   function handleConfidentialityChange(selectedValue: string) {
+    setErrors({ ...errors, access_level: '' })
+    setIsLoading(false)
     setConfidentiality(selectedValue)
   }
 
@@ -154,22 +186,23 @@ export function CreateListForm() {
       description:
         'Est accessible aux personnes dont vous renseignez le mail, et qui pourront modifier la liste',
     },
-    {
-      value: 'public',
-      icon: <GlobeAltIcon />,
-      label: 'Publique',
-      description:
-        'Accessible aux personnes à qui vous envoyez son url, mais ils ne pourront pas la modifier',
-    },
+    // Todo  : think about having a public access to a list
+    // {
+    //   value: 'public',
+    //   icon: <GlobeAltIcon />,
+    //   label: 'Publique',
+    //   description:
+    //     'Accessible aux personnes à qui vous envoyez son url, mais ils ne pourront pas la modifier',
+    // },
   ]
 
   return (
     <form className={classes['root']}>
       <div className={classes['form-element']}>
-        <label htmlFor="name" className={classes['label']}>
-          Quel nom pour votre liste ?
-        </label>
         <div className={classes['input-section']}>
+          <label htmlFor="name" className={classes['label']}>
+            Nom de la liste
+          </label>
           <div className={classes['input-container']}>
             <input
               name="name"
@@ -178,19 +211,59 @@ export function CreateListForm() {
               onChange={handleName}
               className={classes['input']}
             />
-            {errors && <div className={classes['error']}>{errors.name}</div>}
+            {errors && (
+              <div className={classes['error']}>{errors.listName}</div>
+            )}
+          </div>
+        </div>
+        <div className={classes['input-section']}>
+          <label htmlFor="thematic" className={classes['label']}>
+            Thématique
+          </label>
+          <div className={classes['input-container']}>
+            <input
+              name="thematic"
+              placeholder="(ex: Maison)"
+              id="thematic"
+              onChange={handleThematic}
+              className={classes['input']}
+            />
+            {errors && (
+              <div className={classes['error']}>{errors.thematic}</div>
+            )}
+          </div>
+        </div>
+        <div className={classes['input-section']}>
+          <label htmlFor="description" className={classes['label']}>
+            Description
+          </label>
+          <div className={classes['input-container']}>
+            <input
+              name="description"
+              placeholder="(ex: Fini le PQ qu'on oublie parce que la liste de courses est resté sur la table!)"
+              id="description"
+              onChange={handleDescription}
+              className={classes['input']}
+            />
+            {errors && (
+              <div className={classes['error']}>{errors.description}</div>
+            )}
           </div>
         </div>
       </div>
       <div className={classes['form-element']}>
-        <label htmlFor="share" className={classes['label']}>
-          Elle est...
-        </label>
-        <CustomSelector
-          options={options}
-          onSelectionChange={handleConfidentialityChange}
-        />
-        {errors && <div className={classes['error']}>{errors.name}</div>}
+        <div className={classes['input-section']}>
+          <label htmlFor="share" className={classes['label']}>
+            Elle est...
+          </label>
+          <CustomSelector
+            options={options}
+            onSelectionChange={handleConfidentialityChange}
+          />
+          {errors && (
+            <div className={classes['error']}>{errors.access_level}</div>
+          )}
+        </div>
       </div>
       {confidentiality === 'shared' && (
         <div
@@ -199,22 +272,27 @@ export function CreateListForm() {
           })}
         >
           <div className={classes['form-element']}>
-            <label htmlFor="email" className={classes['label']}>
-              Avec qui la partager ?
-            </label>
             <div className={classes['input-section']}>
-              <div className={classes['input-container']}>
+              <label htmlFor="email" className={classes['label']}>
+                Avec qui la partager ?
+              </label>
+              <div
+                className={classNames(
+                  classes['input-container'],
+                  classes['input-container-row'],
+                )}
+              >
                 <input
                   type="text"
                   name="email"
                   id="email"
-                  placeholder="Renseignez leur email"
+                  placeholder="ex: jordan@rangeTaChambre.fr"
                   onChange={handleEmail}
                   onKeyDown={handleEnterKeyDown}
                   value={emailState}
                   className={classes['input']}
                 />
-                <PlusIcon
+                <UserPlusIcon
                   onClick={addEmailToList}
                   className={classes['plus-icon']}
                 />
@@ -224,7 +302,14 @@ export function CreateListForm() {
           </div>
 
           <div className={classes['emails-container']}>
-            {emailsArray.map((email, index) => (
+            <div className={classes['title-email']}>Liste partagée avec...</div>
+            {emails.length === 0 && (
+              <div className={classes['nobody']}>
+                <UserIcon className={classes['icon']} />
+                <div className={classes['text']}>Personne pour l'instant</div>
+              </div>
+            )}
+            {emails.map((email, index) => (
               <div
                 className={classnames(classes['email-element'], {
                   [classes['email-invisible']]:
@@ -239,7 +324,7 @@ export function CreateListForm() {
                   {displayEmail(email)}
                 </div>
                 <div className={classes['email-picto']}>
-                  <MinusIcon
+                  <UserMinusIcon
                     className={classes['minus-icon']}
                     onClick={() => removeEmailFromList(index)}
                   />
@@ -255,6 +340,7 @@ export function CreateListForm() {
           onClick={sendForm}
           className={classes['button']}
           isLoading={isLoading}
+          disabled={isButtonDisabled}
         ></Button>
         {errors && <div className={classes['error']}>{errors.form}</div>}
       </div>

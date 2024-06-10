@@ -12,6 +12,7 @@ type IProps = {
   className?: string
   leftIcon?: JSX.Element
   rightIcon?: JSX.Element
+  disabled?: boolean
 }
 
 export default function Button(props: IProps) {
@@ -19,6 +20,7 @@ export default function Button(props: IProps) {
     <button
       className={classNames(classes['root'], props.className)}
       onClick={props.onClick}
+      disabled={props.disabled}
     >
       <div className={classes['loader-wrapper']}>
         {props.isLoading ? (

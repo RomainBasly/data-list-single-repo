@@ -1,6 +1,7 @@
 export function isValidEmail(email: string): boolean {
+  const trimmedEmail = email.trim();
   const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-  return emailRegex.test(email);
+  return emailRegex.test(trimmedEmail);
 }
 
 export function isValidCode(code: string): boolean {
@@ -8,9 +9,9 @@ export function isValidCode(code: string): boolean {
   return codeRegex.test(code);
 }
 
-export function isValidUserName(userName: string): boolean {
+export function isValidName(name: string): boolean {
   const userNameRegex = /^[^<>&'"/\\]*$/;
-  return userNameRegex.test(userName);
+  return userNameRegex.test(name);
 }
 
 export const validateConnectFormInputs = (
@@ -73,7 +74,7 @@ export function validateUserNameInput(input: string): Record<string, string> {
   const errors: Record<string, string> = {};
   if (input.length < 3) {
     errors.username = "Le nom d'utilisateur doit avoir minimum 3 caractères";
-  } else if (!isValidUserName) {
+  } else if (!isValidName) {
     errors.username =
       "Le nom d'utilisateur ne peut pas détenir les caractères <, >, & ', \", ', / ou \\";
   }
@@ -93,14 +94,61 @@ export function matchingPasswords(
 
 export function validateInputAddItemToList(input: string) {
   const errors: Record<string, string> = {};
-  if (!isValidString(input)) {
+  if (input.length === 0) {
+    errors.itemContent = "Le champ ne peut pas être vide";
+  } else if (!isValidRequiredString(input)) {
     errors.itemContent =
       "Certains caractères ne sont pas autorisés (ex: <, >, ', \", / ou \\)";
   }
   return errors;
 }
 
-function isValidString(input: string) {
-  const regex = /^[A-Za-z0-9:\-+%âêîôûàèìòùäëïöüçœé\s'&?]+$/;
-  return regex.test(input);
+export function validateCreateListForm(body: {
+  listName: string;
+  emails: string[];
+  thematic: string;
+  accessLevel: string;
+  description: string;
+  cyphered: boolean
+}): Record<string, string> {
+  const errors: Record<string, string> = {};
+
+  if (!isValidRequiredString(body.listName)) {
+    errors.listName =
+      "Le nom de la liste contient des caractères interdits ou est vide";
+  }
+
+  if (!isValidRequiredString(body.thematic)) {
+    errors.thematic =
+      "La thématique contient des caractères interdits ou est vide";
+  }
+
+  if (!isValidRequiredString(body.accessLevel)) {
+    errors.access_level =
+      "Vous devez choisir si la liste est privée ou partagée";
+  }
+
+  if (!isValidEmailArray(body.emails)) {
+    errors.emailsArray = "Une ou plusieurs adresses email sont invalides";
+  }
+
+  if (!isValidNotRequiredString(body.description)) {
+    errors.description = "La description contient des caractères interdits";
+  }
+
+  return errors;
+}
+
+function isValidRequiredString(input: string): boolean {
+  const validStringRegex = /^[a-zA-Z0-9âêîôûàèìòùäëïöüçœé'":%\?\s-'&]+$/;
+  return validStringRegex.test(input);
+}
+
+function isValidNotRequiredString(input: string): boolean {
+  const validStringRegex = /^[a-zA-Z0-9âêîôûàèìòùäëïöüçœé'":%\?\s-'&]*$/;
+  return validStringRegex.test(input);
+}
+
+function isValidEmailArray(emails: string[]): boolean {
+  return emails.every((email) => isValidEmail(email));
 }

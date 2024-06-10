@@ -6,24 +6,36 @@
   .form-element {
     display: flex;
     flex-direction: column;
-
-    .label {
-      font-weight: bold;
-      line-height: 1.2;
-    }
+    gap: 20px;
 
     .input-section {
       display: flex;
       width: 100%;
       align-items: center;
-      gap: 10px;
+      gap: 4px;
       flex-direction: column;
+
+      .label {
+        align-self: flex-start;
+        font-weight: bold;
+        line-height: 1.2;
+      }
+
+      .error {
+        display: flex;
+        align-self: flex-start;
+      }
 
       .input-container {
         display: flex;
-        align-items: center;
         width: 100%;
-        margin-top: 10px;
+        gap: 4px;
+        flex-direction: column;
+
+        &.input-container-row {
+          flex-direction: row;
+          align-items: center;
+        }
 
         .input {
           background-color: transparent;
@@ -81,15 +93,39 @@
     display: flex;
     flex-direction: column;
     animation: collapseContent 0.1s ease-out forwards;
+    border-radius: 8px;
+    padding: 10px 0px;
 
     &.email-section-visible {
       animation: expandContent 0.5s ease-out forwards;
+      gap: 10px;
     }
 
     .emails-container {
       display: flex;
       flex-direction: column;
+      gap: 10px;
 
+      .title-email {
+        padding-top: 10px;
+        font-weight: bold;
+        line-height: 1.2;
+      }
+
+      .nobody {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #6c757d;
+
+        .icon {
+          width: 20px;
+        }
+        .text {
+          font-size: 14px;
+          font-style: italic;
+        }
+      }
       .email-element {
         display: flex;
         align-items: center;

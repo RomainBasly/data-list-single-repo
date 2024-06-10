@@ -18,7 +18,9 @@ export default function RegistrationForm() {
 
   async function registrationForm(e: { preventDefault: () => void }) {
     e.preventDefault()
-    const lowerCaseEmail = email.toLowerCase()
+    
+    const trimmedEmail = email.trim();
+    const lowerCaseEmail = trimmedEmail.toLowerCase()
     const sanitizedEmail = sanitize(lowerCaseEmail)
     const formErrors = validateEmailInput(sanitizedEmail)
     if (Object.keys(formErrors).length > 0) {

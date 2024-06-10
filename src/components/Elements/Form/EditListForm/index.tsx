@@ -30,15 +30,15 @@ const EditListForm = forwardRef<HTMLInputElement, IProps>((props, ref) => {
       setErrors({ ...errors, itemContent: 'Le champ ne peut pas être vide' })
       return
     }
-    const sanitizedCode = sanitize(value)
-    const formErrors = validateInputAddItemToList(sanitizedCode)
+    const sanitizedElement = sanitize(value)
+    const formErrors = validateInputAddItemToList(sanitizedElement.trim())
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors)
       return
     }
     try {
       if (props.id) {
-        const success = await props.onInputSubmit(sanitizedCode, props.id)
+        const success = await props.onInputSubmit(sanitizedElement, props.id)
         if (success) {
           if (props.handleEditing) {
             props.handleEditing()
@@ -46,7 +46,7 @@ const EditListForm = forwardRef<HTMLInputElement, IProps>((props, ref) => {
           setValue('')
         }
       } else {
-        await props.onInputSubmit(sanitizedCode)
+        await props.onInputSubmit(sanitizedElement.trim())
       }
     } catch (error) {
       // Todo : add error for that problem
