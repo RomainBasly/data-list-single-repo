@@ -3,7 +3,7 @@ import React, { Suspense, useEffect, useState } from 'react'
 import InvitationCard from './InvitationCard'
 import classes from './classes.module.scss'
 import StorageService from '@/Services/CookieService'
-import { getSocket } from '@/components/Elements/Socket'
+// import { getSocket } from '@/components/Elements/Socket'
 import JwtService from '@/Services/jwtService'
 import Cookies from 'js-cookie'
 import { useAuthInitialization } from '@/components/hooks/useAuthInitialization'
@@ -37,41 +37,41 @@ export default function UserInvitations() {
   const [error, setError] = useState<string>('')
   const { accessToken } = useAuthInitialization()
   const { refreshAccessToken } = useTokenRefresh()
-  const socket = getSocket()
+  // const socket = getSocket()
 
-  useEffect(() => {
-    if (socket) {
-      socket.on('list-invitation-socket', (packet: any) => {
-        const newInvitationThroughSocket = {
-          id: packet.data.id as string,
-          list_id: packet.data.listId as string,
-          user_id: packet.data.userId as number,
-          status: packet.data.status as number,
-          'app-lists': {
-            listName: packet.data.listName as string,
-            description: packet.data.listDescription as string,
-            thematic: packet.data.thematic as string,
-          },
-          'app-users': {
-            email: packet.data.creatorEmail as string,
-            userName: packet.data.creatorUserName as string,
-          },
-        }
+  // useEffect(() => {
+  //   if (socket) {
+  //     socket.on('list-invitation-socket', (packet: any) => {
+  //       const newInvitationThroughSocket = {
+  //         id: packet.data.id as string,
+  //         list_id: packet.data.listId as string,
+  //         user_id: packet.data.userId as number,
+  //         status: packet.data.status as number,
+  //         'app-lists': {
+  //           listName: packet.data.listName as string,
+  //           description: packet.data.listDescription as string,
+  //           thematic: packet.data.thematic as string,
+  //         },
+  //         'app-users': {
+  //           email: packet.data.creatorEmail as string,
+  //           userName: packet.data.creatorUserName as string,
+  //         },
+  //       }
 
-        const totalInvitations = pendingInvitations.toSpliced(
-          0,
-          0,
-          newInvitationThroughSocket,
-        )
+  //       const totalInvitations = pendingInvitations.toSpliced(
+  //         0,
+  //         0,
+  //         newInvitationThroughSocket,
+  //       )
 
-        setPendingInvitations(totalInvitations)
-      })
+  //       setPendingInvitations(totalInvitations)
+  //     })
 
-      return () => {
-        socket.off('list-invitation-socket')
-      }
-    }
-  }, [socket, pendingInvitations])
+  //     return () => {
+  //       socket.off('list-invitation-socket')
+  //     }
+  //   }
+  // }, [socket, pendingInvitations])
 
   useEffect(() => {
     const fetchPendingInvitations = async () => {

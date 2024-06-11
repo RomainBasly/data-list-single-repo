@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect } from 'react'
-import { getSocket } from '../Socket'
+// import { getSocket } from '../Socket'
 import { DefaultEventsMap } from '@socket.io/component-emitter'
 import { Socket } from 'socket.io-client'
 
@@ -20,14 +20,14 @@ export default function ServiceWorkerInitiator() {
               console.log('Service Worker registration failed: ', err)
             },
           )
-          navigator.serviceWorker.addEventListener('message', (event) => {
-            if (event.data && event.data.action === 'reinitializeWebSocket') {
-              const socket = getSocket()
-              if (!socket.connected) {
-                socket.connect()
-              }
-            }
-          })
+          // navigator.serviceWorker.addEventListener('message', (event) => {
+          //   if (event.data && event.data.action === 'reinitializeWebSocket') {
+          //     const socket = getSocket()
+          //     if (!socket.connected) {
+          //       socket.connect()
+          //     }
+          //   }
+          // })
         }
       }
     } catch (error) {
@@ -35,59 +35,59 @@ export default function ServiceWorkerInitiator() {
     }
   }, [])
 
-  useEffect(() => {
-    // Function to check and (re)connect the socket
-    const checkAndReconnectSocket = async () => {
-      const socket = getSocket()
+  // useEffect(() => {
+  //   // Function to check and (re)connect the socket
+  //   const checkAndReconnectSocket = async () => {
+  //     const socket = getSocket()
 
-      try {
-        await testServerConnection(socket)
-        console.log('Server connection is active')
-      } catch (error) {
-        console.log('Server connection failed, reconnecting...', error)
-        // Attempt to reconnect
-        if (socket.connected) {
-          socket.disconnect()
-          localStorage.removeItem('socketId')
-        }
-        socket.connect()
-      }
-    }
+  //     try {
+  //       await testServerConnection(socket)
+  //       console.log('Server connection is active')
+  //     } catch (error) {
+  //       console.log('Server connection failed, reconnecting...', error)
+  //       // Attempt to reconnect
+  //       if (socket.connected) {
+  //         socket.disconnect()
+  //         localStorage.removeItem('socketId')
+  //       }
+  //       socket.connect()
+  //     }
+  //   }
 
-    // Event listener for when the tab becomes visible again
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        if (navigator.onLine) {
-          checkAndReconnectSocket()
-        }
-      }
-    }
+  //   // Event listener for when the tab becomes visible again
+  //   const handleVisibilityChange = () => {
+  //     if (document.visibilityState === 'visible') {
+  //       if (navigator.onLine) {
+  //         checkAndReconnectSocket()
+  //       }
+  //     }
+  //   }
 
-    const testServerConnection = (
-      socket: Socket<DefaultEventsMap, DefaultEventsMap>,
-    ) => {
-      return new Promise((resolve, reject) => {
-        // Set a timeout for the test
-        const timeout = setTimeout(() => {
-          reject(new Error('Response timeout'))
-        }, 60000) // 60 seconds timeout
+  //   const testServerConnection = (
+  //     socket: Socket<DefaultEventsMap, DefaultEventsMap>,
+  //   ) => {
+  //     return new Promise((resolve, reject) => {
+  //       // Set a timeout for the test
+  //       const timeout = setTimeout(() => {
+  //         reject(new Error('Response timeout'))
+  //       }, 60000) // 60 seconds timeout
 
-        socket.once('pong', () => {
-          clearTimeout(timeout)
-          resolve(true)
-        })
+  //       socket.once('pong', () => {
+  //         clearTimeout(timeout)
+  //         resolve(true)
+  //       })
 
-        socket.emit('ping')
-      })
-    }
+  //       socket.emit('ping')
+  //     })
+  //   }
 
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-    window.addEventListener('online', checkAndReconnectSocket) // Reconnect when coming back online
+  //   document.addEventListener('visibilitychange', handleVisibilityChange)
+  //   window.addEventListener('online', checkAndReconnectSocket) // Reconnect when coming back online
 
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
-      window.removeEventListener('online', checkAndReconnectSocket)
-    }
-  }, [])
-  return <></>
+  //   return () => {
+  //     document.removeEventListener('visibilitychange', handleVisibilityChange)
+  //     window.removeEventListener('online', checkAndReconnectSocket)
+  //   }
+  // }, [])
+  // return <></>
 }

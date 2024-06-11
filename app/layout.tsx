@@ -5,7 +5,7 @@ import React from 'react'
 import Script from 'next/script'
 import { headers } from 'next/headers'
 // import ServiceWorkerInitiator from '@/components/Elements/ServiceWorkerInitiator'
-import { SocketProvider } from '@/components/providers/socket-provider'
+// import { SocketProvider } from '@/components/providers/socket-provider'
 import { UserInfoProvider } from '@/components/providers/user-info-provider'
 import ServiceWorkerInitiator from '@/components/Elements/ServiceWorkerInitiator'
 
@@ -64,12 +64,12 @@ export default function RootLayout({
   return (
     <html lang="fr">
       <body className={inter.className}>
-        <SocketProvider>
-          <UserInfoProvider>{children}</UserInfoProvider>
-        </SocketProvider>
+        {/* <SocketProvider> */}
+        <UserInfoProvider>{children}</UserInfoProvider>
+        {/* </SocketProvider> */}
       </body>
       <Script strategy="afterInteractive" nonce={nonce ?? 'nothing'} />
-      <ServiceWorkerInitiator />
+      {/* <ServiceWorkerInitiator /> */}
     </html>
   )
 }

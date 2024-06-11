@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 import { AuthorizationApi } from '@/api/Back/AuthorizationApi'
 import StorageService from '@/Services/CookieService'
 import JwtService from '@/Services/jwtService'
-import { getSocket } from '@/components/Elements/Socket'
+// import { getSocket } from '@/components/Elements/Socket'
 
 export default function Transition() {
   const router = useRouter()
@@ -43,11 +43,11 @@ export default function Transition() {
               response.accessToken,
               true,
             )
-            const socket = getSocket()
-            socket.emit('register-user-id', {
-              socketId: localStorage.getItem('socketId'),
-              accessTokenJWT: response.accessToken,
-            })
+            // const socket = getSocket()
+            // socket.emit('register-user-id', {
+            //   socketId: localStorage.getItem('socketId'),
+            //   accessTokenJWT: response.accessToken,
+            // })
             router.push('/home')
           }
         } catch (error) {

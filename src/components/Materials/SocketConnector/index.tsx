@@ -31,12 +31,13 @@
 //   return <div>socket Status2 : {statusMessage}</div>
 // }
 'use client'
-import { useSocket } from '@/components/providers/socket-provider'
+// import { useSocket } from '@/components/providers/socket-provider'
 
-export default function SocketConnector() {
-  const { isConnected, listAttributes } = useSocket()
-  if (!listAttributes) {
-    return <div>Error</div>
-  }
-  return <div>`You are {isConnected ? 'connected' : 'disconnected'}`</div>
-}
+// Garder celui là
+// export default function SocketConnector() {
+//   const { isConnected, listAttributes } = useSocket()
+//   if (!listAttributes) {
+//     return <div>Error</div>
+//   }
+//   return <div>`You are {isConnected ? 'connected' : 'disconnected'}`</div>
+// }
