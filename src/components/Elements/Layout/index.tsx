@@ -24,20 +24,23 @@ export default function Layout({ children, pageType }: ILayoutProps) {
         content="width=device-width, initial-scale=1"
       ></meta>
       <meta name="x-nonce" content={nonce ?? 'default-nonce'} />
-
       {pageType !== 'login' && pageType !== 'register' && (
         <div className={classes['root']}>
           <Header className={classes['header']} />
           <SideMenu />
-          <NetworkStatusNotifierWithNoSSR className={classes['footer']} />
+          <div className={classes['layout-content']}>
+            {children}
+            <NetworkStatusNotifierWithNoSSR
+              className={classes['internet-notifier']}
+            />
+          </div>
         </div>
       )}
-      <div className={classes['layout-content']}>
-        {children}
-        <NetworkStatusNotifierWithNoSSR
-          className={classes['internet-notifier']}
-        />
-      </div>
+      {(pageType === 'login' || pageType === 'register') && (
+        <div className={classes['root']}>
+          <div className={classes['layout-content']}>{children}</div>
+        </div>
+      )}
     </>
   )
 }

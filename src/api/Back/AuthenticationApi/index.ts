@@ -13,9 +13,22 @@ export type IRegister = {
   password: string;
 };
 
+export type IDisconnect = {
+  accessToken: string | null;
+  refreshToken: string | null;
+};
+
+export type IDisconnectResponse = {
+  status: string;
+  message: string;
+  action: string;
+  redirectUrl: string;
+};
+
 export interface ILoginResponse {
   accessToken?: string;
   refreshToken?: string;
+  id: number;
   error?: string;
   message?: string;
 }
@@ -61,6 +74,21 @@ export default class AuthenticationApi extends BaseApiService {
 
     try {
       return await this.postRequest<IRegisterResponse>(url, params);
+    } catch (error) {
+      if (error instanceof Response) {
+        const errorBody: BackendError = await error.json();
+        throw errorBody;
+      }
+      throw error;
+    }
+  }
+
+  public async disconnect(userId: string): Promise<IDisconnectResponse> {
+    assert(this.baseURL, "missing URL inside Auth disconnection request");
+    const url = new URL(this.baseURL.concat("/auth").concat("/logoutUser"));
+
+    try {
+      return await this.postRequest<IDisconnectResponse>(url, { userId });
     } catch (error) {
       if (error instanceof Response) {
         const errorBody: BackendError = await error.json();

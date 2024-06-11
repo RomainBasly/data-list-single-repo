@@ -4,6 +4,7 @@ import assert from "assert";
 export default class UserStore {
   private static instance: UserStore;
   private email: string | null = null;
+  private id: string | null = null;
   public accessToken: string | null = null;
   public isOnline: boolean | null = null;
 
@@ -28,6 +29,11 @@ export default class UserStore {
   public setEmail(email: string): void {
     this.email = email;
     localStorage.setItem("email", email);
+  }
+
+  public setId(id: string): void {
+    this.id = id;
+    localStorage.setItem("id", id);
   }
 
   public getEmail(): string {

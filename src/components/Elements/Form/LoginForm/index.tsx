@@ -8,6 +8,7 @@ import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
 import StorageService from '@/Services/CookieService'
 import Button from '@/components/Materials/Button'
+import { getSocket } from '../../Socket'
 
 export type IBody = {
   email: string
@@ -23,7 +24,8 @@ export function LoginForm() {
 
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()
-    const lowerCaseEmail = email.toLowerCase()
+    const trimmedEmail = email.trim()
+    const lowerCaseEmail = trimmedEmail.toLowerCase()
     const formErrors = validateConnectFormInputs(lowerCaseEmail, password)
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors)
@@ -45,6 +47,15 @@ export function LoginForm() {
           response.refreshToken,
           false,
         )
+      try {
+        const socket = getSocket()
+        socket.emit('register-user-id', {
+          socketId: localStorage.getItem('socketId'),
+          accessTokenJWT: response.accessToken,
+        })
+      } catch (error) {
+        console.error(error)
+      }
       setIsLoading(!isLoading)
       router.push('/')
     } catch (error) {

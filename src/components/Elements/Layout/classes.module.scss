@@ -1,21 +1,29 @@
 .root {
   display: flex;
   flex-direction: column;
-}
-
-.layout-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   height: 100%;
-}
-.internet-notifier {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  background-color: #efefef;
-  height: 40px;
-  color: white;
-  //position: relative;
+
+  .layout-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    align-items: center;
+
+    // @media screen and (max-width: 500px) {
+    //   align-items: unset;
+    // }
+  }
+  .internet-notifier {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background-color: #efefef;
+    position: fixed;
+    bottom: 0;
+    height: 20px;
+    color: white;
+    z-index: 8;
+  }
 }

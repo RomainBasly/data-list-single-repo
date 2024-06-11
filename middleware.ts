@@ -32,7 +32,7 @@ export default async function middleware(request: NextRequest) {
   const isRootPage = url.pathname === "/";
 
   const isLoggedIn =
-    accessToken && !JwtService.getInstance().isTokenExpired(decodedAccessToken);
+    accessToken && !JwtService.getInstance().isTokenExpired(accessToken);
   const response = NextResponse.next();
   response.headers.set("x-nonce", nonce);
   response.headers.set(
@@ -46,14 +46,9 @@ export default async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/home", request.url));
     } else if (refreshToken && !isLoggedIn) {
       // let the transition page make the call and retrive new accessToken
-      console.log(
-        "je passe par là refreshToken && !isLoggedIn",
-        accessToken &&
-          !JwtService.getInstance().isTokenExpired(decodedAccessToken)
-      );
+
       return NextResponse.redirect(new URL("/transition", request.url));
     } else {
-      console.log("je passe par ici dans le else", refreshToken, isLoggedIn);
       return NextResponse.redirect(new URL("/login", request.url));
     }
   }
@@ -69,10 +64,6 @@ export default async function middleware(request: NextRequest) {
     }
 
     if (!isLoggedIn && privatePages.includes(url.pathname)) {
-      console.log(
-        "je passe ici !isLoggedIn && privatePages.includes(url.pathname)",
-        accessToken
-      );
       return NextResponse.redirect(new URL("/transition", request.url));
     }
 
@@ -82,12 +73,6 @@ export default async function middleware(request: NextRequest) {
 
     // Redirect to login page if no accessToken or refreshToken found
     if (!accessToken && !refreshToken && !isLogPage) {
-      console.log(
-        "je passe par ici !accessToken && !refreshToken && !isLogPage",
-        accessToken,
-        refreshToken,
-        isLogPage
-      );
       return NextResponse.redirect(new URL("/login", request.url));
     }
   }
@@ -96,5 +81,8 @@ export default async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/", "/login", "/register", "/home", "/profile"],
+  matcher: ["/", "/login", "/register", "/home", "/lists/create-list"],
+  api: {
+    bodyParser: true,
+  },
 };

@@ -28,7 +28,7 @@ const ignoreUrlParametersMatchingPlugin = {
 
 workbox.routing.registerRoute(
   ({ url, request }) => request.mode === "navigate",
-  new workbox.strategies.StaleWhileRevalidate({
+  new workbox.strategies.NetworkFirst({
     cacheName: "pages-cache",
     plugins: [
       new workbox.cacheableResponse.CacheableResponsePlugin({
@@ -44,7 +44,7 @@ workbox.routing.registerRoute(
 );
 workbox.routing.registerRoute(
   ({ url, request }) => request.mode === "navigate",
-  new workbox.strategies.StaleWhileRevalidate({
+  new workbox.strategies.NetworkFirst({
     cacheName: "pages-cache-rsc",
     plugins: [
       new workbox.cacheableResponse.CacheableResponsePlugin({
@@ -159,15 +159,27 @@ self.addEventListener("activate", (event) => {
 //   }
 // });
 
+self.clients.matchAll().then((clients) => {
+  clients.forEach((client) => {
+    client.postMessage({
+      action: "reinitializeWebSocket",
+    });
+  });
+});
+
 self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
   if (url.pathname === "/images/leightWeightImage.png") {
-    // Attempt to fetch from network, fall back to offline handling if network fails
     event.respondWith(
       fetch(event.request).catch(() => caches.match("/offline"))
     );
     return;
   }
+
+  if (url.pathname.startsWith("/api/user/")) {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
@@ -186,6 +198,7 @@ self.addEventListener("fetch", (event) => {
       });
     })
   );
+
   if (event.request.mode === "navigate" && url.pathname === "/") {
     event.respondWith(
       Response.redirect(new URL("/home", event.request.url).href)
@@ -193,12 +206,16 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  console.log("fetching", event.request.url);
+  if (event.request.mode === "navigate") {
+    // Assuming you want to trigger WebSocket re-initialization on navigation
+    event.waitUntil(sendMessage({ action: "reinitializeWebSocket" }));
+  }
 });
 
 const sendMessage = async (message) => {
   self.clients.matchAll().then((clients) => {
     clients.forEach((client) => {
+      console.log("reconnect");
       client.postMessage(message);
     });
   });

@@ -21,13 +21,17 @@ export default abstract class BaseApiService {
 
   protected async getRequest<T>(
     url: URL,
-    contentType?: ContentType, refreshToken?: string
+    contentType?: ContentType,
+    extraHeaders?: HeadersInit
   ): Promise<T> {
     const response = await this.sendRequest(
       async () =>
         await fetch(url, {
           method: "GET",
-          headers: this.buildHeaders(contentType ?? ContentType.JSON, refreshToken),
+          headers: this.buildHeaders(
+            contentType ?? ContentType.JSON,
+            extraHeaders
+          ),
           credentials: "include",
         })
     );
@@ -41,13 +45,14 @@ export default abstract class BaseApiService {
 
   protected async postRequest<T>(
     url: URL,
-    body: { [key: string]: unknown } = {}
+    body: { [key: string]: unknown } = {},
+    extraHeaders?: HeadersInit
   ): Promise<T> {
     const response = await this.sendRequest(
       async () =>
         await fetch(url, {
           method: "POST",
-          headers: this.buildHeaders(ContentType.JSON),
+          headers: this.buildHeaders(ContentType.JSON, extraHeaders),
           body: this.buildBody(body),
           credentials: "include",
         })
@@ -92,15 +97,18 @@ export default abstract class BaseApiService {
     return responseContent;
   }
 
-  protected buildHeaders(contentType: ContentType, refreshToken?: string) {
+  protected buildHeaders(contentType: ContentType, extraHeaders?: HeadersInit) {
     const headers = new Headers();
     assert(this.apiKey, "APIkey missing");
     if (contentType === ContentType.JSON) {
       headers.set("Content-Type", contentType);
       headers.set("X-API-KEY", this.apiKey);
     }
-    if (refreshToken) {
-      headers.set("Authorization", `Bearer ${refreshToken}`)
+
+    if (extraHeaders) {
+      for (const [key, value] of Object.entries(extraHeaders)) {
+        headers.append(key, value);
+      }
     }
     return headers;
   }

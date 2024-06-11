@@ -3,18 +3,17 @@ import { JwtPayload } from "jsonwebtoken";
 
 export default class JwtService {
   private static instance: JwtService | null = null;
-  private readonly accessTokenSecret: string;
-  private readonly refreshTokenSecret: string;
+  // private readonly accessTokenSecret: string | null = null;
+  // private readonly refreshTokenSecret: string | null = null;
 
   private constructor() {
-    const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
-    const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
-
-    if (!accessTokenSecret || !refreshTokenSecret) {
-      throw new Error("error here");
-    }
-    this.accessTokenSecret = accessTokenSecret;
-    this.refreshTokenSecret = refreshTokenSecret;
+    // const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
+    // const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;
+    // if (!accessTokenSecret || !refreshTokenSecret) {
+    //   throw new Error("error here");
+    // }
+    // this.accessTokenSecret = accessTokenSecret;
+    // this.refreshTokenSecret = refreshTokenSecret;
   }
 
   public static getInstance(): JwtService {
@@ -22,16 +21,6 @@ export default class JwtService {
       this.instance = new JwtService();
     }
     return this.instance;
-  }
-
-  async isAccessTokenValid(token: string): Promise<boolean> {
-    try {
-      const key = new TextEncoder().encode(this.accessTokenSecret);
-      const { payload } = await jwtVerify(token, key);
-      return true;
-    } catch (error) {
-      return false;
-    }
   }
 
   // async isRefreshTokenValid(token: string): Promise<boolean> {
@@ -56,7 +45,8 @@ export default class JwtService {
     }
   }
 
-  public isTokenExpired(decodedToken: JwtPayload | null): boolean {
+  public isTokenExpired(token: string): boolean {
+    const decodedToken = decodeJwt(token);
     const currentTimeInSeconds = Math.floor(Date.now() / 1000);
 
     if (decodedToken === null) {

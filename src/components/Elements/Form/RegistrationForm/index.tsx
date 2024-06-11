@@ -16,9 +16,11 @@ export default function RegistrationForm() {
   const [errors, setErrors] = useState<{ [key: string]: string }>()
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  async function sendForm(e: { preventDefault: () => void }) {
+  async function registrationForm(e: { preventDefault: () => void }) {
     e.preventDefault()
-    const lowerCaseEmail = email.toLowerCase()
+    
+    const trimmedEmail = email.trim();
+    const lowerCaseEmail = trimmedEmail.toLowerCase()
     const sanitizedEmail = sanitize(lowerCaseEmail)
     const formErrors = validateEmailInput(sanitizedEmail)
     if (Object.keys(formErrors).length > 0) {
@@ -62,7 +64,7 @@ export default function RegistrationForm() {
       </div>
       <div className={classes['button-container']}>
         <Button
-          onClick={sendForm}
+          onClick={registrationForm}
           text={"S'enregistrer"}
           isLoading={isLoading}
           className={classes['connexion-button']}

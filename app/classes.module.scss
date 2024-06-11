@@ -6,9 +6,10 @@
   max-width: 650px;
   justify-content: center;
   margin: auto;
+  width: 100%;
 
   @media screen and (max-width: 500px) {
-    padding: 20px 60px;
+    padding: 20px 40px;
   }
 
   .title-container {
@@ -29,7 +30,6 @@
     border-radius: 4px;
     cursor: pointer;
     background-color: #efe9ae;
-    //background-color: #ffcb77b3;
 
     transition: border-color 1s, background-color 1s;
 

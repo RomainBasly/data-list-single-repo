@@ -31,12 +31,15 @@ export default function RegistrationForm() {
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()
 
-    const sanitizedPrePassword = sanitize(prePassword)
+    const sanitizedPrePassword = sanitize(prePassword.trim())
     const prePasswordErrors = validatePasswordInput(sanitizedPrePassword)
-    const sanitizedUserName = sanitize(userName)
+    const sanitizedUserName = sanitize(userName.trim())
     const userNameErrors = validateUserNameInput(sanitizedUserName)
 
-    const matchingPassErrors = matchingPasswords(sanitizedPrePassword, password)
+    const matchingPassErrors = matchingPasswords(
+      sanitizedPrePassword,
+      password.trim(),
+    )
 
     const formErrors = {
       ...prePasswordErrors,
