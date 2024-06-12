@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 // import { getSocket } from '../Socket'
 import { DefaultEventsMap } from '@socket.io/component-emitter'
 import { Socket } from 'socket.io-client'
+import { getSocket } from '../Socket'
 
 export default function ServiceWorkerInitiator() {
   useEffect(() => {
@@ -20,14 +21,14 @@ export default function ServiceWorkerInitiator() {
               console.log('Service Worker registration failed: ', err)
             },
           )
-          // navigator.serviceWorker.addEventListener('message', (event) => {
-          //   if (event.data && event.data.action === 'reinitializeWebSocket') {
-          //     const socket = getSocket()
-          //     if (!socket.connected) {
-          //       socket.connect()
-          //     }
-          //   }
-          // })
+          navigator.serviceWorker.addEventListener('message', (event) => {
+            if (event.data && event.data.action === 'reinitializeWebSocket') {
+              const socket = getSocket()
+              if (!socket.connected) {
+                socket.connect()
+              }
+            }
+          })
         }
       }
     } catch (error) {
