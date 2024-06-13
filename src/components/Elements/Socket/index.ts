@@ -11,7 +11,10 @@ export const getSocket = () => {
       process.env.NEXT_PUBLIC_SOCKET_URL,
       "error getting the socket url from env"
     );
-    socket = io(process.env.NEXT_PUBLIC_SOCKET_URL);
+    socket = io(process.env.NEXT_PUBLIC_SOCKET_URL, {
+      transports: ["websocket", "polling"], // Ensure both transports are allowed
+      upgrade: true,
+    });
     // Setup your event listeners here
     socket.on("connect", () => {
       const accessTokenJWT = Cookies.get("accessToken");
