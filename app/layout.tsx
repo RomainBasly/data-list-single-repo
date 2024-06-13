@@ -8,7 +8,6 @@ import ServiceWorkerInitiator from '@/components/Elements/ServiceWorkerInitiator
 import { SocketProvider } from '@/components/providers/socket-provider'
 import { UserInfoProvider } from '@/components/providers/user-info-provider'
 
-
 const inter = Inter({ subsets: ['latin'] })
 
 const APP_NAME = "Simp'listes"
@@ -69,7 +68,7 @@ export default function RootLayout({
         </SocketProvider>
       </body>
       <Script strategy="afterInteractive" nonce={nonce ?? 'nothing'} />
-      {/* <ServiceWorkerInitiator /> */}
+      <ServiceWorkerInitiator />
     </html>
   )
 }
