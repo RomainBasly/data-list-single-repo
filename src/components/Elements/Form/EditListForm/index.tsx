@@ -96,7 +96,6 @@ const EditListForm = forwardRef<HTMLInputElement, IProps>((props, ref) => {
           onClick={(e) => {
             e.stopPropagation()
             e.preventDefault()
-            console.log('PlusIcon clicked')
             submitForm(e)
           }}
         >
