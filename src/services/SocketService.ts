@@ -26,6 +26,9 @@ export class SocketService {
       },
       this.expressApp
     );
+
+    this.httpsServer.setTimeout(600000);
+
     this.io = new IOServer(this.httpsServer, {
       cors: {
         origin: [
