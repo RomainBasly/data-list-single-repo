@@ -1,12 +1,13 @@
 import express from "express";
-import http from "http";
+import https from "https";
 import { Server as IOServer, Socket } from "socket.io";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { randomBytes } from "node:crypto";
+import fs from "fs";
 
 export class SocketService {
   private expressApp: express.Application;
-  private httpServer: http.Server;
+  private httpsServer: https.Server;
   private io: IOServer;
   private readonly port: string | number;
   private static instance: SocketService;
@@ -14,8 +15,18 @@ export class SocketService {
 
   constructor() {
     this.expressApp = express();
-    this.httpServer = http.createServer();
-    this.io = new IOServer(this.httpServer, {
+    this.httpsServer = https.createServer(
+      {
+        key: fs.readFileSync(
+          "/etc/letsencrypt/live/ws.simplists.net/privkey.pem"
+        ),
+        cert: fs.readFileSync(
+          "/etc/letsencrypt/live/ws.simplists.net/fullchain.pem"
+        ),
+      },
+      this.expressApp
+    );
+    this.io = new IOServer(this.httpsServer, {
       cors: {
         origin: [
           "https://data-list-collaborative-r54h7zfc9-romainbaslys-projects.vercel.app/",
@@ -127,7 +138,7 @@ export class SocketService {
   }
 
   private listen(): void {
-    this.httpServer.listen(this.port, () => {
+    this.httpsServer.listen(this.port, () => {
       console.log(`Server is running on port ${this.port}`);
     });
   }
