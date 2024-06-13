@@ -11,9 +11,7 @@ type IProps = {
 export default function NetworkStatusNotifier(props: IProps) {
   const isOnline = useNetworkStatus()
 
-  useEffect(() => {
-    console.log('isOnline', isOnline)
-  }, [isOnline])
+  useEffect(() => {}, [isOnline])
 
   // if (isOnline) {
   //   return <div>we are online</div>
