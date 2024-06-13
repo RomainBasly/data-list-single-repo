@@ -4,6 +4,8 @@ export const allowedOrigins = [
   'https://data-list-collaborative.vercel.app',
   'https://simplists.net',
   'https://www.simplists.net',
+  'ws://ws.simplists.net',
+  'wss://ws.simplists.net',
 ];
 
 export const corsOptions = {
