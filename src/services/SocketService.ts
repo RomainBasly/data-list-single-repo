@@ -95,7 +95,6 @@ export class SocketService {
         }
 
         if (targetSocketId) {
-          console.log("data", data);
           this.io.to(targetSocketId).emit("list-invitation-socket", {
             data,
           });
