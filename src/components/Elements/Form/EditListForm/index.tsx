@@ -46,7 +46,10 @@ const EditListForm = forwardRef<HTMLInputElement, IProps>((props, ref) => {
           setValue('')
         }
       } else {
-        await props.onInputSubmit(sanitizedElement.trim())
+        const success = await props.onInputSubmit(sanitizedElement.trim())
+        if (success) {
+          setValue('')
+        }
       }
     } catch (error) {
       // Todo : add error for that problem

@@ -24,6 +24,7 @@ export default async function handler(
     return res.status(200).json({
       message: "Item added to list",
       itemAdded: itemAdded.addedElement,
+      success: "ok",
     });
   } catch (error) {
     // Handle errors (e.g., from your backend call)

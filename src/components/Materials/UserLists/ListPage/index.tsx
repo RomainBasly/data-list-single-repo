@@ -132,7 +132,7 @@ export default function ListPage() {
     try {
       // Voir si on doit refacto avec le listId en paramètre
       const response = await fetch(
-        `/api/lists/addItemToList?listId=${listId}`,
+        `/api/lists/addItemToList`,
         {
           method: 'POST',
           headers: {
