@@ -3,7 +3,7 @@ import { LandingHeader } from '@/components/Elements/Headers/LandingHeader'
 import classes from '../../login/classes.module.scss'
 import PasswordCreation from '@/components/Elements/Form/PasswordCreation'
 
-export default function AddPassword() {
+export default function AddPassword2() {
   return (
     <Layout pageType="register">
       <div className={classes['root']}>

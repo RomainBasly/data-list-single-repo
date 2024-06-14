@@ -29,10 +29,20 @@
 
       .password,
       .username {
-        background-color: white;
+        background-color: transparent;
         border-radius: 4px;
         padding: 10px;
         border: 1px solid grey;
+
+        &:focus {
+          outline: none;
+          border: 1px solid #ffb600;
+          background-color: #efe9ae;
+        }
+
+        &::placeholder {
+          color: #6c757d;
+        }
       }
 
       .error {

@@ -8,6 +8,7 @@ import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
 import StorageService from '@/Services/CookieService'
 import Button from '@/components/Materials/Button'
+import PasswordInput from '../../Inputs/PasswordInput'
 // import { getSocket } from '../../Socket'
 
 export type IBody = {
@@ -70,6 +71,7 @@ export function LoginForm() {
 
   function handlePassword(e: React.ChangeEvent<HTMLInputElement>) {
     setErrors({ ...errors, password: '', form: '' })
+    console.log('event on the parent', e.target.value)
     setIsLoading(false)
     setPassword(e.target.value)
   }
@@ -89,17 +91,16 @@ export function LoginForm() {
           placeholder="gabriel@attable.com"
           id="email"
           onChange={handleEmail}
+          className={classes['input']}
         />
         {errors && <div className={classes['error']}>{errors.email}</div>}
       </div>
       <div className={classes['form-element']}>
         <label htmlFor="password">Mot de passe</label>
-        <input
-          type="password"
-          name="password"
-          id="password"
-          placeholder="Entrez votre mot de passe"
+        <PasswordInput
           onChange={handlePassword}
+          name={'password'}
+          placeholder={'Entrez votre mot de passe'}
         />
         {errors && <div className={classes['error']}>{errors.password}</div>}
       </div>

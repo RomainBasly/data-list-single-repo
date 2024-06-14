@@ -14,6 +14,7 @@ import { useRouter } from 'next/navigation'
 import Button from '@/components/Materials/Button'
 import UserStore from '@/Stores/UserStore'
 import AuthenticationApi from '@/api/Back/AuthenticationApi'
+import PasswordInput from '../../Inputs/PasswordInput'
 
 export default function RegistrationForm() {
   const router = useRouter()
@@ -115,16 +116,13 @@ export default function RegistrationForm() {
         </div>
         <div className={classes['input-container']}>
           <label htmlFor="password">Mot de passe</label>
-          <input
-            name="password"
-            id="password"
-            placeholder="Entrez votre mot de passe"
-            type="password"
-            className={classes['password']}
+          <PasswordInput
             onChange={(e) => {
               validatePassword(e.target.value)
               handlePrePassword(e)
             }}
+            name="password"
+            placeholder={'Entrez votre mot de passe'}
           />
           {errors && <div className={classes['error']}>{errors.password}</div>}
         </div>
@@ -132,13 +130,11 @@ export default function RegistrationForm() {
           <label htmlFor="password-confirmation">
             Confirmez votre mot de passe
           </label>
-          <input
+          <PasswordInput
             name="password-confirmation"
             id="password-confirmation"
-            placeholder="Mot de passe"
-            type="password"
-            className={classes['password']}
             onChange={handlePasswords}
+            placeholder={'Confirmez votre mot de passe'}
           />
           {errors && (
             <div className={classes['error']}>{errors.matchingPassword}</div>
