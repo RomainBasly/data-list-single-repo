@@ -18,8 +18,8 @@ export default function RegistrationForm() {
 
   async function registrationForm(e: { preventDefault: () => void }) {
     e.preventDefault()
-    
-    const trimmedEmail = email.trim();
+
+    const trimmedEmail = email.trim()
     const lowerCaseEmail = trimmedEmail.toLowerCase()
     const sanitizedEmail = sanitize(lowerCaseEmail)
     const formErrors = validateEmailInput(sanitizedEmail)
@@ -59,6 +59,7 @@ export default function RegistrationForm() {
           id="email"
           placeholder="gabriel@attable.com"
           onChange={handleEmail}
+          className={classes['input']}
         />
         {errors && <div className={classes['error']}>{errors.email}</div>}
       </div>
