@@ -8,9 +8,18 @@ import StorageService from '@/Services/CookieService'
 import { useRouter } from 'next/navigation'
 import { IBeneficiary, IListContent } from './ListPage'
 import LoadingMaterial from '../LoadingMaterial'
+import { sortItemListObjectByNameASC } from '@/components/Helpers'
 
 export type IList = {
   'app-lists': IListContent
+}
+
+export type IListElement = {
+  id: string
+  listName: string
+  thematic: string
+  description: string
+  beneficiaries: IBeneficiary[]
 }
 
 export default function UserLists() {
@@ -39,8 +48,11 @@ export default function UserLists() {
             throw new Error('Failed to fetch lists')
           }
           const data = await response.json()
-          
-          setUserLists(data)
+          console.log('data', data)
+
+          const sortedData = [...data].sort(sortItemListObjectByNameASC)
+
+          setUserLists(sortedData)
           setLoading(false)
         }
       } catch (error) {

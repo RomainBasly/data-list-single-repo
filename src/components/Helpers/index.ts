@@ -1,3 +1,4 @@
+import { IList, IListElement } from "../Materials/UserLists";
 import { IElement } from "../Materials/UserLists/ListPage";
 
 export function sortItemObjectByUpdatedDateDSC(
@@ -17,4 +18,18 @@ export function sortItemObjectByUpdatedDateASC(
   let dateB = new Date(objectB.updated_at);
 
   return dateA.getTime() - dateB.getTime();
+}
+
+export function sortItemListObjectByNameASC(a: IList, b: IList) {
+  let firstElement = a["app-lists"].listName.toUpperCase();
+  let secondElement = b["app-lists"].listName.toUpperCase();
+
+  if (firstElement > secondElement) {
+    return 1;
+  }
+
+  if (firstElement < secondElement) {
+    return -1;
+  }
+  return 0;
 }

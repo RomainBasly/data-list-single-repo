@@ -39,7 +39,6 @@ export function CreateListForm() {
   const [name, setName] = useState<string>('')
   const [thematic, setThematic] = useState<string>('')
   const [description, setDescription] = useState<string>('')
-  const [password, setPassword] = useState<string>('')
   const [errors, setErrors] = useState<{ [key: string]: string }>({})
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const router = useRouter()
