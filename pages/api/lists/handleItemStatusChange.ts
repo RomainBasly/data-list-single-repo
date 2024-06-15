@@ -9,6 +9,7 @@ export default async function handler(
   const elementId = req.body.elementId;
   const listId = req.body.listId;
   const statusOpen = req.body.statusOpen;
+  const beneficiaries = req.body.beneficiaries;
 
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method Not Allowed" });
@@ -21,6 +22,7 @@ export default async function handler(
       listId,
       elementId,
       statusOpen,
+      beneficiaries,
       {
         Cookie: cookieHeader || "",
       }

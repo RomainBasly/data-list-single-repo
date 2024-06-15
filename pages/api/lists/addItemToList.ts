@@ -8,6 +8,7 @@ export default async function handler(
   const cookieHeader = req.headers.cookie;
   const listId = req.body.listId;
   const content = req.body.content;
+  const beneficiaries = req.body.beneficiaries;
 
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method Not Allowed" });
@@ -17,7 +18,7 @@ export default async function handler(
   try {
     const listsApi = ListsApi.getInstance();
 
-    const itemAdded = await listsApi.addItemToList(listId, content, {
+    const itemAdded = await listsApi.addItemToList(listId, content, beneficiaries, {
       Cookie: cookieHeader || "",
     });
 

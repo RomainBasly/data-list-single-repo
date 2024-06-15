@@ -1,6 +1,7 @@
 import assert from "assert";
 import BaseApiService, { ContentType } from "../BaseAPIService";
 import { BackendError } from "@/Services/errorHandlingService";
+import { IBeneficiary } from "@/components/Materials/UserLists/ListPage";
 
 export type Cookie = {
   Cookie: string;
@@ -62,17 +63,18 @@ export default class ListsApi extends BaseApiService {
   public async addItemToList(
     listId: string | string[] | undefined,
     content: string,
+    beneficiaries: IBeneficiary[],
     params: any
   ) {
     assert(this.baseUrl, "Backend URL is missing");
     const url = new URL(
-      this.baseUrl.concat("/lists").concat(`/add-item-to-list/${listId}`)
+      this.baseUrl.concat("/lists").concat(`/add-item-to-list/`)
     );
 
     try {
       return await this.postRequest<any>(
         url,
-        { listId, content },
+        { listId, content, beneficiaries },
         {
           Cookie: params.Cookie,
         }
@@ -89,6 +91,7 @@ export default class ListsApi extends BaseApiService {
   public async suppressItem(
     listId: string | string[] | undefined,
     elementId: string | string[] | undefined,
+    beneficiaries: IBeneficiary[],
     params: any
   ) {
     assert(this.baseUrl, "Backend URL is missing");
@@ -99,7 +102,7 @@ export default class ListsApi extends BaseApiService {
     try {
       return await this.postRequest<any>(
         url,
-        { listId, elementId },
+        { listId, elementId, beneficiaries },
         { Cookie: params.Cookie }
       );
     } catch (error) {
@@ -114,6 +117,7 @@ export default class ListsApi extends BaseApiService {
     listId: string | string[] | undefined,
     elementId: string | string[] | undefined,
     status: boolean,
+    beneficiaries: IBeneficiary[],
     params: any
   ) {
     assert(this.baseUrl, "Backend URL is missing");
@@ -124,7 +128,7 @@ export default class ListsApi extends BaseApiService {
     try {
       return await this.postRequest<any>(
         url,
-        { listId, elementId, status },
+        { listId, elementId, status, beneficiaries },
         { Cookie: params.Cookie }
       );
     } catch (error) {
@@ -139,6 +143,7 @@ export default class ListsApi extends BaseApiService {
     listId: string | string[] | undefined,
     elementId: string | string[] | undefined,
     contentUpdated: string,
+    beneficiaries: IBeneficiary[],
     params: any
   ) {
     assert(this.baseUrl, "Backend URL is missing");
@@ -149,7 +154,7 @@ export default class ListsApi extends BaseApiService {
     try {
       return await this.postRequest<any>(
         url,
-        { listId, elementId, content: contentUpdated },
+        { listId, elementId, content: contentUpdated, beneficiaries },
         { Cookie: params.Cookie }
       );
     } catch (error) {

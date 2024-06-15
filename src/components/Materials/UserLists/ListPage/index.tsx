@@ -10,6 +10,7 @@ import LoadingMaterial from '../../LoadingMaterial'
 import DynamicButtonInput from '../../Button/AddListElementButton'
 import { sortItemObjectByUpdatedDateDSC } from '@/components/Helpers'
 import ListElement from './ListElement'
+import { getSocket } from '@/components/Elements/Socket'
 
 type IResponse = IList[]
 
@@ -53,6 +54,7 @@ export default function ListPage() {
   const router = useRouter()
   const paramsInitiator = useParams()
   const listId = paramsInitiator?.listId as string | undefined
+  const socket = getSocket()
 
   useEffect(() => {
     const fetchListData = async () => {
@@ -117,6 +119,85 @@ export default function ListPage() {
     }
   }, [accessToken, listId, router])
 
+  useEffect(() => {
+    if (socket) {
+      socket.on('adding-item-to-list-socket', (packet: any) => {
+        if (listItems) {
+          const updatedItems = [...listItems, packet.elementToPass[0]]
+          const sortedElements = updatedItems.sort(
+            sortItemObjectByUpdatedDateDSC,
+          )
+          setListItems(sortedElements)
+        } else {
+          setListItems(packet.elementToPass[0])
+        }
+      })
+      socket.on(
+        'suppress-item-from-list-socket',
+        (packet: { elementId: string }) => {
+          if (listItems) {
+            const updatedItems = listItems.filter(
+              (element) => element.id !== packet.elementId,
+            )
+            setTimeout(() => {
+              setListItems(updatedItems)
+              setAnimateSuppressionByItemId(null)
+            }, 700)
+          } else {
+            setListItems(null)
+          }
+        },
+      )
+      socket.on('change-item-status-socket', (packet: any) => {
+        // TODO : refacto the way I transform the data before displaying it
+
+        if (listItems) {
+          const filteredList = listItems.filter(
+            (element) => element.id !== packet.elementToPass[0].id,
+          )
+          const updatedListUnsorted = [...filteredList, packet.elementToPass[0]]
+          const newLiveElementsSorted = updatedListUnsorted
+            .filter((item) => item.statusOpen === true)
+            .sort(sortItemObjectByUpdatedDateDSC)
+          const newCrossedElementsSorted = updatedListUnsorted
+            .filter((item) => item.statusOpen === false)
+            .sort(sortItemObjectByUpdatedDateDSC)
+
+          const newListElements = [
+            ...newLiveElementsSorted,
+            ...newCrossedElementsSorted,
+          ]
+          setListItems(newListElements)
+        } else {
+          setListItems(null)
+        }
+      })
+      socket.on('update-item-content-socket', (packet: any) => {
+        // TODO : refacto the way I transform the data before displaying it
+        if (listItems) {
+          const filteredList = listItems.filter(
+            (element) => element.id !== packet.elementToPass[0].id,
+          )
+          const updatedListUnsorted = [...filteredList, packet.elementToPass[0]]
+          const newLiveElementsSorted = updatedListUnsorted
+            .filter((item) => item.statusOpen === true)
+            .sort(sortItemObjectByUpdatedDateDSC)
+          const newCrossedElementsSorted = updatedListUnsorted
+            .filter((item) => item.statusOpen === false)
+            .sort(sortItemObjectByUpdatedDateDSC)
+
+          const newListElements = [
+            ...newLiveElementsSorted,
+            ...newCrossedElementsSorted,
+          ]
+          setListItems(newListElements)
+        } else {
+          setListItems(null)
+        }
+      })
+    }
+  }, [socket, listItems])
+
   if (!listTop) {
     return (
       <div className={classes['root']}>
@@ -128,20 +209,19 @@ export default function ListPage() {
     )
   }
 
+  const beneficiaries: IBeneficiary[] = listTop['app-lists'].beneficiaries
+
   const addItemToList = async (inputElement: string): Promise<boolean> => {
     try {
       // Voir si on doit refacto avec le listId en paramètre
-      const response = await fetch(
-        `/api/lists/addItemToList`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify({ listId, content: inputElement }),
+      const response = await fetch(`/api/lists/addItemToList`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-      )
+        credentials: 'include',
+        body: JSON.stringify({ listId, content: inputElement, beneficiaries }),
+      })
       const result = await response.json()
 
       if (listItems) {
@@ -177,10 +257,11 @@ export default function ListPage() {
           listId,
           elementId,
           contentUpdate: updatedContent.trim(),
+          beneficiaries,
         }),
       })
       const result = await response.json()
-
+      // TODO : refacto the way I transform the data before displaying it
       if (elementId && listItems) {
         const otherElements = listItems.filter(
           (element) => element.id !== elementId,
@@ -223,7 +304,7 @@ export default function ListPage() {
           'Content-Type': 'application/json',
         },
         credentials: 'include',
-        body: JSON.stringify({ listId, elementId: id }),
+        body: JSON.stringify({ listId, elementId: id, beneficiaries }),
       })
       if (response.status === 200) {
         setAnimateSuppressionByItemId(id)
@@ -245,6 +326,7 @@ export default function ListPage() {
     listId: string,
     id: string,
     statusOpen: boolean,
+    beneficiaries: IBeneficiary[],
   ) => {
     const response = await fetch('/api/lists/handleItemStatusChange', {
       method: 'POST',
@@ -252,7 +334,12 @@ export default function ListPage() {
         'Content-Type': 'application/json',
       },
       credentials: 'include',
-      body: JSON.stringify({ listId, elementId: id, statusOpen: statusOpen }),
+      body: JSON.stringify({
+        listId,
+        elementId: id,
+        statusOpen: statusOpen,
+        beneficiaries,
+      }),
     })
 
     return response.json()
@@ -303,6 +390,7 @@ export default function ListPage() {
           listId,
           id,
           !statusOpen,
+          beneficiaries,
         )
 
         if (!Array.isArray(listItems)) {
