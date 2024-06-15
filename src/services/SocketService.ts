@@ -31,7 +31,10 @@ export class SocketService {
 
     this.io = new IOServer(this.httpsServer, {
       cors: {
-        origin: ["localhost:3000", "localhost:8000"], // Allowed origins
+        origin: [
+          "https://data-list-collaborative-r54h7zfc9-romainbaslys-projects.vercel.app/",
+          "https://stingray-app-69yxe.ondigitalocean.app/api",
+        ], // Allowed origins
         methods: ["GET", "POST"], // Allowed HTTP request methods
         allowedHeaders: ["my-custom-header"], // Custom headers that can be sent
         credentials: true, // Allow sending of cookies and credentials
