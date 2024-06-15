@@ -54,14 +54,91 @@ export class SocketService {
       socket.on("disconnect", () => {
         this.userSocketMap.delete(socketId);
         this.userSocketMap.delete(socket.id);
-        // const userId = [...this.userSocketMap.entries()].find(
-        //   ([_, value]) => value.socketId === socket.id
-        // )?.[0];
-        // if (userId) {
-        //   this.userSocketMap.delete(userId);
-        //   console.log(`User ${userId} disconnected, removing entry from map.`);
-        // }
         console.log("disconnect", this.userSocketMap, socket.id);
+      });
+
+      socket.on("adding-item-to-list-backend", (data: any) => {
+        const elementToPassToFront = data.addedItem;
+        data.beneficiaries.map((person: any) => {
+          const userId = person["app-users"].user_id;
+          let targetSocketId: string | undefined;
+
+          for (const [key, value] of this.userSocketMap.entries()) {
+            if (String(value.userId) === String(userId)) {
+              targetSocketId = value.socketId;
+              break; // Stop searching once we've found the userId
+            }
+          }
+
+          if (targetSocketId) {
+            this.io.to(targetSocketId).emit("adding-item-to-list-socket", {
+              elementToPass: elementToPassToFront,
+            });
+          }
+        });
+      });
+
+      socket.on("suppress-item-from-list-backend", (data: any) => {
+        const elementId = data.elementId;
+        data.beneficiaries.map((person: any) => {
+          const userId = person["app-users"].user_id;
+          let targetSocketId: string | undefined;
+
+          for (const [key, value] of this.userSocketMap.entries()) {
+            if (String(value.userId) === String(userId)) {
+              targetSocketId = value.socketId;
+              break; // Stop searching once we've found the userId
+            }
+          }
+
+          if (targetSocketId) {
+            this.io.to(targetSocketId).emit("suppress-item-from-list-socket", {
+              elementId,
+            });
+          }
+        });
+      });
+
+      socket.on("update-item-content-backend", (data: any) => {
+        const elementToPassToFront = data.updatedItem;
+        data.beneficiaries.map((person: any) => {
+          const userId = person["app-users"].user_id;
+          let targetSocketId: string | undefined;
+
+          for (const [key, value] of this.userSocketMap.entries()) {
+            if (String(value.userId) === String(userId)) {
+              targetSocketId = value.socketId;
+              break; // Stop searching once we've found the userId
+            }
+          }
+
+          if (targetSocketId) {
+            this.io.to(targetSocketId).emit("update-item-content-socket", {
+              elementToPass: elementToPassToFront,
+            });
+          }
+        });
+      });
+
+      socket.on("change-item-status-backend", (data: any) => {
+        const elementToPassToFront = data.updatedItem;
+        data.beneficiaries.map((person: any) => {
+          const userId = person["app-users"].user_id;
+          let targetSocketId: string | undefined;
+
+          for (const [key, value] of this.userSocketMap.entries()) {
+            if (String(value.userId) === String(userId)) {
+              targetSocketId = value.socketId;
+              break; // Stop searching once we've found the userId
+            }
+          }
+
+          if (targetSocketId) {
+            this.io.to(targetSocketId).emit("change-item-status-socket", {
+              elementToPass: elementToPassToFront,
+            });
+          }
+        });
       });
 
       socket.on("list-invitation-backend", (data: any) => {
@@ -78,7 +155,6 @@ export class SocketService {
         }
 
         if (targetSocketId) {
-          console.log("data", data);
           this.io.to(targetSocketId).emit("list-invitation-socket", {
             data,
           });
@@ -95,11 +171,6 @@ export class SocketService {
           "userInfo" in decoded
         ) {
           const userId = decoded.userInfo.id.toString();
-          // Array.from(this.userSocketMap.entries()).forEach(([key, value]) => {
-          //   if (value.userId === userId) {
-          //     this.userSocketMap.delete(key); // Remove old entry to prevent many
-          //   }
-          // });
 
           this.userSocketMap.forEach((value, key) => {
             if (value.userId === userId) {
