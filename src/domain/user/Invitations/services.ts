@@ -51,6 +51,7 @@ export default class UserInvitationsService {
     thematic: string,
     listDescription?: string
   ) {
+    // TODO: refacto to have one only transaction
     invitedUsers.map((invitation) => {
       if (invitation.is_already_active_user) {
         try {

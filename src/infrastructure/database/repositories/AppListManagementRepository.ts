@@ -126,7 +126,7 @@ export class AppListManagementRepository {
       const { data } = await supabase
         .from('app-list-items')
         .insert([{ content, statusOpen: true, list_id: listId }])
-        .select();
+        .select('id, updated_at, content,statusOpen');
       return data;
     } catch (error) {
       throw error;

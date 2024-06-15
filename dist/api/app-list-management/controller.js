@@ -77,7 +77,8 @@ let ListManagementController = class ListManagementController {
             const listId = req.body.listId;
             const userId = userInfo.id;
             const content = req.body.content;
-            const addedElement = await this.listManagementService.addItemToList(listId, userId, content);
+            const beneficiaries = req.body.beneficiaries;
+            const addedElement = await this.listManagementService.addItemToList(listId, userId, content, beneficiaries);
             res.status(200).json({ message: 'item added', addedElement });
         }
         catch (error) {
@@ -89,8 +90,9 @@ let ListManagementController = class ListManagementController {
             const { userInfo } = (0, helpers_1.getFromJWTToken)(req, 'accessToken');
             const elementId = req.body.elementId;
             const listId = req.body.listId;
+            const beneficiaries = req.body.beneficiaries;
             const userId = userInfo.id;
-            await this.listManagementService.suppressElementById(listId, userId, elementId);
+            await this.listManagementService.suppressElementById(listId, userId, elementId, beneficiaries);
             res.status(200).json({ success: true, message: 'item suppressed' });
         }
         catch (error) {
@@ -103,9 +105,9 @@ let ListManagementController = class ListManagementController {
             const elementId = req.body.elementId;
             const status = req.body.status;
             const listId = req.body.listId;
+            const beneficiaries = req.body.beneficiaries;
             const userId = userInfo.id;
-            const response = await this.listManagementService.changeItemStatus(listId, userId, elementId, status);
-            console.log('reponse in the controller', response);
+            const response = await this.listManagementService.changeItemStatus(listId, userId, elementId, status, beneficiaries);
             res.status(200).json({ success: true, message: 'status changed', itemStatusChanged: response });
         }
         catch (error) {
@@ -118,9 +120,9 @@ let ListManagementController = class ListManagementController {
             const elementId = req.body.elementId;
             const content = req.body.content;
             const listId = req.body.listId;
+            const beneficiaries = req.body.beneficiaries;
             const userId = userInfo.id;
-            const response = await this.listManagementService.updateItemContent(listId, userId, elementId, content);
-            console.log('response in the controller', response);
+            const response = await this.listManagementService.updateItemContent(listId, userId, elementId, content, beneficiaries);
             res.status(200).json({ success: true, message: 'content of the item updated', itemContentChanged: response });
         }
         catch (error) {

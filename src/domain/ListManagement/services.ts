@@ -1,10 +1,11 @@
-import { injectable, inject } from 'tsyringe';
-import { List } from './types';
+import { injectable, inject, delay } from 'tsyringe';
+import { IBeneficiary, List } from './types';
 import { AppListManagementRepository } from '../../infrastructure/database/repositories/AppListManagementRepository';
 import UserInvitationsService from '../user/Invitations/services';
 import { AppUserInvitationsRepository } from '../../infrastructure/database/repositories/AppUserInvitationsRepository';
 import { ListValidatorService } from './validation';
 import { UUID } from 'crypto';
+import { WebSocketClientService } from '../webSockets/services';
 
 type User = {
   user_id: number;
@@ -30,6 +31,7 @@ type IElementType = {
 @injectable()
 export class ListManagementService {
   public constructor(
+    @inject(delay(() => WebSocketClientService)) private readonly webSocketService: WebSocketClientService,
     @inject(AppListManagementRepository) private readonly appListManagementRepository: AppListManagementRepository,
     @inject(UserInvitationsService) private readonly userInvitationsService: UserInvitationsService,
     @inject(AppUserInvitationsRepository) private readonly appUserInvitationsRepository: AppUserInvitationsRepository,
@@ -134,49 +136,75 @@ export class ListManagementService {
     }
   }
 
-  public async addItemToList(listId: UUID, userId: number, content: string) {
+  public async addItemToList(listId: UUID, userId: number, content: string, beneficiaries: IBeneficiary[]) {
     try {
       const inputs = { listId, userId, content };
       await this.listValidatorService.verifyInputAddOrUpdateItem(inputs);
       const isAllowed = await this.appListManagementRepository.isUserAllowedToChangeList(listId, userId);
       if (isAllowed.length > 0) {
-        return await this.appListManagementRepository.addItemToList(listId, content);
+        const addedItem = await this.appListManagementRepository.addItemToList(listId, content);
+        this.webSocketService.emit('adding-item-to-list-backend', {
+          addedItem,
+          beneficiaries,
+        });
+        return addedItem;
       }
     } catch (error) {
       throw error;
     }
   }
 
-  public async suppressElementById(listId: UUID, userId: number, elementId: string) {
+  public async suppressElementById(listId: UUID, userId: number, elementId: string, beneficiaries: IBeneficiary[]) {
     try {
       const isAllowed = await this.appListManagementRepository.isUserAllowedToChangeList(listId, userId);
       if (isAllowed.length > 0) {
-        return await this.appListManagementRepository.suppressItemById(listId, elementId);
+        const response = await this.appListManagementRepository.suppressItemById(listId, elementId);
+        this.webSocketService.emit('suppress-item-from-list-backend', {
+          elementId,
+          beneficiaries,
+        });
+        return response;
       }
     } catch (error) {
       throw error;
     }
   }
 
-  public async changeItemStatus(listId: UUID, userId: number, elementId: string, status: boolean) {
+  public async changeItemStatus(
+    listId: UUID,
+    userId: number,
+    elementId: string,
+    status: boolean,
+    beneficiaries: IBeneficiary[]
+  ) {
     try {
-      const isAllowed = await this.appListManagementRepository.isUserAllowedToChangeList(listId, userId);
-      if (isAllowed.length > 0) {
-        return await this.appListManagementRepository.changeItemStatus(listId, elementId, status);
-      }
+      const updatedItem = await this.appListManagementRepository.changeItemStatus(listId, elementId, status);
+      this.webSocketService.emit('change-item-status-backend', {
+        updatedItem,
+        beneficiaries,
+      });
+      return updatedItem;
     } catch (error) {
       throw error;
     }
   }
 
-  public async updateItemContent(listId: UUID, userId: number, elementId: string, content: string) {
+  public async updateItemContent(
+    listId: UUID,
+    userId: number,
+    elementId: string,
+    content: string,
+    beneficiaries: IBeneficiary[]
+  ) {
     try {
       const inputs = { listId, userId, content };
       await this.listValidatorService.verifyInputAddOrUpdateItem(inputs);
-      const isAllowed = await this.appListManagementRepository.isUserAllowedToChangeList(listId, userId);
-      if (isAllowed.length > 0) {
-        return await this.appListManagementRepository.updateItemContent(listId, elementId, content);
-      }
+      const updatedItem = await this.appListManagementRepository.updateItemContent(listId, elementId, content);
+      this.webSocketService.emit('update-item-content-backend', {
+        updatedItem,
+        beneficiaries,
+      });
+      return updatedItem;
     } catch (error) {
       throw error;
     }

@@ -45,3 +45,12 @@ export type IInputAddToList = {
   userId: number;
   content: string;
 };
+
+export type IBeneficiary = {
+  'app-users': IUser;
+};
+
+export type IUser = {
+  userName: string;
+  user_id: string;
+};

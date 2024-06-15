@@ -88,7 +88,7 @@ let AppListManagementRepository = class AppListManagementRepository {
             const { data } = await supabaseClient_1.default
                 .from('app-list-items')
                 .insert([{ content, statusOpen: true, list_id: listId }])
-                .select();
+                .select('id, updated_at, content,statusOpen');
             return data;
         }
         catch (error) {
