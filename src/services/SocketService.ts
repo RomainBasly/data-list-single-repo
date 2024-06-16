@@ -15,6 +15,10 @@ export class SocketService {
 
   constructor() {
     this.expressApp = express();
+
+    this.expressApp.get("/", (req, res) => {
+      res.send("Hello, World!");
+    });
     this.httpsServer = https.createServer(
       {
         key: fs.readFileSync(
@@ -208,6 +212,14 @@ export class SocketService {
 
         console.log("this.userSocketId", this.userSocketMap);
       });
+    });
+
+    this.io.on("error", (err) => {
+      console.error("Socket.io error:", err);
+    });
+
+    this.httpsServer.on("error", (err) => {
+      console.error("HTTPS server error:", err);
     });
   }
 
