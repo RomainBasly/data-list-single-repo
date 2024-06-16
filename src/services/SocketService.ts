@@ -3,11 +3,13 @@ import https from "https";
 import { Server as IOServer, Socket } from "socket.io";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { randomBytes } from "node:crypto";
+import http from "http"; // Import the HTTP module
 import fs from "fs";
 
 export class SocketService {
   private expressApp: express.Application;
-  private httpsServer: https.Server;
+  // private httpsServer: https.Server;
+  private httpServer: http.Server;
   private io: IOServer;
   private readonly port: string | number;
   private static instance: SocketService;
@@ -19,21 +21,25 @@ export class SocketService {
     this.expressApp.get("/", (req, res) => {
       res.send("Hello, World!");
     });
-    this.httpsServer = https.createServer(
-      {
-        key: fs.readFileSync(
-          "/etc/letsencrypt/live/ws.simplists.net/privkey.pem"
-        ),
-        cert: fs.readFileSync(
-          "/etc/letsencrypt/live/ws.simplists.net/fullchain.pem"
-        ),
-      },
-      this.expressApp
-    );
 
-    this.httpsServer.setTimeout(600000);
+    // this.httpsServer = https.createServer(
+    //   {
+    //     key: fs.readFileSync(
+    //       "/etc/letsencrypt/live/ws.simplists.net/privkey.pem"
+    //     ),
+    //     cert: fs.readFileSync(
+    //       "/etc/letsencrypt/live/ws.simplists.net/fullchain.pem"
+    //     ),
+    //   },
+    //   this.expressApp
+    // );
 
-    this.io = new IOServer(this.httpsServer, {
+    // this.httpsServer.setTimeout(600000);
+
+    this.httpServer = http.createServer(this.expressApp);
+
+    this.io = new IOServer(this.httpServer, {
+      // this.io = new IOServer(this.httpsServer, {
       cors: {
         origin: [
           "https://data-list-collaborative-r54h7zfc9-romainbaslys-projects.vercel.app/",
@@ -218,13 +224,14 @@ export class SocketService {
       console.error("Socket.io error:", err);
     });
 
-    this.httpsServer.on("error", (err) => {
+    this.httpServer.on("error", (err) => {
       console.error("HTTPS server error:", err);
     });
   }
 
   private listen(): void {
-    this.httpsServer.listen(this.port, () => {
+    this.httpServer.listen(this.port, () => {
+      // this.httpsServer.listen(this.port, () => {
       console.log(`Server is running on port ${this.port}`);
     });
   }
