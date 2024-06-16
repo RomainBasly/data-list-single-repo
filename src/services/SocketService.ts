@@ -8,8 +8,8 @@ import fs from "fs";
 
 export class SocketService {
   private expressApp: express.Application;
-  // private httpsServer: https.Server;
-  private httpServer: http.Server;
+  private httpsServer: https.Server;
+  //private httpServer: http.Server;
   private io: IOServer;
   private readonly port: string | number;
   private static instance: SocketService;
@@ -22,23 +22,23 @@ export class SocketService {
       res.send("Hello, World!");
     });
 
-    // this.httpsServer = https.createServer(
-    //   {
-    //     key: fs.readFileSync(
-    //       "/etc/letsencrypt/live/ws.simplists.net/privkey.pem"
-    //     ),
-    //     cert: fs.readFileSync(
-    //       "/etc/letsencrypt/live/ws.simplists.net/fullchain.pem"
-    //     ),
-    //   },
-    //   this.expressApp
-    // );
+    this.httpsServer = https.createServer(
+      {
+        key: fs.readFileSync(
+          "/etc/letsencrypt/live/ws.simplists.net/privkey.pem"
+        ),
+        cert: fs.readFileSync(
+          "/etc/letsencrypt/live/ws.simplists.net/fullchain.pem"
+        ),
+      },
+      this.expressApp
+    );
 
-    // this.httpsServer.setTimeout(600000);
+    this.httpsServer.setTimeout(600000);
 
-    this.httpServer = http.createServer(this.expressApp);
+    // this.httpServer = http.createServer(this.expressApp);
 
-    this.io = new IOServer(this.httpServer, {
+    this.io = new IOServer(this.httpsServer, {
       // this.io = new IOServer(this.httpsServer, {
       cors: {
         origin: [
@@ -224,13 +224,13 @@ export class SocketService {
       console.error("Socket.io error:", err);
     });
 
-    this.httpServer.on("error", (err) => {
+    this.httpsServer.on("error", (err) => {
       console.error("HTTPS server error:", err);
     });
   }
 
   private listen(): void {
-    this.httpServer.listen(this.port, () => {
+    this.httpsServer.listen(this.port, () => {
       // this.httpsServer.listen(this.port, () => {
       console.log(`Server is running on port ${this.port}`);
     });
