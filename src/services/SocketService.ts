@@ -86,6 +86,7 @@ export class SocketService {
 
       socket.on("adding-item-to-list-backend", (data: any) => {
         const elementToPassToFront = data.addedItem;
+        console.log("elementPassToFront adding", elementToPassToFront);
         data.beneficiaries.map((person: any) => {
           const userId = person["app-users"].user_id;
           let targetSocketId: string | undefined;
@@ -128,6 +129,7 @@ export class SocketService {
 
       socket.on("update-item-content-backend", (data: any) => {
         const elementToPassToFront = data.updatedItem;
+        console.log("elementPassToFront update", elementToPassToFront);
         data.beneficiaries.map((person: any) => {
           const userId = person["app-users"].user_id;
           let targetSocketId: string | undefined;
