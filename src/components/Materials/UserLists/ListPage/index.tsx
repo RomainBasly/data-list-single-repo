@@ -150,7 +150,7 @@ export default function ListPage() {
       )
       socket.on('change-item-status-socket', (packet: any) => {
         // TODO : refacto the way I transform the data before displaying it
-
+        console.log('packet from change item status', packet)
         if (listItems) {
           const filteredList = listItems.filter(
             (element) => element.id !== packet.elementToPass[0].id,
