@@ -179,6 +179,7 @@ export class ListManagementService {
   ) {
     try {
       const updatedItem = await this.appListManagementRepository.changeItemStatus(listId, elementId, status);
+      console.log('updatedItem', updatedItem);
       this.webSocketService.emit('change-item-status-backend', {
         updatedItem,
         beneficiaries,
