@@ -71,7 +71,6 @@ export function LoginForm() {
 
   function handlePassword(e: React.ChangeEvent<HTMLInputElement>) {
     setErrors({ ...errors, password: '', form: '' })
-    console.log('event on the parent', e.target.value)
     setIsLoading(false)
     setPassword(e.target.value)
   }

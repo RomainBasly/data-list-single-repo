@@ -48,7 +48,6 @@ export default function UserLists() {
             throw new Error('Failed to fetch lists')
           }
           const data = await response.json()
-          console.log('data', data)
 
           const sortedData = [...data].sort(sortItemListObjectByNameASC)
 
