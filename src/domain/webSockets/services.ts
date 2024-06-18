@@ -12,11 +12,15 @@ export class WebSocketClientService {
 
   constructor() {
     this.url = process.env.SOCKET_URL || '';
+    console.log('this url', this.url);
     this.connect();
   }
 
   private connect() {
-    this.instance = ioClient(this.url);
+    this.instance = ioClient(this.url, {
+      transports: ['websocket', 'polling'], // Ensure both transports are allowed
+      upgrade: true,
+    });
 
     this.instance.on('connect', () => {
       console.log('connect to the Websocket Server');
