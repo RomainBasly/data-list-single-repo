@@ -49,6 +49,7 @@ export class SocketService {
         allowedHeaders: ["my-custom-header"], // Custom headers that can be sent
         credentials: true, // Allow sending of cookies and credentials
       },
+      path: "/socket.io/",
     });
     this.port = process.env.PORT || 3001;
 
