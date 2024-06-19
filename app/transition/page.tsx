@@ -27,6 +27,7 @@ export default function Transition() {
     ;(async () => {
       const refreshToken = Cookies.get('refreshToken')
       const accessToken = Cookies.get('accessToken')
+      console.log("transitionPage", accessToken, refreshToken)
 
       if (accessToken) {
         router.push('/home')
@@ -43,6 +44,7 @@ export default function Transition() {
               response.accessToken,
               true,
             )
+            // TODO check why I commented this
             // const socket = getSocket()
             // socket.emit('register-user-id', {
             //   socketId: localStorage.getItem('socketId'),

@@ -13,6 +13,7 @@ export const useAuthInitialization = () => {
     const initializeAuth = async () => {
       const accessToken = Cookies.get("accessToken");
       const refreshToken = Cookies.get("refreshToken");
+      console.log("initializer accessToken and refreshToken", accessToken, refreshToken)
 
       if (accessToken && refreshToken) {
         const isAccesTokenExpired =
@@ -28,6 +29,7 @@ export const useAuthInitialization = () => {
                 });
               setAccessToken(newAccessToken.accessToken);
             } else {
+              console.log('I pass in the else of the auth, because RefreshToken expired')
               Router.push("/login");
             }
           } catch (error) {
