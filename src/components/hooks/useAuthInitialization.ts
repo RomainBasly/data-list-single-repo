@@ -37,7 +37,6 @@ export const useAuthInitialization = () => {
 
               setAccessToken(result.accessToken);
             } else {
-              console.log('I pass in the else of the auth, because RefreshToken expired')
               Router.push("/login");
             }
           } catch (error) {
