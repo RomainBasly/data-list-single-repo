@@ -13,11 +13,6 @@ export const useAuthInitialization = () => {
     const initializeAuth = async () => {
       const accessToken = Cookies.get("accessToken");
       const refreshToken = Cookies.get("refreshToken");
-      console.log(
-        "initializer accessToken and refreshToken",
-        accessToken,
-        refreshToken
-      );
 
       if (accessToken && refreshToken) {
         console.log("I pass here 1", refreshToken);
@@ -42,7 +37,7 @@ export const useAuthInitialization = () => {
 
               setAccessToken(result.accessToken);
             } else {
-              console.log("I pass here in the if 4", refreshToken);
+              console.log('I pass in the else of the auth, because RefreshToken expired')
               Router.push("/login");
             }
           } catch (error) {

@@ -32,9 +32,9 @@ export class AuthorizationApi extends BaseApiService {
     const url = new URL(this.baseURL.concat("/refresh-token"));
 
     try {
-      const headers = new Headers();
-      headers.append("Cookie", `refreshToken=${params}`);
-      return await this.getRequest(url, ContentType.JSON, headers);
+
+      // TO do : add the refreshToken to generate a new AccessToken
+      return await this.getRequest(url, ContentType.JSON, {Cookie: params.Cookie.refreshToken});
     } catch (error) {
       console.log(error);
       throw error;

@@ -46,7 +46,6 @@ export default class JwtService {
   }
 
   public isTokenExpired(token: string): boolean {
-    console.log("I check if isToken expired");
     const decodedToken = decodeJwt(token);
     const currentTimeInSeconds = Math.floor(Date.now() / 1000);
 
