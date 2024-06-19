@@ -6,6 +6,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const cookieHeader = req.headers.cookie;
+  console.log("cookieHeader while getting the items", cookieHeader);
   const listId = req.query.listId;
 
   if (!listId || typeof listId !== "string") {

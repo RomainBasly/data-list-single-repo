@@ -13,26 +13,34 @@ export const useAuthInitialization = () => {
     const initializeAuth = async () => {
       const accessToken = Cookies.get("accessToken");
       const refreshToken = Cookies.get("refreshToken");
-      console.log("initializer accessToken and refreshToken", accessToken, refreshToken)
+      console.log(
+        "initializer accessToken and refreshToken",
+        accessToken,
+        refreshToken
+      );
 
       if (accessToken && refreshToken) {
+        console.log("I pass here 1", refreshToken);
         const isAccesTokenExpired =
           JwtService.getInstance().isTokenExpired(accessToken);
         if (isAccesTokenExpired) {
+          console.log("I pass here 2", refreshToken);
           try {
             const isRefreshTokenExpired =
               JwtService.getInstance().isTokenExpired(refreshToken);
             if (!isRefreshTokenExpired) {
+              console.log("I pass here in the if 3", refreshToken);
               const newAccessToken =
                 await AuthorizationApi.getInstance().getNewAccessToken({
                   Cookie: { refreshToken },
                 });
               setAccessToken(newAccessToken.accessToken);
             } else {
-              console.log('I pass in the else of the auth, because RefreshToken expired')
+              console.log("I pass here in the if 4", refreshToken);
               Router.push("/login");
             }
           } catch (error) {
+            console.log("I pass here in the if 5", refreshToken, error);
             Router.push("/login");
             throw error;
           }
@@ -40,9 +48,11 @@ export const useAuthInitialization = () => {
           setAccessToken(accessToken);
         }
       } else if (!accessToken && refreshToken) {
+        console.log("I pass here in the if 6", refreshToken);
         const isRefreshTokenExpired =
           JwtService.getInstance().isTokenExpired(refreshToken);
         if (!isRefreshTokenExpired) {
+          console.log("I pass here in the if 7", refreshToken);
           const newAccessToken =
             await AuthorizationApi.getInstance().getNewAccessToken({
               Cookie: { refreshToken },
@@ -60,5 +70,3 @@ export const useAuthInitialization = () => {
 
   return { accessToken };
 };
-
-
