@@ -18,6 +18,7 @@ export class AppRefreshTokenController {
   ) {}
   async generateNewAccessToken(req: Request, res: Response, next: NextFunction) {
     const cookieHeader = req.headers.cookie;
+    console.log('cookie header', cookieHeader);
 
     if (!cookieHeader) {
       return res.status(401).json({ message: 'Unauthorized 1' });
