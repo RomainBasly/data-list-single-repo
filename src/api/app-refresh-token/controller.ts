@@ -5,6 +5,7 @@ import { RefreshTokenService } from '../../domain/refreshToken/services';
 import { AppUserRepository } from '../../infrastructure/database/repositories/AppUserRepository';
 import { ErrorMessages } from '../../domain/common/errors';
 import { retrieveTokenFromCookie } from '../../common/helpers';
+import cookie from 'cookie';
 
 const accessTokenSecret = process.env.ACCESS_TOKEN_SECRET;
 const refreshTokenSecret = process.env.REFRESH_TOKEN_SECRET;

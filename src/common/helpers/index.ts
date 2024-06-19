@@ -47,8 +47,12 @@ export function getFromJWTToken(req: Request, tokenType: string) {
 
 export function retrieveTokenFromCookie(cookieHeader: string, tokenType: string) {
   try {
-    return cookieHeader?.split(';').find((row) => row.trim().startsWith(`${tokenType}=`));
+    const tokenString = cookieHeader?.split(';').find((row) => row.trim().startsWith(`${tokenType}=`));
+    if (!tokenString) {
+      throw new Error(`Token ${tokenType} not found`);
+    }
+    return tokenString.split('=')[1];
   } catch (error) {
-    throw new Error('Error retrieving info from cookie Header');
+    throw new Error(`Error retrieving ${tokenType} from cookie header: ${error}`);
   }
 }
