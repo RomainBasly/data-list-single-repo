@@ -11,16 +11,16 @@ export const useTokenRefresh = () => {
       !JwtService.getInstance().isTokenExpired(refreshToken)
     ) {
       try {
-        const {accessToken} =
-          await AuthorizationApi.getInstance().getNewAccessToken({
-            Cookie: { refreshToken },
-          });
-          StorageService.getInstance().setCookies(
-            'accessToken',
-            accessToken,
-            true,
-          )
-        return accessToken;
+        const response = await fetch(`/api/token/getNewAccessToken`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ refreshToken }),
+        });
+        const result = await response.json();
+        return result.accessToken;
       } catch (error) {
         throw new Error("Failed to refresh access token");
       }

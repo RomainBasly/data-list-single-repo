@@ -27,7 +27,7 @@ export default function Transition() {
     ;(async () => {
       const refreshToken = Cookies.get('refreshToken')
       const accessToken = Cookies.get('accessToken')
-      console.log("transitionPage", accessToken, refreshToken)
+      console.log('transitionPage', accessToken, refreshToken)
 
       if (accessToken) {
         router.push('/home')
@@ -35,13 +35,20 @@ export default function Transition() {
 
       if (!accessToken && refreshToken) {
         try {
-          const response = await AuthorizationApi.getInstance().getNewAccessToken(
-            { Cookie: { refreshToken } },
-          )
-          if (response.accessToken) {
+          const response = await fetch(`/api/token/getNewAccessToken`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ refreshToken }),
+          })
+          const result = await response.json()
+
+          if (result.accessToken) {
             StorageService.getInstance().setCookies(
               'accessToken',
-              response.accessToken,
+              result.accessToken,
               true,
             )
             // TODO check why I commented this
