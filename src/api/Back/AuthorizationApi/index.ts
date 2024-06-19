@@ -26,7 +26,7 @@ export class AuthorizationApi extends BaseApiService {
 
   // todo : check if this is really a get method with a refresh-token as param
   public async getNewAccessToken(
-    params: string
+    params: IGetNewAccessToken
   ): Promise<{ accessToken: string }> {
     assert(this.baseURL, "url is missing in refreshToken Method");
     const url = new URL(this.baseURL.concat("/refresh-token"));

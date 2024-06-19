@@ -11,7 +11,9 @@ export default async function handler(
     const refreshTokenApi = AuthorizationApi.getInstance();
 
     if (cookieHeader) {
-      const data = await refreshTokenApi.getNewAccessToken(cookieHeader);
+      const data = await refreshTokenApi.getNewAccessToken({
+        Cookie: { refreshToken: cookieHeader },
+      });
       return res.status(200).json(data);
     } else {
       throw new Error("error getting the cookieHeader from the request");
