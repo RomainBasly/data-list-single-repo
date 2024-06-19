@@ -26,14 +26,14 @@ export class AuthorizationApi extends BaseApiService {
 
   // todo : check if this is really a get method with a refresh-token as param
   public async getNewAccessToken(
-    params: IGetNewAccessToken
+    params: string
   ): Promise<{ accessToken: string }> {
     assert(this.baseURL, "url is missing in refreshToken Method");
     const url = new URL(this.baseURL.concat("/refresh-token"));
 
     try {
       const headers = new Headers();
-      headers.append("Cookie", `refreshToken=${params.Cookie.refreshToken}`);
+      headers.append("Cookie", `refreshToken=${params}`);
       return await this.getRequest(url, ContentType.JSON, headers);
     } catch (error) {
       console.log(error);

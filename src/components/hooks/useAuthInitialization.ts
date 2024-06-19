@@ -30,11 +30,17 @@ export const useAuthInitialization = () => {
               JwtService.getInstance().isTokenExpired(refreshToken);
             if (!isRefreshTokenExpired) {
               console.log("I pass here in the if 3", refreshToken);
-              const newAccessToken =
-                await AuthorizationApi.getInstance().getNewAccessToken({
-                  Cookie: { refreshToken },
-                });
-              setAccessToken(newAccessToken.accessToken);
+              const response = await fetch(`/api/token/getNewAccessToken`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({ refreshToken }),
+              });
+              const result = await response.json();
+
+              setAccessToken(result.accessToken);
             } else {
               console.log("I pass here in the if 4", refreshToken);
               Router.push("/login");
@@ -53,11 +59,17 @@ export const useAuthInitialization = () => {
           JwtService.getInstance().isTokenExpired(refreshToken);
         if (!isRefreshTokenExpired) {
           console.log("I pass here in the if 7", refreshToken);
-          const newAccessToken =
-            await AuthorizationApi.getInstance().getNewAccessToken({
-              Cookie: { refreshToken },
-            });
-          setAccessToken(newAccessToken.accessToken);
+          const response = await fetch(`/api/token/getNewAccessToken`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include",
+            body: JSON.stringify({ refreshToken }),
+          });
+          const result = await response.json();
+
+          setAccessToken(result.accessToken);
         } else {
           Router.push("/login");
         }
