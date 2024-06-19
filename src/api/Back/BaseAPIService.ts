@@ -24,14 +24,15 @@ export default abstract class BaseApiService {
     contentType?: ContentType,
     extraHeaders?: HeadersInit
   ): Promise<T> {
+    const headers = this.buildHeaders(
+      contentType ?? ContentType.JSON,
+      extraHeaders
+    );
     const response = await this.sendRequest(
       async () =>
         await fetch(url, {
           method: "GET",
-          headers: this.buildHeaders(
-            contentType ?? ContentType.JSON,
-            extraHeaders
-          ),
+          headers: headers,
           credentials: "include",
         })
     );
@@ -45,15 +46,17 @@ export default abstract class BaseApiService {
 
   protected async postRequest<T>(
     url: URL,
-    body: { [key: string]: unknown } = {},
+    bodyParam: { [key: string]: unknown } = {},
     extraHeaders?: HeadersInit
   ): Promise<T> {
+    const headers = this.buildHeaders(ContentType.JSON, extraHeaders);
+    const body = this.buildBody(bodyParam);
     const response = await this.sendRequest(
       async () =>
         await fetch(url, {
           method: "POST",
-          headers: this.buildHeaders(ContentType.JSON, extraHeaders),
-          body: this.buildBody(body),
+          headers: headers,
+          body: body,
           credentials: "include",
         })
     );

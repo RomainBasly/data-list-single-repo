@@ -6,8 +6,8 @@ export type IValidation = {};
 export type IGetAccessTokenParams = {};
 
 export type IGetNewAccessToken = {
-  Cookie: {refreshToken: string}
-}
+  Cookie: { refreshToken: string };
+};
 
 export class AuthorizationApi extends BaseApiService {
   private readonly baseURL = this.backEndUrl;
@@ -32,10 +32,9 @@ export class AuthorizationApi extends BaseApiService {
     const url = new URL(this.baseURL.concat("/refresh-token"));
 
     try {
-
-      // TO do : add the refreshToken to generate a new AccessToken
-      console.log("generateNewAccessToken", params.Cookie.refreshToken)
-      return await this.getRequest(url, ContentType.JSON, {Cookie: params.Cookie.refreshToken});
+      const headers = new Headers();
+      headers.append("Cookie", `refreshToken=${params.Cookie.refreshToken}`);
+      return await this.getRequest(url, ContentType.JSON, headers);
     } catch (error) {
       console.log(error);
       throw error;
