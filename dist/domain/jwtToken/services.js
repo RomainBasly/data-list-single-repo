@@ -25,7 +25,7 @@ let TokenService = class TokenService {
     generateAccessToken(payload) {
         if (!this.accessTokenSecret)
             return null;
-        return jsonwebtoken_1.default.sign(payload, this.accessTokenSecret, { expiresIn: '7200s' });
+        return jsonwebtoken_1.default.sign(payload, this.accessTokenSecret, { expiresIn: '10s' });
     }
     generateRefreshToken(payload) {
         if (!this.refreshTokenSecret)
