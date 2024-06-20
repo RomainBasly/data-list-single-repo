@@ -42,20 +42,24 @@ function getFromJWTToken(req, tokenType) {
     if (!cookieHeader) {
         throw new Error('no cookieHeader');
     }
-    const tokenCookie = retrieveTokenFromCookie(cookieHeader, tokenType);
-    if (!tokenCookie)
+    const token = retrieveTokenFromCookie(cookieHeader, tokenType);
+    if (!token)
         throw new Error('no token accessible the method');
-    const token = tokenCookie.split('=')[1];
     const decoded = jsonwebtoken_1.default.decode(token);
+    console.log('getFromJWTToken4', decoded);
     return decoded;
 }
 exports.getFromJWTToken = getFromJWTToken;
 function retrieveTokenFromCookie(cookieHeader, tokenType) {
     try {
-        return cookieHeader === null || cookieHeader === void 0 ? void 0 : cookieHeader.split(';').find((row) => row.trim().startsWith(`${tokenType}=`));
+        const tokenString = cookieHeader === null || cookieHeader === void 0 ? void 0 : cookieHeader.split(';').find((row) => row.trim().startsWith(`${tokenType}=`));
+        if (!tokenString) {
+            throw new Error(`Token ${tokenType} not found`);
+        }
+        return tokenString.split('=')[1];
     }
     catch (error) {
-        throw new Error('Error retrieving info from cookie Header');
+        throw new Error(`Error retrieving ${tokenType} from cookie header: ${error}`);
     }
 }
 exports.retrieveTokenFromCookie = retrieveTokenFromCookie;

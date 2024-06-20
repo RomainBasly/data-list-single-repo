@@ -36,12 +36,10 @@ export function getFromJWTToken(req: Request, tokenType: string) {
   if (!cookieHeader) {
     throw new Error('no cookieHeader');
   }
-  const tokenCookie = retrieveTokenFromCookie(cookieHeader, tokenType);
-  if (!tokenCookie) throw new Error('no token accessible the method');
-
-  const token = tokenCookie.split('=')[1];
+  const token = retrieveTokenFromCookie(cookieHeader, tokenType);
+  if (!token) throw new Error('no token accessible the method');
   const decoded = jwt.decode(token);
-
+  console.log('getFromJWTToken4', decoded);
   return decoded;
 }
 

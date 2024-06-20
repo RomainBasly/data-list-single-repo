@@ -19,10 +19,14 @@ let WebSocketClientService = class WebSocketClientService {
         this.retryInterval = 10000;
         this.retryCount = 0;
         this.url = process.env.SOCKET_URL || '';
+        console.log('this url', this.url);
         this.connect();
     }
     connect() {
-        this.instance = (0, socket_io_client_1.io)(this.url);
+        this.instance = (0, socket_io_client_1.io)(this.url, {
+            transports: ['websocket', 'polling'], // Ensure both transports are allowed
+            upgrade: true,
+        });
         this.instance.on('connect', () => {
             console.log('connect to the Websocket Server');
             this.initializeListeners();

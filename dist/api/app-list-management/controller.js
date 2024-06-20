@@ -51,6 +51,7 @@ let ListManagementController = class ListManagementController {
     async getListForUserById(req, res, next) {
         try {
             const { userInfo } = (0, helpers_1.getFromJWTToken)(req, 'accessToken');
+            console.log('userInfo', userInfo);
             const userId = userInfo.id;
             const data = await this.listManagementService.getListBeneficiariesById(userId);
             res.json(data);

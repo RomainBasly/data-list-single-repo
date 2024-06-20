@@ -29,16 +29,13 @@ export const verifyRequestApiKey = (req: IRequest, res: Response, next: NextFunc
 export const verifyUserAccessToken = (req: IRequest, res: Response, next: NextFunction) => {
   try {
     const cookieHeader = req.headers.cookie;
+    console.log('cookieHeader in verify1', cookieHeader);
     if (!cookieHeader) {
       throw new ForbiddenError(ErrorMessages.FORBIDDEN_ERROR);
     }
-    const accessTokenCookie = retrieveTokenFromCookie(cookieHeader, 'accessToken');
-    if (!accessTokenCookie) {
-      return res.status(401).json({ message: 'Unauthorized' });
-    }
+    const accessToken = retrieveTokenFromCookie(cookieHeader, 'accessToken');
+    console.log('cookieHeader in verify2', accessToken);
     if (!accessTokenSecret) throw new Error('no accessToken accessible in middleware (verifyToken)');
-
-    const accessToken = accessTokenCookie.split('=')[1];
 
     const decodedToken = jwt.verify(accessToken, accessTokenSecret) as JwtPayloadAccessToken;
     jwt.verify(accessToken, accessTokenSecret, (err, decoded) => {

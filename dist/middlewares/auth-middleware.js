@@ -24,16 +24,14 @@ exports.verifyRequestApiKey = verifyRequestApiKey;
 const verifyUserAccessToken = (req, res, next) => {
     try {
         const cookieHeader = req.headers.cookie;
+        console.log('cookieHeader in verify1', cookieHeader);
         if (!cookieHeader) {
             throw new errors_1.ForbiddenError(errors_1.ErrorMessages.FORBIDDEN_ERROR);
         }
-        const accessTokenCookie = (0, helpers_1.retrieveTokenFromCookie)(cookieHeader, 'accessToken');
-        if (!accessTokenCookie) {
-            return res.status(401).json({ message: 'Unauthorized' });
-        }
+        const accessToken = (0, helpers_1.retrieveTokenFromCookie)(cookieHeader, 'accessToken');
+        console.log('cookieHeader in verify2', accessToken);
         if (!accessTokenSecret)
             throw new Error('no accessToken accessible in middleware (verifyToken)');
-        const accessToken = accessTokenCookie.split('=')[1];
         const decodedToken = jsonwebtoken_1.default.verify(accessToken, accessTokenSecret);
         jsonwebtoken_1.default.verify(accessToken, accessTokenSecret, (err, decoded) => {
             if (err) {
