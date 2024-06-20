@@ -39,6 +39,7 @@ let RefreshTokenService = class RefreshTokenService {
             throw new errors_1.accessTokenError(errors_1.ErrorMessages.ACCESSTOKEN_ERROR);
         }
         const { user_id, userName, email } = foundUser;
+        console.log('foundUser', foundUser);
         const accessToken = this.tokenService.generateAccessToken({
             userInfo: { id: user_id, roles: foundUser.roles, userName, email },
         });

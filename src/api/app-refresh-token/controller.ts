@@ -19,15 +19,14 @@ export class AppRefreshTokenController {
   ) {}
   async generateNewAccessToken(req: Request, res: Response, next: NextFunction) {
     const cookieHeader = req.headers.cookie;
-
+    console.log('generateNewAccessToken - cookieHeader', cookieHeader);
     if (!cookieHeader) {
       return res.status(401).json({ message: 'Unauthorized 1' });
     }
-    const cookieRefreshToken = retrieveTokenFromCookie(cookieHeader, 'refreshToken');
-    if (!cookieRefreshToken) {
+    const refreshToken = retrieveTokenFromCookie(cookieHeader, 'refreshToken');
+    if (!refreshToken) {
       return res.status(401).json({ message: 'Unauthorized 2' });
     }
-    const refreshToken = cookieRefreshToken.split('=')[1];
 
     if (!refreshTokenSecret) throw new Error('no refreshTokenSecret in middleware');
     if (!accessTokenSecret) throw new Error('no accessTokenSecret in middleware');

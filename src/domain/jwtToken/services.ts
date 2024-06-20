@@ -23,7 +23,7 @@ export class TokenService {
 
   public generateAccessToken(payload: JwtPayloadAccessToken): string | null {
     if (!this.accessTokenSecret) return null;
-    return jwt.sign(payload, this.accessTokenSecret, { expiresIn: '600s' });
+    return jwt.sign(payload, this.accessTokenSecret, { expiresIn: '10s' });
   }
 
   public generateRefreshToken(payload: { email: string }): string | null {
