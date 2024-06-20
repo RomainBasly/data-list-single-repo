@@ -34,7 +34,11 @@ export const useAuthInitialization = () => {
                 body: JSON.stringify({ refreshToken }),
               });
               const result = await response.json();
-
+              console.log(
+                "I pass here in the if 90",
+                result,
+                result.accessToken
+              );
               setAccessToken(result.accessToken);
             } else {
               Router.push("/login");
@@ -62,7 +66,7 @@ export const useAuthInitialization = () => {
             body: JSON.stringify({ refreshToken }),
           });
           const result = await response.json();
-
+          console.log("I pass here in result", result, result.accessToken);
           setAccessToken(result.accessToken);
         } else {
           Router.push("/login");
