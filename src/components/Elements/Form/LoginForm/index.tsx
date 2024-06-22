@@ -58,7 +58,7 @@ export function LoginForm() {
       //   console.error(error)
       // }
       setIsLoading(!isLoading)
-      router.push('/')
+      router.push('/home')
     } catch (error) {
       setIsLoading(false)
       const errorMessage = getErrorMessage(error)

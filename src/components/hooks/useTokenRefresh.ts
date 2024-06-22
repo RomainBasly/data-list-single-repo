@@ -4,6 +4,7 @@ import { AuthorizationApi } from "@/api/Back/AuthorizationApi";
 import Cookies from "js-cookie";
 
 export const useTokenRefresh = () => {
+  let accessToken = Cookies.get("accessToken");
   const refreshAccessToken = async () => {
     const refreshToken = Cookies.get("refreshToken");
     if (
@@ -20,7 +21,7 @@ export const useTokenRefresh = () => {
           body: JSON.stringify({ refreshToken }),
         });
         const result = await response.json();
-        return result.accessToken;
+        accessToken = result.accessToken;
       } catch (error) {
         throw new Error("Failed to refresh access token");
       }
@@ -29,5 +30,5 @@ export const useTokenRefresh = () => {
     }
   };
 
-  return { refreshAccessToken };
+  return { accessToken, refreshAccessToken };
 };

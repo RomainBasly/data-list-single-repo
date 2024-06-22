@@ -14,13 +14,13 @@ type IProps = {
   content: string
   statusOpen: boolean
   animateSuppressionByItemId: boolean
-  onElementSuppress: (id: string) => Promise<boolean>
-  onCrossElement: (id: string, status: boolean) => Promise<boolean>
+  onElementSuppress: (id: string) => Promise<boolean | null>
+  onCrossElement: (id: string, status: boolean) => Promise<boolean | null>
   onInputSubmit: (
     updatedContent: string,
     elementId?: string,
     onSuccess?: () => void,
-  ) => Promise<boolean>
+  ) => Promise<boolean | null>
 }
 
 export default function ListElement(props: IProps) {

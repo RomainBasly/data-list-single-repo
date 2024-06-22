@@ -5,7 +5,7 @@ import classNames from 'classnames'
 import EditListForm from '@/components/Elements/Form/EditListForm'
 
 type IProps = {
-  onInputSubmit: (value: string) => Promise<boolean>
+  onInputSubmit: (value: string) => Promise<boolean | null>
 }
 
 export default function DynamicButtonInput(props: Readonly<IProps>) {

@@ -15,7 +15,7 @@ export default async function handler(
     res.status(200).json(listsInvitations);
   } catch (error) {
     // Handle errors (e.g., from your backend call)
-    console.log("error is", error);
+    console.log("error is 3", error);
     res.status(500).json({ error: "Failed to fetch invitations" });
   }
 }

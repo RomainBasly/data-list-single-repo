@@ -29,7 +29,7 @@ export default async function handler(
     });
   } catch (error) {
     // Handle errors (e.g., from your backend call)
-    console.log("error is", error);
+    console.log("error is 1", error);
     res.status(500).json({ error: "Failed to add an element to the list" });
   }
 }

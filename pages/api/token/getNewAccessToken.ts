@@ -6,21 +6,23 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const cookieHeader = req.headers.cookie;
-
   try {
     const refreshTokenApi = AuthorizationApi.getInstance();
 
     if (cookieHeader) {
-      const data = await refreshTokenApi.getNewAccessToken({
+      const newAccessToken = await refreshTokenApi.getNewAccessToken({
         Cookie: { refreshToken: cookieHeader },
       });
-      return res.status(200).json(data);
+      if (!newAccessToken) {
+        return res.status(401).json({ message: "Invalid refresh token" });
+      }
+      return res.status(200).json({ accessToken: newAccessToken });
     } else {
       throw new Error("error getting the cookieHeader from the request");
     }
   } catch (error) {
     // Handle errors (e.g., from your backend call)
-    console.log("error is", error);
+    console.log("error is10", error);
     res.status(500).json({ error: "Failed to fetch invitations" });
   }
 }

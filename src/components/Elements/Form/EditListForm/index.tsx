@@ -16,7 +16,7 @@ type IProps = {
     updatedContent: string,
     elementId?: string,
     onSuccess?: () => void,
-  ) => Promise<boolean>
+  ) => Promise<boolean | null>
   onInputChange?: (newInput: string) => void
 }
 

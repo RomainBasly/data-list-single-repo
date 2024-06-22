@@ -1,15 +1,17 @@
 'use client'
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { Suspense, useCallback, useEffect, useState } from 'react'
 import InvitationCard from './InvitationCard'
 import classes from './classes.module.scss'
 import StorageService from '@/Services/CookieService'
-// import { getSocket } from '@/components/Elements/Socket'
+import { useRouter } from 'next/navigation'
 import JwtService from '@/Services/jwtService'
 import Cookies from 'js-cookie'
-import { useAuthInitialization } from '@/components/hooks/useAuthInitialization'
-import { useTokenRefresh } from '@/components/hooks/useTokenRefresh'
+// import { useAuthInitialization } from '@/components/hooks/useAuthInitialization'
+// import { useTokenRefresh } from '@/components/hooks/useTokenRefresh'
 import { InformationCircleIcon } from '@heroicons/react/24/outline'
 import { getSocket } from '@/components/Elements/Socket'
+import { useCheckAccessTokenHealth } from '@/components/Utils/checkAccessTokenHealth'
+import useTokenService from '@/components/Utils/tokenService'
 
 type IInvitation = {
   id: string
@@ -36,9 +38,9 @@ export default function UserInvitations() {
   )
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
-  const { accessToken } = useAuthInitialization()
-  const { refreshAccessToken } = useTokenRefresh()
   const socket = getSocket()
+  const { checkToken } = useCheckAccessTokenHealth()
+  const router = useRouter()
 
   useEffect(() => {
     if (socket) {
@@ -74,83 +76,83 @@ export default function UserInvitations() {
     }
   }, [socket, pendingInvitations])
 
-  useEffect(() => {
-    const fetchPendingInvitations = async () => {
-      try {
-        if (accessToken) {
-          // This part of the setCookies is essential to propagate the token to the next request I am about to do
-          // TODO : see if we can do it differently later
-          StorageService.getInstance().setCookies(
-            'accessToken',
-            accessToken,
-            true,
-          )
-          const status = 1
-          const response = await fetch(
-            `/api/lists/getInvitations?status=${status}`,
-            {
-              credentials: 'include',
-            },
-          )
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch invitations')
-          }
-          const data = await response.json()
-          setPendingInvitations(data)
-          setLoading(false)
-        }
-      } catch (error) {
-        console.error('Error fetching invitations:', error)
-        if (error instanceof Error) {
-          setError(error.message)
-        }
+  const fetchPendingInvitations = useCallback(async () => {
+    try {
+      const token = await checkToken()
+      if (!token) {
         setLoading(false)
+        router.push('/login')
+        return
       }
-    }
 
+      // This part of the setCookies is essential to propagate the token to the next request I am about to do
+      // TODO : see if we can do it differently later
+      const status = 1
+      const response = await fetch(
+        `/api/lists/getInvitations?status=${status}`,
+        {
+          credentials: 'include',
+        },
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch invitations')
+      }
+      const data = await response.json()
+      setPendingInvitations(data)
+      setLoading(false)
+    } catch (error) {
+      console.error('Error fetching invitations:', error)
+      if (error instanceof Error) {
+        setError(error.message)
+      }
+      setLoading(false)
+    }
+  }, [router, checkToken])
+
+  useEffect(() => {
     fetchPendingInvitations()
-  }, [accessToken])
+  }, [fetchPendingInvitations])
+
+  const fetchRefusedInvitations = useCallback(async () => {
+    try {
+      const token = await checkToken()
+      if (!token) {
+        setLoading(false)
+        router.push('/login')
+        return
+      }
+
+      // This part of the setCookies is essential to propagate the token to the next request I am about to do
+      // TODO : see if we can do it differently later
+
+      const status = 3
+
+      const response = await fetch(
+        `/api/lists/getInvitations?status=${status}`,
+        {
+          credentials: 'include',
+        },
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch invitations')
+      }
+      const data = await response.json()
+      setRefusedInvitations(data)
+      setLoading(false)
+    } catch (error) {
+      console.error('Error fetching invitations:', error)
+      if (error instanceof Error) {
+        setError(error.message)
+      }
+      setLoading(false)
+    }
+  }, [router, checkToken])
 
   useEffect(() => {
-    const fetchRefusedInvitations = async () => {
-      try {
-        if (accessToken) {
-          // This part of the setCookies is essential to propagate the token to the next request I am about to do
-          // TODO : see if we can do it differently later
-          StorageService.getInstance().setCookies(
-            'accessToken',
-            accessToken,
-            true,
-          )
-
-          const status = 3
-
-          const response = await fetch(
-            `/api/lists/getInvitations?status=${status}`,
-            {
-              credentials: 'include',
-            },
-          )
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch invitations')
-          }
-          const data = await response.json()
-          setRefusedInvitations(data)
-          setLoading(false)
-        }
-      } catch (error) {
-        console.error('Error fetching invitations:', error)
-        if (error instanceof Error) {
-          setError(error.message)
-        }
-        setLoading(false)
-      }
-    }
-
     fetchRefusedInvitations()
-  }, [accessToken])
+  }, [fetchRefusedInvitations])
 
   if (error) return <div>Error: {error}</div>
 
@@ -161,15 +163,13 @@ export default function UserInvitations() {
     isChangingItsMind: boolean,
   ) {
     try {
-      let accessToken = Cookies.get('accessToken')
-
-      // TODO test if that works if the cookie is outdated and if we suppressed the following
-      if (
-        !accessToken ||
-        JwtService.getInstance().isTokenExpired(accessToken)
-      ) {
-        accessToken = await refreshAccessToken()
+      const token = await checkToken()
+      if (!token) {
+        setLoading(false)
+        router.push('/login')
+        return
       }
+
       const response = await fetch(`/api/lists/handleInvitationStatus/`, {
         method: 'POST',
         headers: {

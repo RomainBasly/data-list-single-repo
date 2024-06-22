@@ -1,14 +1,16 @@
 'use client'
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { Suspense, useCallback, useEffect, useState } from 'react'
 import classes from './classes.module.scss'
 import { InformationCircleIcon } from '@heroicons/react/20/solid'
 import ListCard from './ListCard'
-import { useAuthInitialization } from '@/components/hooks/useAuthInitialization'
+// import { useAuthInitialization } from '@/components/hooks/useAuthInitialization'
 import StorageService from '@/Services/CookieService'
 import { useRouter } from 'next/navigation'
 import { IBeneficiary, IListContent } from './ListPage'
 import LoadingMaterial from '../LoadingMaterial'
 import { sortItemListObjectByNameASC } from '@/components/Helpers'
+import { useCheckAccessTokenHealth } from '@/components/Utils/checkAccessTokenHealth'
+import Cookies from 'js-cookie'
 
 export type IList = {
   'app-lists': IListContent
@@ -26,45 +28,51 @@ export default function UserLists() {
   const [loading, setLoading] = useState(true)
   const [userLists, setUserLists] = useState<IList[]>([])
   const [error, setError] = useState<string>('')
-  const { accessToken } = useAuthInitialization()
   const router = useRouter()
+  const { checkToken } = useCheckAccessTokenHealth()
+
+  const fetchListsByUser = useCallback(async () => {
+    try {
+      const token = await checkToken()
+      if (!token) {
+        setLoading(false)
+        router.push('/login')
+        return
+      }
+
+      const response = await fetch(`/api/lists/getLists`, {
+        credentials: 'include',
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch lists')
+      }
+      const data = await response.json()
+
+      const sortedData = [...data].sort(sortItemListObjectByNameASC)
+
+      setUserLists(sortedData)
+      setLoading(false)
+    } catch (error) {
+      console.error('Error fetching list beneficiaries:', error)
+      if (error instanceof Error) {
+        setError(error.message)
+      }
+      setLoading(false)
+    }
+  }, [router, checkToken])
 
   useEffect(() => {
-    const fetchListsByUser = async () => {
-      try {
-        if (accessToken) {
-          // This part of the setCookies is essential to propagate the token to the next request I am about to do
-          // TODO : see if we can do it differently later
-          StorageService.getInstance().setCookies(
-            'accessToken',
-            accessToken,
-            true,
-          )
-          const response = await fetch(`/api/lists/getLists`, {
-            credentials: 'include',
-          })
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch lists')
-          }
-          const data = await response.json()
-
-          const sortedData = [...data].sort(sortItemListObjectByNameASC)
-
-          setUserLists(sortedData)
-          setLoading(false)
-        }
-      } catch (error) {
-        console.error('Error fetching list beneficiaries:', error)
-        if (error instanceof Error) {
-          setError(error.message)
-        }
-        setLoading(false)
-      }
-    }
-
     fetchListsByUser()
-  }, [accessToken])
+  }, [fetchListsByUser])
+
+  // useEffect(() => {
+  //   const initialize = async () => {
+  //     // Ensure the token is checked and set
+  //     await checkToken()
+  //   }
+  //   initialize()
+  // }, [checkToken])
 
   const handleListClick = (list: IList) => {
     const url = `/lists/user-list/${list['app-lists'].id}`
