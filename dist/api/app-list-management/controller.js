@@ -25,7 +25,6 @@ let ListManagementController = class ListManagementController {
     async createList(req, res, next) {
         try {
             const { listName, accessLevel, description, emails, cyphered, thematic } = req.body;
-            console.log('req.body', req.body);
             const { userInfo } = (0, helpers_1.getFromJWTToken)(req, 'accessToken');
             const creatorUserName = userInfo.userName;
             const creatorEmail = userInfo.email;
