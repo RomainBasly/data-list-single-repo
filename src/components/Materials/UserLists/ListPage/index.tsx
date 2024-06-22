@@ -1,8 +1,8 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import classes from './classes.module.scss'
-import { useAuthInitialization } from '@/components/hooks/useAuthInitialization'
+// import { useAuthInitialization } from '@/components/hooks/useAuthInitialization'
 import StorageService from '@/Services/CookieService'
 import ListCard from '../ListCard'
 import { ListStatus } from '../../../../../types'
@@ -11,6 +11,8 @@ import DynamicButtonInput from '../../Button/AddListElementButton'
 import { sortItemObjectByUpdatedDateDSC } from '@/components/Helpers'
 import ListElement from './ListElement'
 import { getSocket } from '@/components/Elements/Socket'
+import useTokenService from '@/components/Utils/tokenService'
+import { useCheckAccessTokenHealth } from '@/components/Utils/checkAccessTokenHealth'
 
 type IResponse = IList[]
 
@@ -50,74 +52,78 @@ export default function ListPage() {
   >(null)
   const [listTop, setListTop] = useState<IList | null>(null)
   const [listItems, setListItems] = useState<IElement[] | null>(null)
-  const { accessToken } = useAuthInitialization()
+  // const { accessToken } = useAuthInitialization()
   const router = useRouter()
   const paramsInitiator = useParams()
   const listId = paramsInitiator?.listId as string | undefined
   const socket = getSocket()
+  const { token, checkToken } = useCheckAccessTokenHealth()
+
+  const fetchListData = useCallback(async () => {
+    try {
+      const token = await checkToken()
+      if (!token) {
+        setLoading(false)
+        router.push('/login')
+        return
+      }
+
+      const response = await fetch(`/api/lists/getListItems?listId=${listId}`, {
+        credentials: 'include',
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch lists items')
+      }
+      const data: IResponse = await response.json()
+
+      if (data) {
+        if (data[0]['app-lists'].items) {
+          const LIVE = data[0]['app-lists'].items
+            .filter((item) => item.statusOpen === true)
+            .sort(sortItemObjectByUpdatedDateDSC)
+          const CROSSED = data[0]['app-lists'].items
+            .filter((item) => item.statusOpen === false)
+            .sort(sortItemObjectByUpdatedDateDSC)
+
+          const sortedItems = [...LIVE, ...CROSSED]
+          setListItems(sortedItems)
+        }
+
+        const topElements: IList = {
+          ...data[0],
+          'app-lists': {
+            ...data[0]['app-lists'],
+          },
+        }
+        setListTop(topElements)
+        setLoading(false)
+      } else {
+        router.push('/')
+      }
+    } catch (error) {
+      console.error('Error fetching list items:', error)
+      if (error instanceof Error) {
+        setError(error.message)
+      }
+      setLoading(false)
+      router.push('/')
+      // prévoir le cas où ce n'est pas où la personne n'est pas autorisée
+    }
+  }, [router, checkToken])
 
   useEffect(() => {
-    const fetchListData = async () => {
-      try {
-        if (accessToken) {
-          StorageService.getInstance().setCookies(
-            'accessToken',
-            accessToken,
-            true,
-          )
-
-          const response = await fetch(
-            `/api/lists/getListItems?listId=${listId}`,
-            {
-              credentials: 'include',
-            },
-          )
-
-          if (!response.ok) {
-            throw new Error('Failed to fetch lists items')
-          }
-          const data: IResponse = await response.json()
-
-          if (data) {
-            if (data[0]['app-lists'].items) {
-              const LIVE = data[0]['app-lists'].items
-                .filter((item) => item.statusOpen === true)
-                .sort(sortItemObjectByUpdatedDateDSC)
-              const CROSSED = data[0]['app-lists'].items
-                .filter((item) => item.statusOpen === false)
-                .sort(sortItemObjectByUpdatedDateDSC)
-
-              const sortedItems = [...LIVE, ...CROSSED]
-              setListItems(sortedItems)
-            }
-
-            const topElements: IList = {
-              ...data[0],
-              'app-lists': {
-                ...data[0]['app-lists'],
-              },
-            }
-            setListTop(topElements)
-            setLoading(false)
-          } else {
-            router.push('/')
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching list items:', error)
-        if (error instanceof Error) {
-          setError(error.message)
-        }
-        setLoading(false)
-        router.push('/')
-        // prévoir le cas où ce n'est pas où la personne n'est pas autorisée
-      }
-    }
-
-    if (accessToken && listId) {
+    if (listId && token) {
       fetchListData()
     }
-  }, [accessToken, listId, router])
+  }, [listId, token])
+
+  useEffect(() => {
+    const initialize = async () => {
+      await checkToken() // Ensure the token is checked and set
+    }
+    initialize()
+  }, [checkToken])
 
   useEffect(() => {
     if (socket) {

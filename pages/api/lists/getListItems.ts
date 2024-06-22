@@ -21,7 +21,7 @@ export default async function handler(
     res.status(200).json(listItems);
   } catch (error) {
     // Handle errors (e.g., from your backend call)
-    console.log("error is", error);
+    console.log("error is4", error);
     res.status(500).json({ error: "Failed to fetch listsItems" });
   }
 }

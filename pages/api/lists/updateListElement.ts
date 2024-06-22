@@ -37,7 +37,7 @@ export default async function handler(
     }
   } catch (error) {
     // Handle errors (e.g., from your backend call)
-    console.log("error is", error);
+    console.log("error is9", error);
     res.status(500).json({ error: "Failed to change the status of the item" });
   }
 }
