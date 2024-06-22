@@ -1,9 +1,9 @@
 'use client'
-import React, { Suspense, useEffect, useState } from 'react'
+import React, { Suspense, useCallback, useEffect, useState } from 'react'
 import InvitationCard from './InvitationCard'
 import classes from './classes.module.scss'
 import StorageService from '@/Services/CookieService'
-// import { getSocket } from '@/components/Elements/Socket'
+import { useRouter } from 'next/navigation'
 import JwtService from '@/Services/jwtService'
 import Cookies from 'js-cookie'
 // import { useAuthInitialization } from '@/components/hooks/useAuthInitialization'
@@ -39,7 +39,8 @@ export default function UserInvitations() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string>('')
   const socket = getSocket()
-  const { token } = useCheckAccessTokenHealth()
+  const { checkToken } = useCheckAccessTokenHealth()
+  const router = useRouter()
 
   useEffect(() => {
     if (socket) {
@@ -75,73 +76,83 @@ export default function UserInvitations() {
     }
   }, [socket, pendingInvitations])
 
-  useEffect(() => {
-    const fetchPendingInvitations = async () => {
-      try {
-        if (!token) return
-
-        // This part of the setCookies is essential to propagate the token to the next request I am about to do
-        // TODO : see if we can do it differently later
-        const status = 1
-        const response = await fetch(
-          `/api/lists/getInvitations?status=${status}`,
-          {
-            credentials: 'include',
-          },
-        )
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch invitations')
-        }
-        const data = await response.json()
-        setPendingInvitations(data)
+  const fetchPendingInvitations = useCallback(async () => {
+    try {
+      const token = await checkToken()
+      if (!token) {
         setLoading(false)
-      } catch (error) {
-        console.error('Error fetching invitations:', error)
-        if (error instanceof Error) {
-          setError(error.message)
-        }
-        setLoading(false)
+        router.push('/login')
+        return
       }
-    }
 
+      // This part of the setCookies is essential to propagate the token to the next request I am about to do
+      // TODO : see if we can do it differently later
+      const status = 1
+      const response = await fetch(
+        `/api/lists/getInvitations?status=${status}`,
+        {
+          credentials: 'include',
+        },
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch invitations')
+      }
+      const data = await response.json()
+      setPendingInvitations(data)
+      setLoading(false)
+    } catch (error) {
+      console.error('Error fetching invitations:', error)
+      if (error instanceof Error) {
+        setError(error.message)
+      }
+      setLoading(false)
+    }
+  }, [router, checkToken])
+
+  useEffect(() => {
     fetchPendingInvitations()
-  }, [token])
+  }, [fetchPendingInvitations])
+
+  const fetchRefusedInvitations = useCallback(async () => {
+    try {
+      const token = await checkToken()
+      if (!token) {
+        setLoading(false)
+        router.push('/login')
+        return
+      }
+
+      // This part of the setCookies is essential to propagate the token to the next request I am about to do
+      // TODO : see if we can do it differently later
+
+      const status = 3
+
+      const response = await fetch(
+        `/api/lists/getInvitations?status=${status}`,
+        {
+          credentials: 'include',
+        },
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch invitations')
+      }
+      const data = await response.json()
+      setRefusedInvitations(data)
+      setLoading(false)
+    } catch (error) {
+      console.error('Error fetching invitations:', error)
+      if (error instanceof Error) {
+        setError(error.message)
+      }
+      setLoading(false)
+    }
+  }, [router, checkToken])
 
   useEffect(() => {
-    const fetchRefusedInvitations = async () => {
-      try {
-        if (!token) return
-
-        // This part of the setCookies is essential to propagate the token to the next request I am about to do
-        // TODO : see if we can do it differently later
-
-        const status = 3
-
-        const response = await fetch(
-          `/api/lists/getInvitations?status=${status}`,
-          {
-            credentials: 'include',
-          },
-        )
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch invitations')
-        }
-        const data = await response.json()
-        setRefusedInvitations(data)
-        setLoading(false)
-      } catch (error) {
-        console.error('Error fetching invitations:', error)
-        if (error instanceof Error) {
-          setError(error.message)
-        }
-        setLoading(false)
-      }
-    }
-
     fetchRefusedInvitations()
-  }, [token])
+  }, [fetchRefusedInvitations])
 
   if (error) return <div>Error: {error}</div>
 
@@ -152,7 +163,12 @@ export default function UserInvitations() {
     isChangingItsMind: boolean,
   ) {
     try {
-      if (!token) return
+      const token = await checkToken()
+      if (!token) {
+        setLoading(false)
+        router.push('/login')
+        return
+      }
 
       const response = await fetch(`/api/lists/handleInvitationStatus/`, {
         method: 'POST',

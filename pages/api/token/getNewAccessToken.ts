@@ -6,7 +6,6 @@ export default async function handler(
   res: NextApiResponse
 ) {
   const cookieHeader = req.headers.cookie;
-  console.log("cookieHeader handler", cookieHeader);
   try {
     const refreshTokenApi = AuthorizationApi.getInstance();
 

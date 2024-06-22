@@ -2,16 +2,14 @@ import StorageService from '@/Services/CookieService'
 import JwtService from '@/Services/jwtService'
 import Cookies from 'js-cookie'
 import { useRouter } from 'next/navigation'
+import { useCallback } from 'react'
 
 const useTokenService = () => {
   const Router = useRouter()
 
-  const checkAndRefreshAccessToken = async () => {
+  const checkAndRefreshAccessToken = useCallback(async () => {
     const accessToken = Cookies.get('accessToken')
     const refreshToken = Cookies.get('refreshToken')
-
-    console.log('accessToken from checkAndRefresh', accessToken)
-    console.log('refreshToken from checkAndRefresh', refreshToken)
 
     if (!refreshToken) {
       Router.push('/login')
@@ -40,7 +38,6 @@ const useTokenService = () => {
         body: JSON.stringify({ refreshToken }),
       })
       const result = await response.json()
-      console.log('result', result, result.accessToken.accessToken)
 
       StorageService.getInstance().setCookies(
         'accessToken',
@@ -52,7 +49,7 @@ const useTokenService = () => {
       Router.push('/login')
       throw error
     }
-  }
+  }, [Router])
   return { checkAndRefreshAccessToken }
 }
 

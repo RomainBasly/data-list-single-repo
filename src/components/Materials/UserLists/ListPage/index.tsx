@@ -57,7 +57,7 @@ export default function ListPage() {
   const paramsInitiator = useParams()
   const listId = paramsInitiator?.listId as string | undefined
   const socket = getSocket()
-  const { token, checkToken } = useCheckAccessTokenHealth()
+  const { checkToken } = useCheckAccessTokenHealth()
 
   const fetchListData = useCallback(async () => {
     try {
@@ -110,20 +110,13 @@ export default function ListPage() {
       router.push('/')
       // prévoir le cas où ce n'est pas où la personne n'est pas autorisée
     }
-  }, [router, checkToken])
+  }, [router, checkToken, listId])
 
   useEffect(() => {
-    if (listId && token) {
+    if (listId) {
       fetchListData()
     }
-  }, [listId, token])
-
-  useEffect(() => {
-    const initialize = async () => {
-      await checkToken() // Ensure the token is checked and set
-    }
-    initialize()
-  }, [checkToken])
+  }, [listId, fetchListData])
 
   useEffect(() => {
     if (socket) {
@@ -156,7 +149,6 @@ export default function ListPage() {
       )
       socket.on('change-item-status-socket', (packet: any) => {
         // TODO : refacto the way I transform the data before displaying it
-        console.log('packet from change item status', packet)
         if (listItems) {
           const filteredList = listItems.filter(
             (element) => element.id !== packet.elementToPass[0].id,
@@ -217,9 +209,16 @@ export default function ListPage() {
 
   const beneficiaries: IBeneficiary[] = listTop['app-lists'].beneficiaries
 
-  const addItemToList = async (inputElement: string): Promise<boolean> => {
+  const addItemToList = async (
+    inputElement: string,
+  ): Promise<boolean | null> => {
     try {
-      // Voir si on doit refacto avec le listId en paramètre
+      const token = await checkToken()
+      if (!token) {
+        setLoading(false)
+        router.push('/login')
+        return null
+      }
       const response = await fetch(`/api/lists/addItemToList`, {
         method: 'POST',
         headers: {
@@ -231,9 +230,16 @@ export default function ListPage() {
       const result = await response.json()
 
       if (listItems) {
-        const updatedItems = [...listItems, result.itemAdded[0]]
-        const sortedElements = updatedItems.sort(sortItemObjectByUpdatedDateDSC)
-        setListItems(sortedElements)
+        const updatedListUnsorted = [...listItems, result.itemAdded[0]]
+        const liveElementsSorted = updatedListUnsorted
+          .filter((item) => item.statusOpen === true)
+          .sort(sortItemObjectByUpdatedDateDSC)
+        const crossedElementsSorted = updatedListUnsorted
+          .filter((item) => item.statusOpen === false)
+          .sort(sortItemObjectByUpdatedDateDSC)
+
+        const updatedItems = [...liveElementsSorted, ...crossedElementsSorted]
+        setListItems(updatedItems)
       } else {
         setListItems(result.itemAdded)
       }
@@ -251,8 +257,14 @@ export default function ListPage() {
     updatedContent: string,
     elementId?: string,
     onSuccess?: () => void,
-  ): Promise<boolean> => {
+  ): Promise<boolean | null> => {
     try {
+      const token = await checkToken()
+      if (!token) {
+        setLoading(false)
+        router.push('/login')
+        return null
+      }
       const response = await fetch(`/api/lists/updateListElement`, {
         method: 'POST',
         headers: {
@@ -302,8 +314,14 @@ export default function ListPage() {
     }
   }
 
-  const suppressElement = async (id: string): Promise<boolean> => {
+  const suppressElement = async (id: string): Promise<boolean | null> => {
     try {
+      const token = await checkToken()
+      if (!token) {
+        setLoading(false)
+        router.push('/login')
+        return null
+      }
       const response = await fetch(`/api/lists/suppressItem`, {
         method: 'POST',
         headers: {
@@ -334,6 +352,12 @@ export default function ListPage() {
     statusOpen: boolean,
     beneficiaries: IBeneficiary[],
   ) => {
+    const token = await checkToken()
+    if (!token) {
+      setLoading(false)
+      router.push('/login')
+      return null
+    }
     const response = await fetch('/api/lists/handleItemStatusChange', {
       method: 'POST',
       headers: {
@@ -391,6 +415,12 @@ export default function ListPage() {
 
   const handleElementStatusChange = async (id: string, statusOpen: boolean) => {
     try {
+      const token = await checkToken()
+      if (!token) {
+        setLoading(false)
+        router.push('/login')
+        return null
+      }
       if (listId) {
         const responseData = await fetchItemStatusChange(
           listId,

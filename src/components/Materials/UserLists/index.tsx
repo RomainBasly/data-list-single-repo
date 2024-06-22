@@ -29,7 +29,7 @@ export default function UserLists() {
   const [userLists, setUserLists] = useState<IList[]>([])
   const [error, setError] = useState<string>('')
   const router = useRouter()
-  const { token, checkToken } = useCheckAccessTokenHealth()
+  const { checkToken } = useCheckAccessTokenHealth()
 
   const fetchListsByUser = useCallback(async () => {
     try {
@@ -63,17 +63,16 @@ export default function UserLists() {
   }, [router, checkToken])
 
   useEffect(() => {
-    if (token) {
-      fetchListsByUser()
-    }
-  }, [token, fetchListsByUser])
+    fetchListsByUser()
+  }, [fetchListsByUser])
 
-  useEffect(() => {
-    const initialize = async () => {
-      await checkToken() // Ensure the token is checked and set
-    }
-    initialize()
-  }, [checkToken])
+  // useEffect(() => {
+  //   const initialize = async () => {
+  //     // Ensure the token is checked and set
+  //     await checkToken()
+  //   }
+  //   initialize()
+  // }, [checkToken])
 
   const handleListClick = (list: IList) => {
     const url = `/lists/user-list/${list['app-lists'].id}`
