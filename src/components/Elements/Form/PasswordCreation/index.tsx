@@ -15,6 +15,7 @@ import Button from '@/components/Materials/Button'
 import UserStore from '@/Stores/UserStore'
 import AuthenticationApi from '@/api/Back/AuthenticationApi'
 import PasswordInput from '../../Inputs/PasswordInput'
+import { useCheckAccessTokenHealth } from '@/components/Utils/checkAccessTokenHealth'
 
 export default function RegistrationForm() {
   const router = useRouter()
@@ -25,8 +26,24 @@ export default function RegistrationForm() {
   const [errors, setErrors] = useState<{ [key: string]: string }>()
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
+  const { checkToken } = useCheckAccessTokenHealth()
+
   useEffect(() => {
-    setEmail(UserStore.getInstance().getEmail())
+    const launchOnLogin = async () => {
+      const token = await checkToken()
+      if (token) {
+        setIsLoading(false)
+        router.push('/home')
+        return
+      }
+    }
+
+    launchOnLogin()
+  }, [checkToken, router])
+
+  useEffect(() => {
+    const userEmail = UserStore.getInstance().getEmail()
+    setEmail(userEmail || '')
   }, [])
 
   async function sendForm(e: { preventDefault: () => void }) {

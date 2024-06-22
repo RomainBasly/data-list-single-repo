@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import classes from '../LoginForm/classes.module.scss'
 import Link from 'next/link'
 import { sanitize } from 'isomorphic-dompurify'
@@ -9,12 +9,28 @@ import { getErrorMessage } from '@/Services/errorHandlingService'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/Materials/Button'
 import UserStore from '@/Stores/UserStore'
+import { useCheckAccessTokenHealth } from '@/components/Utils/checkAccessTokenHealth'
 
 export default function RegistrationForm() {
   const router = useRouter()
   const [email, setEmail] = useState<string>('')
   const [errors, setErrors] = useState<{ [key: string]: string }>()
   const [isLoading, setIsLoading] = useState<boolean>(false)
+
+  const { checkToken } = useCheckAccessTokenHealth()
+
+  useEffect(() => {
+    const launchOnLogin = async () => {
+      const token = await checkToken()
+      if (token) {
+        setIsLoading(false)
+        router.push('/home')
+        return
+      }
+    }
+
+    launchOnLogin()
+  }, [checkToken, router])
 
   async function registrationForm(e: { preventDefault: () => void }) {
     e.preventDefault()

@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import classes from './classes.module.scss'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import AuthenticationApi from '@/api/Back/AuthenticationApi'
 import { validateConnectFormInputs } from '@/Services/validation'
 import { getErrorMessage } from '@/Services/errorHandlingService'
@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation'
 import StorageService from '@/Services/CookieService'
 import Button from '@/components/Materials/Button'
 import PasswordInput from '../../Inputs/PasswordInput'
+import { useCheckAccessTokenHealth } from '@/components/Utils/checkAccessTokenHealth'
 // import { getSocket } from '../../Socket'
 
 export type IBody = {
@@ -22,6 +23,20 @@ export function LoginForm() {
   const [errors, setErrors] = useState<{ [key: string]: string }>()
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const router = useRouter()
+  const { checkToken } = useCheckAccessTokenHealth()
+
+  useEffect(() => {
+    const launchOnLogin = async () => {
+      const token = await checkToken()
+      if (token) {
+        setIsLoading(false)
+        router.push('/home')
+        return
+      }
+    }
+
+    launchOnLogin()
+  }, [checkToken, router])
 
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()

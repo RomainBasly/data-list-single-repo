@@ -36,10 +36,10 @@ export default class UserStore {
     localStorage.setItem("id", id);
   }
 
-  public getEmail(): string {
+  public getEmail(): string | null {
     if (!this.email) {
       const storedEmail = localStorage.getItem("email");
-      assert(storedEmail, "no email in storage");
+
       this.email = storedEmail;
     }
     return this.email;
