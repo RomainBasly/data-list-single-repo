@@ -23,10 +23,15 @@ import { sanitize } from 'isomorphic-dompurify'
 import CustomSelector from '@/components/Materials/CustomSelector'
 import classnames from 'classnames'
 import classNames from 'classnames'
+import { useCheckAccessTokenHealth } from '@/components/Utils/checkAccessTokenHealth'
 
-export type IBody = {
-  email: string
-  password: string
+interface Body {
+  listName: string
+  emails: string[]
+  thematic: string
+  accessLevel: string
+  description: string
+  cyphered: boolean
 }
 
 export function CreateListForm() {
@@ -34,7 +39,7 @@ export function CreateListForm() {
   const [removeEmailAnimationIndex, setRemoveEmailAnimationIndex] = useState<
     number | null
   >(null)
-  const [emails, setEmailsArray] = useState<string[]>([])
+  const [emailsArray, setEmailsArray] = useState<string[]>([])
   const [confidentiality, setConfidentiality] = useState<string>('')
   const [name, setName] = useState<string>('')
   const [thematic, setThematic] = useState<string>('')
@@ -43,6 +48,8 @@ export function CreateListForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const router = useRouter()
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(true)
+  const { checkToken } = useCheckAccessTokenHealth()
+  const [body, setBody] = useState<Body | null>(null)
 
   useEffect(() => {
     const isThereAnyError = Object.values(errors).some((value) => value !== '')
@@ -53,84 +60,124 @@ export function CreateListForm() {
   async function sendForm(e: { preventDefault: () => void }) {
     e.preventDefault()
     setIsLoading(true)
+
     if (emailState) {
       addEmailToList()
-    }
-
-    const body = {
-      listName: name.trim(),
-      emails,
-      thematic: thematic.trim(),
-      accessLevel: confidentiality,
-      description: description.trim(),
-      cyphered: true,
-    }
-
-    const formErrors = validateCreateListForm(body)
-
-    if (Object.values(formErrors).length > 0) {
-      setErrors(formErrors)
-      setIsLoading(false)
-      return
+        .then((newEmailsArray) => {
+          createAndSubmitBody(newEmailsArray)
+        })
+        .catch(() => {
+          setIsLoading(false)
+        })
     } else {
-      setErrors({})
+      createAndSubmitBody(emailsArray)
     }
-
-    try {
-      const response = await fetch('/api/lists/createList', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(body),
-      })
-
-      if (response.ok) {
-        setIsLoading(false)
-        router.push('/')
-      }
-    } catch (error) {
-      setIsLoading(false)
-      const errorMessage = getErrorMessage(error)
-      setErrors({
-        ...errors,
-        form: errorMessage,
-      })
-    }
+    console.log('body', body)
   }
 
   function handleEmail(e: React.ChangeEvent<HTMLInputElement>) {
     setErrors({ ...errors, email: '' })
     setIsLoading(false)
     setEmailState(e.target.value.toLowerCase())
+    console.log(
+      'e.target.value.toLowerCase()',
+      e.target.value.toLowerCase(),
+      emailState,
+    )
   }
 
   function handleEnterKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key.toLowerCase() === 'enter') {
       e.preventDefault()
-      addEmailToList()
+
+      setEmailsArray((previousEmailsArray) => {
+        const newEmailsArray = [...previousEmailsArray, emailState]
+        setEmailState('')
+        return newEmailsArray
+      })
+    }
+  }
+
+  async function createAndSubmitBody(updatedEmailsArray: string[]) {
+    const newBody: Body = {
+      listName: name.trim(),
+      emails: updatedEmailsArray,
+      thematic: thematic.trim(),
+      accessLevel: confidentiality,
+      description: description.trim(),
+      cyphered: true,
+    }
+
+    const formErrors = validateCreateListForm(newBody)
+    if (Object.values(formErrors).length > 0) {
+      setErrors(formErrors)
+      setIsLoading(false)
+    } else {
+      setErrors({})
+      // Here you can proceed to submit your form, e.g., by making an API call
+      console.log('Form submitted successfully', newBody)
+    }
+    if (newBody) {
+      try {
+        const token = await checkToken()
+        if (!token) {
+          setIsLoading(false)
+          router.push('/login')
+          return
+        }
+        const response = await fetch('/api/lists/createList', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(newBody),
+        })
+
+        if (response.ok) {
+          setIsLoading(false)
+          router.push('/')
+        }
+      } catch (error) {
+        setIsLoading(false)
+        const errorMessage = getErrorMessage(error)
+        setErrors({
+          ...errors,
+          form: errorMessage,
+        })
+      }
     }
   }
 
   function addEmailToList() {
-    const sanitizedEmail = sanitize(emailState.trim())
-    const formErrors = validateEmailInput(sanitizedEmail)
-    if (Object.keys(formErrors).length > 0) {
-      setErrors(formErrors)
-      return
-    }
-
-    if (emailState) {
-      setEmailsArray([...emails, sanitizedEmail])
-      setEmailState('')
-    }
+    return new Promise<string[]>((resolve, reject) => {
+      const sanitizedEmail = sanitize(emailState.trim())
+      console.log('sanitizedEmail', sanitizedEmail)
+      const formErrors = validateEmailInput(sanitizedEmail)
+      console.log('I pass here1')
+      if (Object.keys(formErrors).length > 0) {
+        setErrors(formErrors)
+        return
+      }
+      console.log('I pass here2')
+      if (emailState) {
+        console.log('emailState addEmailToList', emailState)
+        setEmailsArray((previousEmailsArray) => {
+          const newEmailsArray = [...previousEmailsArray, emailState]
+          setEmailState('')
+          resolve(newEmailsArray)
+          return newEmailsArray
+        })
+      } else {
+        resolve(emailsArray)
+      }
+    })
   }
 
   function removeEmailFromList(index: number) {
     setRemoveEmailAnimationIndex(index)
     setTimeout(() => {
-      const newArray = emails.filter(
+      const newArray = emailsArray.filter(
         (_, currentIndex) => currentIndex !== index,
       )
       setEmailsArray(newArray)
@@ -292,7 +339,7 @@ export function CreateListForm() {
                   className={classes['input']}
                 />
                 <UserPlusIcon
-                  onClick={addEmailToList}
+                  onClick={() => addEmailToList}
                   className={classes['plus-icon']}
                 />
               </div>
@@ -302,13 +349,13 @@ export function CreateListForm() {
 
           <div className={classes['emails-container']}>
             <div className={classes['title-email']}>Liste partagée avec...</div>
-            {emails.length === 0 && (
+            {emailsArray.length === 0 && (
               <div className={classes['nobody']}>
                 <UserIcon className={classes['icon']} />
                 <div className={classes['text']}>Personne pour l'instant</div>
               </div>
             )}
-            {emails.map((email, index) => (
+            {emailsArray.map((email, index) => (
               <div
                 className={classnames(classes['email-element'], {
                   [classes['email-invisible']]:
