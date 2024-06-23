@@ -36,8 +36,14 @@ export async function middleware(request: NextRequest) {
   }
 
   if (!accessToken) {
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
+    // prevent an infinite loop if backend is unreachable and you try to connect to it with a refreshToken
+    if (url.searchParams.get("redirectAttempt") === "true") {
+      return response;
+    } else {
+      url.pathname = "/login";
+      url.searchParams.set("redirectAttempt", "true");
+      return NextResponse.redirect(url);
+    }
   }
 
   return response;
