@@ -1,50 +1,82 @@
 import CspService from "@/Services/cspServices";
 import { NextRequest, NextResponse } from "next/server";
 
+const PUBLIC_PATHS = ["/login", "/register", "/faq"];
+const LOGIN_PATH = "/login";
+const HOME_PATH = "/home";
+
+const isPublicPath = (pathname: string) => PUBLIC_PATHS.includes(pathname);
+
+const handlePublicPaths = (
+  url: URL,
+  accessToken: string | undefined,
+  response: NextResponse
+) => {
+  if (isPublicPath(url.pathname)) {
+    if (
+      accessToken &&
+      (url.pathname === "/login" || url.pathname === "/register")
+    ) {
+      url.pathname = HOME_PATH;
+      return NextResponse.redirect(url);
+    }
+    return response;
+  }
+  return null;
+};
+
+const handleTokens = (
+  url: URL,
+  accessToken: string | undefined,
+  refreshToken: string | undefined,
+  response: NextResponse
+) => {
+  if (!accessToken && !refreshToken) {
+    url.pathname = LOGIN_PATH;
+    return NextResponse.redirect(url);
+  }
+
+  // If there's a refreshToken, the page component will handle refreshing the accessToken
+  return response;
+};
+
+const handleRootPath = (
+  url: URL,
+  accessToken: string | undefined,
+  refreshToken: string | undefined
+) => {
+  if (url.pathname === "/" && (accessToken || refreshToken)) {
+    url.pathname = HOME_PATH;
+    return NextResponse.redirect(url);
+  }
+  return null;
+};
+
 export async function middleware(request: NextRequest) {
-  const accessToken = request.cookies.get("accessToken");
+  const accessToken = request.cookies.get("accessToken")?.value;
+  const refreshToken = request.cookies.get("refreshToken")?.value;
   const { nonce, contentSecurityPolicyHeaderValue } =
     CspService.getInstance().initiateCsp();
 
-  const publicPaths = ["/login", "/register", "/faq"];
   const url = request.nextUrl.clone();
-
   const response = NextResponse.next();
+
   response.headers.set("x-nonce", nonce);
   response.headers.set(
     "Content-Security-Policy",
     contentSecurityPolicyHeaderValue
   );
+  // Handle public paths
+  const publicPathResponse = handlePublicPaths(url, accessToken, response);
+  if (publicPathResponse) return publicPathResponse;
 
-  if (publicPaths.includes(request.nextUrl.pathname)) {
-    return NextResponse.next();
-  }
+  // Handle redirection from root path
+  const rootPathResponse = handleRootPath(url, accessToken, refreshToken);
+  if (rootPathResponse) return rootPathResponse;
 
-  if (url.pathname === "/") {
-    if (accessToken) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/home";
-      return NextResponse.redirect(url);
-    } else {
-      url.pathname = "/login";
-      return NextResponse.redirect(url);
-    }
-  }
-
-  if (publicPaths.includes(url.pathname)) {
-    return response;
-  }
-
-  if (!accessToken) {
-    // prevent an infinite loop if backend is unreachable and you try to connect to it with a refreshToken
-    if (url.searchParams.get("redirectAttempt") === "true") {
-      return response;
-    } else {
-      url.pathname = "/login";
-      url.searchParams.set("redirectAttempt", "true");
-      return NextResponse.redirect(url);
-    }
-  }
+  // Handle token validation and redirection
+  const tokenResponse = handleTokens(url, accessToken, refreshToken, response);
+  if (tokenResponse) return tokenResponse;
 
   return response;
 }

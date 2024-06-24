@@ -17,21 +17,6 @@ export default function RegistrationForm() {
   const [errors, setErrors] = useState<{ [key: string]: string }>()
   const [isLoading, setIsLoading] = useState<boolean>(false)
 
-  const { checkToken } = useCheckAccessTokenHealth()
-
-  useEffect(() => {
-    const launchOnLogin = async () => {
-      const token = await checkToken()
-      if (token) {
-        setIsLoading(false)
-        router.push('/home')
-        return
-      }
-    }
-
-    launchOnLogin()
-  }, [checkToken, router])
-
   async function registrationForm(e: { preventDefault: () => void }) {
     e.preventDefault()
 

@@ -89,12 +89,7 @@ export function CreateListForm() {
   function handleEnterKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key.toLowerCase() === 'enter') {
       e.preventDefault()
-
-      setEmailsArray((previousEmailsArray) => {
-        const newEmailsArray = [...previousEmailsArray, emailState]
-        setEmailState('')
-        return newEmailsArray
-      })
+      addEmailToList()
     }
   }
 
@@ -152,16 +147,12 @@ export function CreateListForm() {
   function addEmailToList() {
     return new Promise<string[]>((resolve, reject) => {
       const sanitizedEmail = sanitize(emailState.trim())
-      console.log('sanitizedEmail', sanitizedEmail)
       const formErrors = validateEmailInput(sanitizedEmail)
-      console.log('I pass here1')
       if (Object.keys(formErrors).length > 0) {
         setErrors(formErrors)
         return
       }
-      console.log('I pass here2')
       if (emailState) {
-        console.log('emailState addEmailToList', emailState)
         setEmailsArray((previousEmailsArray) => {
           const newEmailsArray = [...previousEmailsArray, emailState]
           setEmailState('')
@@ -339,7 +330,7 @@ export function CreateListForm() {
                   className={classes['input']}
                 />
                 <UserPlusIcon
-                  onClick={() => addEmailToList}
+                  onClick={() => addEmailToList()}
                   className={classes['plus-icon']}
                 />
               </div>
