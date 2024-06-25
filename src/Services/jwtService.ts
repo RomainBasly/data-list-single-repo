@@ -45,7 +45,7 @@ export default class JwtService {
     }
   }
 
-  public isTokenExpired(token: string): boolean {
+  public isTokenExpired(token: string, bufferInSeconds = 30): boolean {
     const decodedToken = decodeJwt(token);
     const currentTimeInSeconds = Math.floor(Date.now() / 1000);
 
@@ -58,6 +58,6 @@ export default class JwtService {
       return true;
     }
 
-    return expirationTime < currentTimeInSeconds;
+    return expirationTime < (currentTimeInSeconds + bufferInSeconds);
   }
 }

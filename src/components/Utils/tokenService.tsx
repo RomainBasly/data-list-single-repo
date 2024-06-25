@@ -16,12 +16,16 @@ const useTokenService = () => {
       return null
     }
 
-    if (accessToken && !JwtService.getInstance().isTokenExpired(accessToken)) {
+    if (
+      accessToken &&
+      !JwtService.getInstance().isTokenExpired(accessToken, 5)
+    ) {
       return accessToken
     }
 
     const isRefreshTokenExpired = JwtService.getInstance().isTokenExpired(
       refreshToken,
+      30,
     )
     if (isRefreshTokenExpired) {
       Router.push('/login')
