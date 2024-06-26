@@ -8,7 +8,7 @@ import fs from "fs";
 
 export class SocketService {
   private expressApp: express.Application;
-  private httpServer: https.Server;
+  private httpServer: http.Server;
   //private httpServer: http.Server;
   private io: IOServer;
   private readonly port: string | number;
@@ -22,7 +22,7 @@ export class SocketService {
       res.send("Hello, World!");
     });
 
-    this.httpServer = https.createServer(
+    this.httpServer = http.createServer(
       // {
       //   key: fs.readFileSync(
       //     "/etc/letsencrypt/live/ws.simplists.net/privkey.pem"
