@@ -18,7 +18,7 @@ export default class CspService {
   style-src 'self' 'nonce-${nonce}' fonts.googleapis.com;
   font-src 'self' fonts.gstatic.com;
   img-src 'self' data:;
-  connect-src 'self' https://stingray-app-69yxe.ondigitalocean.app http://localhost:8000/api/ ws://localhost:3001/ wss://ws.simplists.net https://10.132.0.2:3001;
+  connect-src 'self' https://stingray-app-69yxe.ondigitalocean.app http://localhost:8000/api/ wss://ws.simplists.net https://fonts.googleapis.com;
   base-uri 'self';
   object-src 'none';
 `;
