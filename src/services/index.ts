@@ -46,7 +46,7 @@ export class SocketService {
       socket.on("disconnect", () => {
         // TODO : check which one to suppress
         this.userSocketMap.delete(socketId);
-        this.userSocketMap.delete(socket.id);
+        //this.userSocketMap.delete(socket.id);
         console.log("disconnect", this.userSocketMap, socket.id);
       });
 

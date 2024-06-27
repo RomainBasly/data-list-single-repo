@@ -20,7 +20,6 @@ export class SocketConfig {
           "https://data-list-collaborative-r54h7zfc9-romainbaslys-projects.vercel.app/",
           "https://stingray-app-69yxe.ondigitalocean.app/api",
         ], // Allowed origins
-        // methods: ["GET", "POST"], // TODO : check if necessary or not. Allowed HTTP request methods
         allowedHeaders: ["my-custom-header"], // TODO : check if necessary
         credentials: true, // Allow sending of cookies and credentials
       },
