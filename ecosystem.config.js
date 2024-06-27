@@ -2,7 +2,7 @@ module.exports = {
   apps: [
     {
       name: "WS-PROD",
-      script: "./dist/main.js",
+      script: "./dist/index.js",
       env: {
         PORT: 3001,
         CORS_ORIGINS:
