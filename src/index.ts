@@ -1,14 +1,14 @@
 import dotenv from "dotenv";
-import { SocketService } from "./services/SocketService";
+import { SocketService } from "./services";
+import { SocketConfig } from "./config";
 
 dotenv.config();
 
 class Main {
-  // element necessary to the constructor
-  // constructor
   public async start() {
     console.info("socket started");
-    SocketService.getInstance();
+    const { io, httpServer } = SocketConfig.getInstance().startServer();
+    SocketService.getInstance(io, httpServer);
   }
 }
 

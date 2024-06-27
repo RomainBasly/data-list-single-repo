@@ -1,67 +1,31 @@
 import express from "express";
-import https from "https";
 import { Server as IOServer, Socket } from "socket.io";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { randomBytes } from "node:crypto";
-import http from "http"; // Import the HTTP module
-import fs from "fs";
+import http from "http";
+import { DefaultEventsMap } from "socket.io/dist/typed-events";
 
 export class SocketService {
-  private expressApp: express.Application;
-  private httpServer: http.Server;
-  //private httpServer: http.Server;
-  private io: IOServer;
-  private readonly port: string | number;
   private static instance: SocketService;
   private userSocketMap: Map<string, { socketId: string; userId?: string }>;
 
-  constructor() {
-    this.expressApp = express();
-
-    this.expressApp.get("/", (req, res) => {
-      res.send("Hello, World!");
-    });
-
-    this.httpServer = http.createServer(
-      // {
-      //   key: fs.readFileSync(
-      //     "/etc/letsencrypt/live/ws.simplists.net/privkey.pem"
-      //   ),
-      //   cert: fs.readFileSync(
-      //     "/etc/letsencrypt/live/ws.simplists.net/fullchain.pem"
-      //   ),
-      // },
-      this.expressApp
-    );
-
-    this.httpServer.setTimeout(600000);
-
-    // this.httpServer = http.createServer(this.expressApp);
-
-    this.io = new IOServer(this.httpServer, {
-      // this.io = new IOServer(this.httpsServer, {
-      cors: {
-        origin: [
-          "https://data-list-collaborative-r54h7zfc9-romainbaslys-projects.vercel.app/",
-          "https://stingray-app-69yxe.ondigitalocean.app/api",
-        ], // Allowed origins
-        methods: ["GET", "POST"], // Allowed HTTP request methods
-        allowedHeaders: ["my-custom-header"], // Custom headers that can be sent
-        credentials: true, // Allow sending of cookies and credentials
-      },
-      path: "/socket.io/",
-    });
-    this.port = process.env.PORT || 3001;
-
+  constructor(
+    private io: IOServer<
+      DefaultEventsMap,
+      DefaultEventsMap,
+      DefaultEventsMap,
+      any
+    >,
+    private httpServer: http.Server
+  ) {
     this.userSocketMap = new Map();
 
     this.initializeSocket();
-    this.listen();
   }
 
-  public static getInstance() {
+  public static getInstance(io: IOServer, http: http.Server): SocketService {
     if (!this.instance) {
-      this.instance = new SocketService();
+      this.instance = new SocketService(io, http);
     }
     return this.instance;
   }
@@ -80,6 +44,7 @@ export class SocketService {
         socket.emit("pong");
       });
       socket.on("disconnect", () => {
+        // TODO : check which one to suppress
         this.userSocketMap.delete(socketId);
         this.userSocketMap.delete(socket.id);
         console.log("disconnect", this.userSocketMap, socket.id);
@@ -90,14 +55,9 @@ export class SocketService {
         console.log("elementPassToFront adding", elementToPassToFront);
         data.beneficiaries.map((person: any) => {
           const userId = person["app-users"].user_id;
-          let targetSocketId: string | undefined;
 
-          for (const [key, value] of this.userSocketMap.entries()) {
-            if (String(value.userId) === String(userId)) {
-              targetSocketId = value.socketId;
-              break; // Stop searching once we've found the userId
-            }
-          }
+          // TODO : see what we can do for multi device connexion
+          const targetSocketId = this.findSocketIdByUserId(userId);
 
           if (targetSocketId) {
             this.io.to(targetSocketId).emit("adding-item-to-list-socket", {
@@ -111,14 +71,9 @@ export class SocketService {
         const elementId = data.elementId;
         data.beneficiaries.map((person: any) => {
           const userId = person["app-users"].user_id;
-          let targetSocketId: string | undefined;
 
-          for (const [key, value] of this.userSocketMap.entries()) {
-            if (String(value.userId) === String(userId)) {
-              targetSocketId = value.socketId;
-              break; // Stop searching once we've found the userId
-            }
-          }
+          // TODO : see what we can do for multi device connexion
+          const targetSocketId = this.findSocketIdByUserId(userId);
 
           if (targetSocketId) {
             this.io.to(targetSocketId).emit("suppress-item-from-list-socket", {
@@ -133,14 +88,9 @@ export class SocketService {
         console.log("elementPassToFront update", elementToPassToFront);
         data.beneficiaries.map((person: any) => {
           const userId = person["app-users"].user_id;
-          let targetSocketId: string | undefined;
 
-          for (const [key, value] of this.userSocketMap.entries()) {
-            if (String(value.userId) === String(userId)) {
-              targetSocketId = value.socketId;
-              break; // Stop searching once we've found the userId
-            }
-          }
+          // TODO : see what we can do for multi device connexion
+          const targetSocketId = this.findSocketIdByUserId(userId);
 
           if (targetSocketId) {
             this.io.to(targetSocketId).emit("update-item-content-socket", {
@@ -154,14 +104,8 @@ export class SocketService {
         const elementToPassToFront = data.updatedItem;
         data.beneficiaries.map((person: any) => {
           const userId = person["app-users"].user_id;
-          let targetSocketId: string | undefined;
-
-          for (const [key, value] of this.userSocketMap.entries()) {
-            if (String(value.userId) === String(userId)) {
-              targetSocketId = value.socketId;
-              break; // Stop searching once we've found the userId
-            }
-          }
+          // TODO : see what we can do for multi device connexion
+          const targetSocketId = this.findSocketIdByUserId(userId);
 
           if (targetSocketId) {
             this.io.to(targetSocketId).emit("change-item-status-socket", {
@@ -174,15 +118,8 @@ export class SocketService {
       socket.on("list-invitation-backend", (data: any) => {
         const { userId } = data;
 
-        let targetSocketId: string | undefined;
-
-        // Iterate over the map to find the matching userId
-        for (const [key, value] of this.userSocketMap.entries()) {
-          if (String(value.userId) === String(userId)) {
-            targetSocketId = value.socketId;
-            break; // Stop searching once we've found the userId
-          }
-        }
+        // TODO : see what we can do for multi device connexion
+        const targetSocketId = this.findSocketIdByUserId(userId);
 
         if (targetSocketId) {
           this.io.to(targetSocketId).emit("list-invitation-socket", {
@@ -202,6 +139,7 @@ export class SocketService {
         ) {
           const userId = decoded.userInfo.id.toString();
 
+          // TODO : see what we can do for multi device connexion
           this.userSocketMap.forEach((value, key) => {
             if (value.userId === userId) {
               this.userSocketMap.delete(key);
@@ -232,10 +170,13 @@ export class SocketService {
     });
   }
 
-  private listen(): void {
-    this.httpServer.listen(this.port, () => {
-      // this.httpsServer.listen(this.port, () => {
-      console.log(`Server is running on port ${this.port}`);
-    });
+  private findSocketIdByUserId(userId: string): string | null {
+    for (const [_, value] of this.userSocketMap.entries()) {
+      if (String(value.userId) === String(userId)) {
+        return value.socketId;
+      }
+    }
+
+    return null;
   }
 }
