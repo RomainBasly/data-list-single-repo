@@ -1,4 +1,3 @@
-import express from "express";
 import { Server as IOServer, Socket } from "socket.io";
 import jwt from "jsonwebtoken";
 import { randomBytes } from "node:crypto";
@@ -44,15 +43,11 @@ export class SocketService {
         socket.emit("pong");
       });
       socket.on("disconnect", () => {
-        // TODO : check which one to suppress
         this.userSocketMap.delete(socketId);
-        //this.userSocketMap.delete(socket.id);
-        console.log("disconnect", this.userSocketMap, socket.id);
       });
 
       socket.on("adding-item-to-list-backend", (data: any) => {
         const elementToPassToFront = data.addedItem;
-        console.log("elementPassToFront adding", elementToPassToFront);
         data.beneficiaries.map((person: any) => {
           const userId = person["app-users"].user_id;
 
@@ -85,7 +80,6 @@ export class SocketService {
 
       socket.on("update-item-content-backend", (data: any) => {
         const elementToPassToFront = data.updatedItem;
-        console.log("elementPassToFront update", elementToPassToFront);
         data.beneficiaries.map((person: any) => {
           const userId = person["app-users"].user_id;
 
@@ -104,6 +98,7 @@ export class SocketService {
         const elementToPassToFront = data.updatedItem;
         data.beneficiaries.map((person: any) => {
           const userId = person["app-users"].user_id;
+
           // TODO : see what we can do for multi device connexion
           const targetSocketId = this.findSocketIdByUserId(userId);
 

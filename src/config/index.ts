@@ -16,7 +16,7 @@ export class SocketConfig {
 
     this.io = new IOServer(this.httpServer, {
       cors: {
-        origin: process.env.CORS_ORIGINS?.split(",") || [], // Allowed origins
+        origin: process.env.CORS_ORIGINS?.split(",") || [], // Allowed origins stored in a string on pm2
         allowedHeaders: ["custom-header"], // TODO : check if necessary
         credentials: true, // Allow sending of cookies and credentials
       },
