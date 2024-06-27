@@ -16,11 +16,8 @@ export class SocketConfig {
 
     this.io = new IOServer(this.httpServer, {
       cors: {
-        origin: [
-          "https://data-list-collaborative-r54h7zfc9-romainbaslys-projects.vercel.app/",
-          "https://stingray-app-69yxe.ondigitalocean.app/api",
-        ], // Allowed origins
-        allowedHeaders: ["my-custom-header"], // TODO : check if necessary
+        origin: process.env.CORS_ORIGINS?.split(",") || [], // Allowed origins
+        allowedHeaders: ["custom-header"], // TODO : check if necessary
         credentials: true, // Allow sending of cookies and credentials
       },
       path: "/socket.io/",
