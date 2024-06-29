@@ -12,7 +12,6 @@ export class WebSocketClientService {
 
   constructor() {
     this.url = process.env.SOCKET_URL || '';
-    console.log('this url', this.url);
     this.connect();
   }
 

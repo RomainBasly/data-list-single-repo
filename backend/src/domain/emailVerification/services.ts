@@ -23,7 +23,6 @@ export default class EmailVerificationServices {
       if (!isExpiryStillValid) throw new EmailValidityCodeError(ErrorMessages.NO_MORE_VALID);
       if (isCodeCorrect && isExpiryStillValid) {
         await this.appEmailVerificationTokenRepository.updateIsEmailVerified(email);
-        console.log('column updated');
       }
     } catch (error) {
       console.error('something went wrong in the userservice', error);

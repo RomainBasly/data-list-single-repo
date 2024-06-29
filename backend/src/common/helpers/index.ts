@@ -39,7 +39,6 @@ export function getFromJWTToken(req: Request, tokenType: string) {
   const token = retrieveTokenFromCookie(cookieHeader, tokenType);
   if (!token) throw new Error('no token accessible the method');
   const decoded = jwt.decode(token);
-  console.log('getFromJWTToken4', decoded);
   return decoded;
 }
 

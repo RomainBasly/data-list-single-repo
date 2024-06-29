@@ -72,7 +72,6 @@ export function CreateListForm() {
     } else {
       createAndSubmitBody(emailsArray)
     }
-    console.log('body', body)
   }
 
   function handleEmail(e: React.ChangeEvent<HTMLInputElement>) {
@@ -110,7 +109,6 @@ export function CreateListForm() {
     } else {
       setErrors({})
       // Here you can proceed to submit your form, e.g., by making an API call
-      console.log('Form submitted successfully', newBody)
     }
     if (newBody) {
       try {
