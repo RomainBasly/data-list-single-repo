@@ -10,7 +10,8 @@ export type ApiResponse<T> = {
 };
 
 export default abstract class BaseApiService {
-  protected readonly backEndUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  protected readonly backEndUrl =
+    process.env.NEXT_PUBLIC_BACKEND_URL || "http://backend:8000/api";
   protected readonly apiKey = process.env.NEXT_PUBLIC_API_KEY;
 
   protected constructor() {}
